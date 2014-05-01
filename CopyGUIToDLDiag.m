@@ -22,10 +22,13 @@ function CopyGUIToDLDiag
     end
     
     % Copy the 'RunCapabilityGUI.m' file to one level higher directory
-    copyfile('RunCapabilityGUI.m',fullfile(targetDir,'..','RunCapabilityGUI.m'))
+    copyfile('RunCapabilityGUI.m',fullfile(targetDir,'..','RunCapabilityGUI.m'),'f')
+    % Copy the 'RunCapabilityGUI.m' file to one level higher directory
+    copyfile('Capability GUI Installation Instructions.docx',fullfile(targetDir,'..','Capability GUI Installation Instructions.docx'),'f')
     
     % Set all the files to be read-only to help prevent people from changing them (won't stop 
     % files from being deleted but this should help keep it from changing)
     dos(sprintf('attrib +r "%s\\*" /D /S',targetDir),'-echo');
     dos(sprintf('attrib +r "%s\\..\\RunCapabilityGUI.m" /D /S',targetDir),'-echo');
+    dos(sprintf('attrib +r "%s\\..\\Capability GUI Installation Instructions.docx" /D /S',targetDir),'-echo');
 end

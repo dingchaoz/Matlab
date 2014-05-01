@@ -353,7 +353,7 @@ classdef Capability < handle
                          any(strfind(ex.message,'The SELECT permission was denied')))
                     
                     % If it was becase of a bad database name specified
-                    if strncmp('Cannot open database',ex.message,20) || any(strfind(ex.message,'The SELECT permission was denied'))
+                    if strncmp('Cannot open database',ex.message,20) || any(strfind(ex.message,'The SELECT permission was denied')) || strncmp('Login failed for user',ex.message,21)
                         % Throw an error that an invalid program name was specified
                         error('Capability:InvalidProgram','Couldn''t connect to the %s program database. The database wasn''t found or you don''t have permission to access the data.',in)
                     elseif strncmp('The TCP/IP connection to the host',ex.message,33)
