@@ -79,14 +79,14 @@ for i = 1:size(programs,1)
         end
         
         % Get the listing of all the processed folders
-        midFolderData = dir(fullfile(rawDataDir,truckName,'RawCSVFiles\Min-Max data\ProcessedFiles'));
-        midFolders = {midFolderData(3:end).name}';
-        midFolders = midFolders(cell2mat({midFolderData(3:end).isdir}'));
+        %midFolderData = dir(fullfile(rawDataDir,truckName,'RawCSVFiles\Min-Max data\ProcessedFiles'));
+        %midFolders = {midFolderData(3:end).name}';
+        %midFolders = midFolders(cell2mat({midFolderData(3:end).isdir}'));
         
         % Skip mid folders
         
         % For each mid folder found
-        for k = 1:length(midFolders)
+        for k = []%1:length(midFolders)
             
             % Caclulate the current folder and copy folder
             currentFolder = fullfile(rawDataDir,truckName,'RawCSVFiles\Min-Max data\ProcessedFiles',midFolders{k});
