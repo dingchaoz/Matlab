@@ -70,7 +70,8 @@ datapoint = find( (xvals==pos(1))&(yvals==pos(2)) );
 %     ['X: ',num2str(pos(1),4)];...
 %     ['Y: ',num2str(pos(2),4)] };
 output_txt = { labels{datapoint,1};...
-    strcat('TimePeriod: ',num2str(labels{datapoint,2}))};
+    strcat('TimePeriod: ',num2str(labels{datapoint,2})); ...
+    strcat('Software: ',num2str(labels{datapoint,3}))};
 % If there is a Z-coordinate in the position, display it as well
 if length(pos) > 2
     output_txt{end+1} = ['Z: ',num2str(pos(3),4)];

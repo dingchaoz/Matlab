@@ -59,7 +59,7 @@ function makePlot(obj, visible)
         titleText{i} = regexprep(titleText{i},'\_','\\\_');
     end
     title(titleText,'FontSize',13,'Interpreter','tex') % Actually set the title
-    labels = [obj.TruckName,num2cell(obj.TimePeriod)];
+    labels = [obj.TruckName,num2cell(obj.TimePeriod), num2cell(obj.CalibrationVersion)];
     customDataCursor(h,labels);
     
     % Generate and set the x label
