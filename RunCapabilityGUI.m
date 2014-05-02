@@ -99,6 +99,7 @@ function RunCapabilityGUI
     end
     
     %% Open the tool
+    path(path,guiLocation);
     CapabilityGUI
     
 end
