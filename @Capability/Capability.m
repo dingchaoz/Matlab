@@ -109,20 +109,20 @@ classdef Capability < handle
             % Define the mapping of database name, plot display program, server, and instance
             obj.progMap = {
             % 'Display Name', 'Database Name', 'Server',    'Instance'
-              'ISB',          'DragonMR',      'W3-A11259', 'CAPABILITYDB';
-              'Chrysler CC',  'DragonCC',      'W3-A11259', 'CAPABILITYDB';
-              'ISL',          'Yukon',         'W3-A11259', 'CAPABILITYDB';
-              'Chrysler PU',  'Seahawk',       'W3-A11259', 'CAPABILITYDB';
-              'ISX',          'HDPacific',     'W3-A11259', 'CAPABILITYDB';
-              'Vanguard',     'Vanguard',      'W3-A11259', 'CAPABILITYDB';
-              'Ventura',      'Ventura',       'W3-A11259', 'CAPABILITYDB';
-              'Pele',         'Pele',          'W3-A11259', 'CAPABILITYDB';
-              'Atlantic',     'Atlantic',      'W3-A11259', 'CAPABILITYDB';
-              'Blazer',       'Blazer',        'W3-A11259', 'CAPABILITYDB';
-              'Bronco',       'Bronco',        'W3-A11259', 'CAPABILITYDB';
-              'Clydesdale',   'Clydesdale',    'W3-A11259', 'CAPABILITYDB';
-              'Mamba',        'Mamba',         'W3-A11259', 'CAPABILITYDB';
-              'Shadowfax',    'Shadowfax',     'W3-A11259', 'CAPABILITYDB';
+              'ISB',          'DragonMR',      'W3-A22649', 'CAPABILITYDB';
+              'Chrysler CC',  'DragonCC',      'W3-A22649', 'CAPABILITYDB';
+              'ISL',          'Yukon',         'W3-A22649', 'CAPABILITYDB';
+              'Chrysler PU',  'Seahawk',       'W3-A22649', 'CAPABILITYDB';
+              'ISX',          'HDPacific',     'W3-A22649', 'CAPABILITYDB';
+              'Vanguard',     'Vanguard',      'W3-A22649', 'CAPABILITYDB';
+              'Ventura',      'Ventura',       'W3-A22649', 'CAPABILITYDB';
+              'Pele',         'Pele',          'W3-A22649', 'CAPABILITYDB';
+              'Atlantic',     'Atlantic',      'W3-A22649', 'CAPABILITYDB';
+              'Blazer',       'Blazer',        'W3-A22649', 'CAPABILITYDB';
+              'Bronco',       'Bronco',        'W3-A22649', 'CAPABILITYDB';
+              'Clydesdale',   'Clydesdale',    'W3-A22649', 'CAPABILITYDB';
+              'Mamba',        'Mamba',         'W3-A22649', 'CAPABILITYDB';
+              'Shadowfax',    'Shadowfax',     'W3-A22649', 'CAPABILITYDB';
               };
             
             % If program wasn't passed in
