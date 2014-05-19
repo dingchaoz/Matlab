@@ -3,18 +3,18 @@
 
 % Define the program names to work on
 programs = {...
-            'Pacific';
-            'Atlantic';
-            'Mamba';
-            'Pele';
-            'DragonCC';
-            'DragonMR';
-            'Seahawk';
-            'Yukon';
-            'Blazer';
-            'Bronco';
-            'Cyldesdale';
-            'Shadowfax';
+%             'Pacific';
+%             'Atlantic';
+%             'Mamba';
+%             'Pele';
+%             'DragonCC';
+%             'DragonMR';
+%             'Seahawk';
+%             'Yukon';
+%             'Blazer';
+%             'Bronco';
+%             'Cyldesdale';
+%             'Shadowfax';
             'Vanguard';
             'Ventura';
             };
@@ -22,16 +22,16 @@ programs = {...
 %% Output Location and Filtering
 
 % Starting output directory (new folder based on current time-stamp)
-startDir = ['D:\Plots\Plots_Generated_' datestr(now,'yy-mm-dd_HH-MM-SS')];
+startDir = ['..\Plots_Generated_' datestr(now,'yy-mm-dd_HH-MM-SS')];
 
 % Define the starting and end date to plot data from
 % Start 90 days ago
-startDate = ceil(now)-90;
+startDate = ceil(now)-30;
 % No End Filter (i.e. data up to today)
 endDate = now;
 
-% Plot Folder Name
-plotFold = ['Plots_' datestr(startDate,'yymmdd') '_' datestr(endDate,'yymmdd')];
+% % Plot Folder Name
+% plotFold = ['Plots_' datestr(startDate,'yymmdd') '_' datestr(endDate,'yymmdd')];
 
 % Master Date Filtering (based on above)
 masterDateFilt = [startDate endDate];
@@ -46,12 +46,16 @@ timeToRun = zeros(size(programs));
 
 % For each desired program
 for i = 1:length(programs)
+    % Plot Folder Name
+    plotFold = [programs{i} '_Plots_' datestr(startDate,'yymmdd') '_' datestr(endDate,'yymmdd')];
+
     try % For now
     tic
     % Open a capability object
     cap = Capability(programs{i});
     % Make the correct folder name for the plots
-    outputDir = fullfile(startDir,programs{i},plotFold);
+%     outputDir = fullfile(startDir,programs{i},plotFold);
+    outputDir = fullfile(startDir,plotFold);
     % Make the standard array of plots for this program
     cap.makePlots(outputDir,masterDateFilt,masterSwFilt)
     % Eventually copy them to the network

@@ -174,7 +174,7 @@ classdef Capability < handle
             if isempty(idx)
                 % Use some default values
                 obj.plotProgramName = '???';
-                obj.server = 'W3-A11259';
+                obj.server = 'W3-A22649';
                 obj.instanceName = 'CAPABILITYDB';
             else
                 % Set these properties

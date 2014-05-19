@@ -57,47 +57,46 @@ clear Yukon
 progTime.Yukon = toc(a);
 
 % Blazer
-% a = tic;
-% Blazer = Capability('Blazer');
-% Blazer.updatePrecalcResults;
-% clear Blazer
-% progTime.Blazer = toc(a);
+a = tic;
+Blazer = Capability('Blazer');
+Blazer.updatePrecalcResults;
+clear Blazer
+progTime.Blazer = toc(a);
 
 % Bronco
-% a = tic;
-% Bronco = Capability('Bronco');
-% Bronco.updatePrecalcResults;
-% clear Bronco
-% progTime.Bronco = toc(a);
+a = tic;
+Bronco = Capability('Bronco');
+Bronco.updatePrecalcResults;
+clear Bronco
+progTime.Bronco = toc(a);
 
 % Clydesdale
-% a = tic;
-% Clydesdale = Capability('Clydesdale');
-% Clydesdale.updatePrecalcResults;
-% clear Clydesdale
-% progTime.Clydesdale = toc(a);
+a = tic;
+Clydesdale = Capability('Clydesdale');
+Clydesdale.updatePrecalcResults;
+clear Clydesdale
+progTime.Clydesdale = toc(a);
 
 % Shadowfax
-% a = tic;
-% Shadowfax = Capability('Shadowfax');
-% Shadowfax.updatePrecalcResults;
-% clear Shadowfax
-% progTime.Shadowfax = toc(a);
+a = tic;
+Shadowfax = Capability('Shadowfax');
+Shadowfax.updatePrecalcResults;
+clear Shadowfax
+progTime.Shadowfax = toc(a);
 
 % Vanguard
-% a = tic;
-% Vanguard = Capability('Vanguard');
-% Vanguard.updatePrecalcResults;
-% clear Vanguard
-% progTime.Vanguard = toc(a);
-
+a = tic;
+Vanguard = Capability('Vanguard');
+Vanguard.updatePrecalcResults;
+clear Vanguard
+progTime.Vanguard = toc(a);
 
 % Ventura
-% a = tic;
-% Ventura = Capability('Ventura');
-% Ventura.updatePrecalcResults;
-% clear Ventura
-% progTime.Ventura = toc(a);
+a = tic;
+Ventura = Capability('Ventura');
+Ventura.updatePrecalcResults;
+clear Ventura
+progTime.Ventura = toc(a);
 
 % Show the seconds for each program
 progTime
