@@ -3,18 +3,18 @@
 
 % Define the program names to work on
 programs = {...
-%             'Pacific';
-%             'Atlantic';
-%             'Mamba';
-%             'Pele';
-%             'DragonCC';
-%             'DragonMR';
-%             'Seahawk';
-%             'Yukon';
-%             'Blazer';
-%             'Bronco';
-%             'Cyldesdale';
-%             'Shadowfax';
+            'Pacific';
+            'Atlantic';
+            'Mamba';
+            'Pele';
+            'DragonCC';
+            'DragonMR';
+            'Seahawk';
+            'Yukon';
+            'Blazer';
+            'Bronco';
+            'Cyldesdale';
+            'Shadowfax';
             'Vanguard';
             'Ventura';
             };
@@ -26,7 +26,7 @@ startDir = ['..\Plots_Generated_' datestr(now,'yy-mm-dd_HH-MM-SS')];
 
 % Define the starting and end date to plot data from
 % Start 90 days ago
-startDate = ceil(now)-30;
+startDate = ceil(now)-90;
 % No End Filter (i.e. data up to today)
 endDate = now;
 
