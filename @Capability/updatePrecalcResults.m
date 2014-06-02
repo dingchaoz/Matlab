@@ -209,7 +209,8 @@ function output = convertToCell(structInput)
         end
     end
     
-%     % Check for bad inputs that aren't compatible with datainsert
+
+% Check for bad inputs that aren't compatible with datainsert
 %     for i = 1:numel(output)
 %         % Check for NaN values
 %         if isnan(output{i})
