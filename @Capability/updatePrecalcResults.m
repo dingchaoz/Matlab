@@ -149,12 +149,12 @@ function updatePrecalcResults(obj)
     % Upload data to tblDataTruckSw
     for i = 1:floor(size(uploadTruckSw,1)/inc)
         % Upload this chunk
-        datainsert(obj.conn,'[dbo].[tblDataTruckSw]',fields(truckSw),uploadTruckSw((i-1)*inc+1:i*inc,:));
+        fastinsert(obj.conn,'[dbo].[tblDataTruckSw]',fields(truckSw),uploadTruckSw((i-1)*inc+1:i*inc,:));
     end
     % If data was smaller then inc size, change i from empty to 0
     if isempty(i),i = 0;end
     % Upload the final chunk
-    datainsert(obj.conn,'[dbo].[tblDataTruckSw]',fields(truckSw),uploadTruckSw(i*inc+1:end,:));
+    fastinsert(obj.conn,'[dbo].[tblDataTruckSw]',fields(truckSw),uploadTruckSw(i*inc+1:end,:));
     % Monitor the upload time
     disp('Upload TruckSw');toc
     
@@ -164,12 +164,12 @@ function updatePrecalcResults(obj)
     %datainsert(obj.conn,'[dbo].[tblDataTruckTimeSw]',fields(truckTimeSw),uploadTruckTimeSw);
     for i = 1:floor(size(uploadTruckTimeSw,1)/inc)
         % Upload this chunk
-        datainsert(obj.conn,'[dbo].[tblDataTruckTimeSw]',fields(truckTimeSw),uploadTruckTimeSw((i-1)*inc+1:i*inc,:));
+        fastinsert(obj.conn,'[dbo].[tblDataTruckTimeSw]',fields(truckTimeSw),uploadTruckTimeSw((i-1)*inc+1:i*inc,:));
     end
     % If data was smaller then inc size, change i from empty to 0
     if isempty(i),i = 0;end
     % Upload the final chunk
-    datainsert(obj.conn,'[dbo].[tblDataTruckTimeSw]',fields(truckTimeSw),uploadTruckTimeSw(i*inc+1:end,:));
+    fastinsert(obj.conn,'[dbo].[tblDataTruckTimeSw]',fields(truckTimeSw),uploadTruckTimeSw(i*inc+1:end,:));
     % Monitor the upload time
     disp('Upload TruckTimeSw');toc
     
@@ -209,16 +209,16 @@ function output = convertToCell(structInput)
         end
     end
     
-    % Check for bad inputs that aren't compatible with datainsert
-    for i = 1:numel(output)
-        % Check for NaN values
-        if isnan(output{i})
-            % Convert NaN to ''
-            output{i} = '';
-        elseif length(output{i}) == 1 && ischar(output{i})
-            % Add a space so single character strings, datainsert chokes on this
-            output{i} = [output{i} ' '];
-        end
-    end
+%     % Check for bad inputs that aren't compatible with datainsert
+%     for i = 1:numel(output)
+%         % Check for NaN values
+%         if isnan(output{i})
+%             % Convert NaN to ''
+%             output{i} = '';
+%         elseif length(output{i}) == 1 && ischar(output{i})
+%             % Add a space so single character strings, datainsert chokes on this
+%             output{i} = [output{i} ' '];
+%         end
+%     end
     
 end

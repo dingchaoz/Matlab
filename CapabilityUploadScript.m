@@ -7,6 +7,11 @@ Pacific = CapabilityUploader('HDPacific');
 Pacific.dataUploader;
 clear Pacific
 
+% Work on Acadia
+% Acadia = CapabilityUploader('Acadia');
+% Acadia.dataUploader;
+% clear Acadia
+
 % Work on Atlatnic
 Atlantic = CapabilityUploader('Atlantic');
 Atlantic.dataUploader;

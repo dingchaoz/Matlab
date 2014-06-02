@@ -7,6 +7,13 @@ Pacific.updatePrecalcResults;
 clear Pacific
 progTime.Pacific = toc(a);
 
+% Acadia
+% a = tic;
+% Acadia = Capability('Acadia');
+% Acadia.updatePrecalcResults;
+% clear Acadia
+% progTime.Acadia = toc(a);
+
 % Atlantic
 a = tic;
 Atlantic = Capability('Atlantic');
