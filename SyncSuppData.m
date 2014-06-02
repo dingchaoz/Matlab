@@ -10,6 +10,7 @@ function SyncSuppData(varargin)
     % Define the staring data folder
     %rootDir = 'D:\Matlab\NewIUPR_DB\data';
     rootDir = '\\CIDCSDFS01\EBU_Data01$\NACTGx\common\DL_Diag\Data Analysis\Storage\suppdata';
+%     rootDir = 'D:\Users\kz429\data crunching\GUI code\suppdata';
     
     % If the user didn't pass in any programs
     if nargin < 1
@@ -23,7 +24,7 @@ function SyncSuppData(varargin)
     end
     
     % For each engine program
-    for i = 1:length(programs)
+    for i = 2:length(programs)
         
         try
             % Open the connections to the right databases

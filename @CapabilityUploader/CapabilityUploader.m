@@ -139,10 +139,10 @@ classdef CapabilityUploader < Capability
             end
             
             % Declare the logging objects
-            obj.error = logWriter('Error_Log', fullfile('..\logs',obj.program,'error'));
-            obj.event = logWriter('Event_Log', fullfile('..\logs',obj.program,'event'));
-            obj.warning = logWriter('Warning_Log', fullfile('..\logs',obj.program,'warning'));
-            obj.timer = logWriter('Timer_Log', fullfile('..\logs',obj.program,'timer'));
+            obj.error = logWriter('Error_Log', fullfile('..\capbility_logs',obj.program,'error'));
+            obj.event = logWriter('Event_Log', fullfile('..\capbility_logs',obj.program,'event'));
+            obj.warning = logWriter('Warning_Log', fullfile('..\capbility_logs',obj.program,'warning'));
+            obj.timer = logWriter('Timer_Log', fullfile('..\capbility_logs',obj.program,'timer'));
             
             % Initalize the headers of the log files
             obj.error.writef('CapabilityUploader Error Log File - %s Program\r\n',obj.program);
