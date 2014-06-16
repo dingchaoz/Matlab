@@ -165,7 +165,7 @@ function makePlots(obj, rootDir, masterDateFilt, masterSwFilt)
                     % Load the data in for this grouping
                     obj.fillHistData
                     % Make the plot (visible for now, set to 0 for production)
-                    obj.hist.makePlot(1)
+                    obj.hist.makePlot(0)
                     % Save the plot
                     obj.hist.savePlot(fullfile(histFold,plotFileName))
                 catch ex

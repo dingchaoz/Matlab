@@ -117,3 +117,6 @@ progTime
 %     DragonMR: 1911.61067423046
 %      Seahawk: 2669.82019185501
 %        Yukon: 2486.95632677456
+
+% Show the total time for all programs
+total_time=sum(cell2mat(struct2cell(progTime)))

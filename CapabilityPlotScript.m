@@ -13,7 +13,7 @@ programs = {...
             'Yukon';
             'Blazer';
             'Bronco';
-            'Cyldesdale';
+            'Clydesdale';
             'Shadowfax';
             'Vanguard';
             'Ventura';
