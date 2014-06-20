@@ -67,7 +67,7 @@ function calNumber = dot2num(obj, calDotStr)
                     num4 = ['0', num4];
                 end
                 % Continue if each part turned out to be the correct length
-                if length(num1)==1 && length(num2)==2 && length(num3)==1 && length(num4)==2
+%                 if length(num1)==1 && length(num2)==2 && length(num3)==1 && length(num4)==2
                     % Concatinate the four parts together
                     formattedCalString = [num1 num2 num3 num4];
                     % Convert to a double and return that value
@@ -77,10 +77,10 @@ function calNumber = dot2num(obj, calDotStr)
                         % Throw an error
                         error('Capability:dot2num:str2doubleError','There was a problem with str2double converting the interpreted calibration number %s to a number',formattedCalString)
                     end
-                else
-                    % Individual pieces weren't the right length, return an error
-                    error('Capability:dot2num:Error6Digit','There was an problem with the expected number of digits when processing %s',calDotStr);
-                end
+%                 else
+%                     % Individual pieces weren't the right length, return an error
+%                     error('Capability:dot2num:Error6Digit','There was an problem with the expected number of digits when processing %s',calDotStr);
+%                 end
             else % This is a 7 or 8 digit format calibration number
                 % Pad position 2, 3, and 4 if necessary with a leading zero
                 if length(num2) == 1
