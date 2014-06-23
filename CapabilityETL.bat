@@ -3,8 +3,15 @@
 :: the command line to run the capability upload script. This bat file is run via the task scheduler
 :: Author : Yiyuan Chen; Date: 2014/06/20
 
+d:
+cd Users\kz429\data crunching\GUI code\codeNew 
+
 git.exe pull origin master
 git.exe pull --tags origin master
+
+:: change the directory to D:\Users\kz429\data crunching\GUI code\codeNew
+d:
+cd Users\kz429\data crunching\GUI code\codeNew 
 
 :: Call Matlab script
 matlab -r CapabilityUploadScript
