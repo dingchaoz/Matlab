@@ -50,15 +50,18 @@ function UploadMDLInfoCapDB(fileName)
     %[~, ~, raw] = xlsread(fileName, '3S_Milestones_Tab(1)');
     [~, ~, raw] = xlsread(fileName);
     
-    % Check whether the last row of MDL is all NaN
+   % Check whether the bottom rows of MDL are all NaN from the last row
     lastrow=cellfun(@isnan,raw(end,:),'UniformOutput',false);
+    j=0;
+    
+    % If the last row is NaN, drop it and check the one above it as the last one until a non-NaN row 
+    while sum(cell2mat(lastrow))==length(lastrow)
+        j=j+1;
+        lastrow=cellfun(@isnan,raw(end-j,:),'UniformOutput',false);
+    end
     
     % Sort the data on the system error name column
-    if sum(cell2mat(lastrow))==length(lastrow)
-        raw = [raw(1,:);sortrows(raw(2:end-1,:),3)];
-    else
-        raw = [raw(1,:);sortrows(raw(2:end,:),3)];
-    end
+    raw = [raw(1,:);sortrows(raw(2:end-j,:),3)];
     
     % Convert any numbers to string and any empty values ([]) or NaNs to empty strings
     for i = 1:numel(raw)
