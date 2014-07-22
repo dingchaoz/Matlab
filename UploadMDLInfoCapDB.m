@@ -32,6 +32,7 @@ function UploadMDLInfoCapDB(fileName)
             Name = d(newfile).name;
         end
         fileName = fullfile(pathname, Name);
+        disp(['File that is being processed : - ', fileName])
     end
     
     % If the file specified does not exist
@@ -95,49 +96,29 @@ function UploadMDLInfoCapDB(fileName)
     
     %% Define MDL mapping to use for each engine program of MDL data
     
-    % Pacific (Dragnet X1 2015)
-    uploadProgram(raw, 390, 'HDPacific')
+   
+  Programs = {'Dragnet X1 2015','Dragnet B 2015','Dragnet PU 2015','Dragnet CC 2015','Dragnet L 2015','Vanguard'...
+    ,'Ventura','Pele/Zico'};
+Database = {'Pacific','DragonMR','Seahawk','DragonCC','Yukon','Vanguard',...
+    'Ventura','Pele'};
+[~,s] = size(Programs);
+for count = 1:s
+    a = cellfun(@(x) strcmp(Programs{count},x), raw(1,:));
+    if sum(a) ==0
+        col(count) = NaN;
+        fprintf('\rSkipping MDL upload of %s\r',Program{count})
+    else
+        col(count)= find(a==1);
+    end % if sum(a) ==0
     
-    % Monarch (gets left out of this as it's in the 2010 MDL)
-    %uploadProgram(raw, CCC, 'Monarch')
-    
-    % DragonCC (Dragnet CC 2015)
-    uploadProgram(raw, 363, 'DragonCC')
-    
-    % DragonMR (Dragnet B 2015)
-    uploadProgram(raw, 372, 'DragonMR')
-    
-    % Seahawk (Dragnet PU 2015)
-    uploadProgram(raw, 354, 'Seahawk')
-    
-    % Yukon (Dragnet L 2015)
-    uploadProgram(raw, 381, 'Yukon')
-    
-    % Vanguard
-    uploadProgram(raw, 246, 'Vanguard')
-    
-    % Ventura
-    uploadProgram(raw, 237, 'Ventura')
-    
-    % Atlantic
-    
-    
-    % Elrond
-%     uploadProgram(raw, 21, 'Elrond')
-%     
-%     % Eclipse
-%     uploadProgram(raw, 57, 'Eclipse')
-%     
-%     % Eukon
-%     uploadProgram(raw, 489, 'Eukon')
-    
-    % Pele/Zico
-    uploadProgram(raw, 345, 'Pele')
-    
-    % Yet to implement database for these
-    % Rio
-    %uploadProgram(raw, 182, 'Rio')
-    
+end % for count = 1:s
+for i = 1:length(col)
+    if ~isnan(col(i))
+        uploadProgram(raw, col(i), Database{i})
+    end % if ~isnan(col(i))
+end % for i = 1:length(col)
+
+
 end
 
 function uploadProgram(raw, col, program)
