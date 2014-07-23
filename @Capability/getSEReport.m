@@ -133,7 +133,7 @@ function result = getSEReport(obj,index,type)
                     output.Mu = data.MuMin;
                     output.Sigma = data.SigmaMin;
                     % Use Min data for Ppk calculation
-                    output.Ppk = abs(data.MuMin-LSL)./(3*data.SigmaMin);
+                    output.Ppk = (data.MuMin-LSL)./(3*data.SigmaMin);
                     
                 elseif isnan(LSL) && ~isnan(USL) % USL only
                     
@@ -143,7 +143,7 @@ function result = getSEReport(obj,index,type)
                     output.Mu = data.MuMax;
                     output.Sigma = data.SigmaMax;
                     % Use Max data for Ppk calculation
-                    output.Ppk = abs(USL-data.MuMax)./(3*data.SigmaMax);
+                    output.Ppk = (USL-data.MuMax)./(3*data.SigmaMax);
                     
                 else % Either no thresholds or 2 thresholds
                     
@@ -164,7 +164,7 @@ function result = getSEReport(obj,index,type)
                     output.Sigma = sqrt((n.*sx+n.*sy-sx-sy-sx-sy+n.*sx+n.*sy+n.*(xx-xy).^2)./(2.*(2.*n-1)));
                     
                     % Use overall mu and sigma for Ppk calculation
-                    output.Ppk = min(abs(USL-output.Mu),abs(output.Mu-LSL))./(3*output.Sigma);
+                    output.Ppk = min((USL-output.Mu),(output.Mu-LSL))./(3*output.Sigma);
                     
                 end
                 
