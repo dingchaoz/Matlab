@@ -157,14 +157,14 @@ function decodedData = decodeMinMax(obj, publicDataID, data, cal)
         % Set the b-number back to something benign so it doesn't effect scaling
         % This is a little wonkey but was easiest to do in the existing code
         switch dataType
-            case {'int8', 'int8[]'},    bNumber = 7; % Also process array parameters with only 1 element
-            case {'uint8', 'uint8[]'},   bNumber = 8; % Also process array parameters with only 1 element
+            case {'int8', 'int8[ ]'},    bNumber = 7; % Also process array parameters with only 1 element
+            case {'uint8', 'uint8[ ]'},   bNumber = 8; % Also process array parameters with only 1 element
             case 'bool',    bNumber = 8;
             case 'boolean', bNumber = 8;
-            case {'int16', 'int16[]'},   bNumber = 15; % Also process array parameters with only 1 element
-            case {'uint16', 'uint16[]'},  bNumber = 16; % Also process array parameters with only 1 element
-            case {'int32', 'int32[]'},   bNumber = 31; % Also process array parameters with only 1 element
-            case {'uint32', 'uint32[]'},  bNumber = 32; % Also process array parameters with only 1 element
+            case {'int16', 'int16[ ]'},   bNumber = 15; % Also process array parameters with only 1 element
+            case {'uint16', 'uint16[ ]'},  bNumber = 16; % Also process array parameters with only 1 element
+            case {'int32', 'int32[ ]'},   bNumber = 31; % Also process array parameters with only 1 element
+            case {'uint32', 'uint32[ ]'},  bNumber = 32; % Also process array parameters with only 1 element
             case 'float',   bNumber = 16; % Doesn't matter but prevent the error below
             otherwise
                 % Unknown datatype - throw an error
@@ -191,13 +191,13 @@ function decodedData = decodeMinMax(obj, publicDataID, data, cal)
         case 'float'
             % Do it as a float (use all 8 characters)
             decodedData = obj.hex2scaled(hexString, dataType)*f;
-        case {'int16', 'uint16', 'int16[]', 'uint16[]'}
+        case {'int16', 'uint16', 'int16[ ]', 'uint16[ ]'}
             % 16-bit parameter (use last 4 characters)
             decodedData = obj.hex2scaled(hexString(5:8), dataType, bNumber)*f;
-        case {'int32', 'uint32', 'int32[]', 'uint32[]'}
+        case {'int32', 'uint32', 'int32[ ]', 'uint32[ ]'}
             % 32-bit parameter (use all 8 characters)
             decodedData = obj.hex2scaled(hexString(1:8), dataType, bNumber)*f;
-        case {'int8', 'uint8', 'bool', 'boolean', 'int8[]', 'uint8[]'}
+        case {'int8', 'uint8', 'bool', 'boolean', 'int8[ ]', 'uint8[ ]'}
             % 8-bit parameter or boolean (use last 2 characters)
             decodedData = obj.hex2scaled(hexString(7:8), dataType, bNumber)*f;
         case {'sync_states_t', 'es_health_t'}

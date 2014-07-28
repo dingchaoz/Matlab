@@ -86,22 +86,22 @@ function scaledData = hex2scaled(obj, hexString, dataType, varargin)
             end
             % Do the conversion
             scaledData = processFloat(hexString);
-        case 'int8'
+        case {'int8', 'int8[ ]'}
             % Process it as an int8 datatype
             scaledData = processInt8(hexString, bNum);
-        case 'int16'
+        case {'int16', 'int16[ ]'}
             % Process it as an int16 datatype
             scaledData = processInt16(hexString, bNum); 
-        case 'int32'
+        case {'int32', 'int32[ ]'}
             % Process it as an int32 datatype
             scaledData = processInt32(hexString, bNum);
-        case {'uint8', 'bool', 'boolean'}
+        case {'uint8', 'uint8[ ]', 'bool', 'boolean'}
             % Process it as an uint8 datatype
             scaledData = processUint8(hexString, bNum);
-        case 'uint16'
+        case {'uint16', 'uint16[ ]'}
             % Process it as an uint16 datatype
             scaledData = processUint16(hexString, bNum);
-        case 'uint32'
+        case {'uint32', 'uint32[ ]'}
             % Process it as an uint32 datatype
             scaledData = processUint32(hexString, bNum);
         % Removed here because decodeMinMax will process structures as uint8 itself
