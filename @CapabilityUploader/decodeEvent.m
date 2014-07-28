@@ -28,6 +28,8 @@ function decodedData = decodeEvent(obj, xSEID, data, cal)
 %         arrives already converted from hexadecimal to decimal
 %   Revised - Chris Remington - April 3, 2014
 %       - Added byte-swapping for little-endian ECMs
+%   Revised - Yiyuan Chen - 2014/07/28
+%     - Added 4 array datatypes to process (array parameters with only 1 element)
     
     % If the input was a single number
     if isnumeric(data) && length(data)==1
@@ -78,13 +80,13 @@ function decodedData = decodeEvent(obj, xSEID, data, cal)
             case 'float'
                 % Do it as a float (use all 8 characters)
                 decodedData = obj.hex2scaled(hexString([7 8 5 6 3 4 1 2]), dataType);
-            case {'int16', 'uint16'}
+            case {'int16', 'uint16', 'int16[]', 'uint16[]'}
                 % 16-bit parameter (use fisrt 4 characters)
                 decodedData = obj.hex2scaled(hexString([3 4 1 2]), dataType, bNumber);
-            case {'int8', 'uint8', 'bool', 'boolean'}
+            case {'int8', 'uint8', 'bool', 'boolean', 'int8[]', 'uint8[]'}
                 % 8-bit parameter or boolean (use fisrt 2 characters)
                 decodedData = obj.hex2scaled(hexString([1 2]), dataType, bNumber);
-            case {'int32', 'uint32'}
+            case {'int32', 'uint32', 'int32[]', 'uint32[]'}
                 % 32-bit parameter (use all 8 characters)
                 decodedData = obj.hex2scaled(hexString([7 8 5 6 3 4 1 2]), dataType, bNumber);
             otherwise
@@ -98,13 +100,13 @@ function decodedData = decodeEvent(obj, xSEID, data, cal)
             case 'float'
                 % Do it as a float (use all 8 characters)
                 decodedData = obj.hex2scaled(hexString(1:8), dataType);
-            case {'int16', 'uint16'}
+            case {'int16', 'uint16', 'int16[]', 'uint16[]'}
                 % 16-bit parameter (use fisrt 4 characters)
                 decodedData = obj.hex2scaled(hexString(1:4), dataType, bNumber);
-            case {'int8', 'uint8', 'bool', 'boolean'}
+            case {'int8', 'uint8', 'bool', 'boolean', 'int8[]', 'uint8[]'}
                 % 8-bit parameter or boolean (use fisrt 2 characters)
                 decodedData = obj.hex2scaled(hexString(1:2), dataType, bNumber);
-            case {'int32', 'uint32'}
+            case {'int32', 'uint32', 'int32[]', 'uint32[]'}
                 % 32-bit parameter (use all 8 characters)
                 decodedData = obj.hex2scaled(hexString(1:8), dataType, bNumber);
             otherwise
