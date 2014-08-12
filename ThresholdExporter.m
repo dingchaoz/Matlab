@@ -119,6 +119,8 @@ seahawkRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Ca
 exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Default','BDC')
 % Dragnet_PU (use the Auto family)
 exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Dragnet_PU','BDC')
+% Dragnet_PU_16 (use the Auto family)
+exportThresholds(r,l,fullfile(seahawkRoot,'MY16\DragnetPU_Auto'),'Seahawk','Dragnet_PU_16','BDC')
 % Plain Seahawk (should update this to use a current product calibration)
 exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Seahawk','BDC')
 % % Seahawk Auto
