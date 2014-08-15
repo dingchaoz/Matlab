@@ -24,7 +24,7 @@ function SyncSuppData(varargin)
     end
     
     % For each engine program
-    for i = 3:length(programs)
+    for i = 2:length(programs)
         
         try
             % Open the connections to the right databases

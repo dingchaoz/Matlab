@@ -1,10 +1,10 @@
 function UploadMDLInfoCapDB(fileName)
 %This will update 3-step owner names for the iupr data process
 %   This will upload the 3-step owner names to the correct database for each program on
-%   the IUPR data server.
+%   the capability data server.
 %   
-%   Usage: UploadMDLInfo(fileName)
-%          UploadMDLInfo()
+%   Usage: UploadMDLInfoCapDB(fileName)
+%          UploadMDLInfoCapDB()
 %   
 %   Inputs ---
 %   fileName: (optional) Full path of an mdl file
@@ -16,6 +16,8 @@ function UploadMDLInfoCapDB(fileName)
 %     - Converted from OBD Capability process to load the data and store it in mat files
 %   Modified - Chris Remington - August 5, 2013
 %     - Modified so this will upload to the IUPR data server
+%   Modified - Yiyuan Chen - 2014/08/15
+%     - Modified to upload Acadia's info to CapabilityDB
     
     %% Preliminary Error Checking
     
@@ -96,17 +98,16 @@ function UploadMDLInfoCapDB(fileName)
     
     %% Define MDL mapping to use for each engine program of MDL data
     
-   
-  Programs = {'Dragnet X1 2015','Dragnet B 2015','Dragnet PU 2015','Dragnet CC 2015','Dragnet L 2015','Vanguard'...
-    ,'Ventura','Pele/Zico'};
+Programs = {'Dragnet X1 2015','Dragnet B 2015','Dragnet PU 2015','Dragnet CC 2015','Dragnet L 2015','Vanguard'...
+    ,'Ventura','Pele/Zico','Acadia X1'};
 Database = {'Pacific','DragonMR','Seahawk','DragonCC','Yukon','Vanguard',...
-    'Ventura','Pele'};
+    'Ventura','Pele','Acadia'};
 [~,s] = size(Programs);
 for count = 1:s
     a = cellfun(@(x) strcmp(Programs{count},x), raw(1,:));
     if sum(a) ==0
         col(count) = NaN;
-        fprintf('\rSkipping MDL upload of %s\r',Program{count})
+        fprintf('\rSkipping MDL upload of %s\r',Programs{count})
     else
         col(count)= find(a==1);
     end % if sum(a) ==0

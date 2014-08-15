@@ -95,20 +95,21 @@ end
 % Define program display name for the GUI selection box to database name mapping
 progMap = {
 % 'Display Name',                              'Database Name'
+  'Acadia',                                    'Acadia';
+  'Atlantic',                                  'Atlantic';
+  'Blazer',                                    'Blazer';
+  'Bronco',                                    'Bronco';
+  'Clydesdale',                                'Clydesdale';
   'Dragnet_B  |  Dragon Rear (MR)  |  ISB',    'DragonMR';
   'Dragnet_CC  |  Dragon Front (Chassis Cab)', 'DragonCC';
   'Dragnet_L  |  Yukon  |  ISL',               'Yukon';
   'Dragnet_PU  |  Seahawk (Pick-up Truck)',    'Seahawk';
   'Dragnet_X  |  Pacific  |  ISX',             'HDPacific';
+  'Mamba',                                     'Mamba';
+  'Pele',                                      'Pele';
+  'Shadowfax',                                 'Shadowfax';
   'Vanguard',                                  'Vanguard';
   'Ventura',                                   'Ventura';
-  'Pele',                                      'Pele';
-  'Atlantic',                                  'Atlantic';
-  'Blazer',                                    'Blazer';
-  'Bronco',                                    'Bronco';
-  'Clydesdale',                                'Clydesdale';
-  'Mamba',                                     'Mamba';
-  'Shadowfax',                                 'Shadowfax';
   };
 
 % Populate the program list into the drop-down menu
@@ -116,7 +117,7 @@ set(handles.lstProgram,'String',progMap(:,1));
 set(handles.lstProgram,'UserData',progMap(:,2));
 
 % Default program index
-defaultIndex = 5;
+defaultIndex = 10;
 
 set(handles.lstProgram,'Value',defaultIndex)
 % Set initial database to connect to

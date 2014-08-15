@@ -45,14 +45,14 @@ exportThresholds(r,l,fullfile(manualCals,'PacificCPS_X3'),'HDPacific','X3','BDR'
 exportThresholds(r,l,fullfile(manualCals,'PacificCPS_Black'),'HDPacific','Black','BDR')
 
 %% Acadia
-% % Acadia Root
-% acadiaRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Acadia';
-% % Acadia Default
-% exportThresholds(r,l,fullfile(acadiaRoot,'Aplha\X1'),'Acadia','Default','BGT')
-% % Acadia X1
-% exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X1'),'Acadia','Acadia_X1','BGT')
-% % Acadia X3
-% exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X3'),'Acadia','Acadia_X3','BGT')
+% Acadia Root
+acadiaRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Acadia';
+% Acadia Default
+exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X1'),'Acadia','Default','BGT')
+% Acadia X1
+exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X1'),'Acadia','Acadia_X1','BGT')
+% Acadia X3
+exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X3'),'Acadia','Acadia_X3','BGT')
 
 %% Atlantic
 % Atlantic Root
