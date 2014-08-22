@@ -58,9 +58,9 @@ exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X3'),'Acadia','Acadia_X3','BGT')
 % Atlantic Root
 atlanticRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Atlantic Red';
 % Atlatnic Default (here just use the highest rating
-exportThresholds(r,l,fullfile(atlanticRoot,'FP\675_2100'),'Atlantic','Default','BEF')
+exportThresholds(r,l,fullfile(atlanticRoot,'FP_Upfit\675_2100'),'Atlantic','Default','BEF')
 % Highest power rating, may need to additional ones later on
-exportThresholds(r,l,fullfile(atlanticRoot,'FP\675_2100'),'Atlantic','Atlantic','BEF')
+exportThresholds(r,l,fullfile(atlanticRoot,'FP_Upfit\675_2100'),'Atlantic','Atlantic','BEF')
 
 %% Mamba
 % Mamba Root
