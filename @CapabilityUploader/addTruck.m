@@ -30,7 +30,7 @@ function truckID = addTruck(obj, truckName)
     fetchData = fetch(obj.conn, 'SELECT Max([TruckID]) As TruckID FROM [dbo].[tblTrucks]');
     
     % If no data was returned and this is the first data-set upload to the database
-    if isempty(fetchData)
+    if isempty(fetchData) || isnan(fetchData.TruckID)
         % Start the id number at 1
         truckID = 1;
     else

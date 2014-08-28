@@ -4,7 +4,7 @@
 % Define the program names to work on
 programs = {...
             'Pacific';
-%             'Acadia';
+            'Acadia';
             'Atlantic';
             'Mamba';
             'Pele';

@@ -299,7 +299,7 @@ function setID = createMinMaxSet(obj, datenum, ECM_Run_Time, cal, truckID, meanM
     fetchData = fetch(obj.conn, 'SELECT Max([ConditionID]) AS ConditionID FROM [dbo].[tblMinMaxDataConditions]');
     
     % If no data was returned and this is the first data-set upload to the database
-    if isempty(fetchData)
+    if isempty(fetchData) || isnan(fetchData.ConditionID)
         % Start the id number at 1
         setID = 1;
     else

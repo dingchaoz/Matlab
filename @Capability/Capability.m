@@ -114,6 +114,7 @@ classdef Capability < handle
               'ISL',          'Yukon',         'W3-A22649', 'CAPABILITYDB';
               'Chrysler PU',  'Seahawk',       'W3-A22649', 'CAPABILITYDB';
               'ISX',          'HDPacific',     'W3-A22649', 'CAPABILITYDB';
+              'Acadia',       'Acadia',        'W3-A22649', 'CAPABILITYDB';
               'Vanguard',     'Vanguard',      'W3-A22649', 'CAPABILITYDB';
               'Ventura',      'Ventura',       'W3-A22649', 'CAPABILITYDB';
               'Pele',         'Pele',          'W3-A22649', 'CAPABILITYDB';
