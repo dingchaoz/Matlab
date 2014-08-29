@@ -109,21 +109,21 @@ classdef Capability < handle
             % Define the mapping of database name, plot display program, server, and instance
             obj.progMap = {
             % 'Display Name', 'Database Name', 'Server',    'Instance'
-              'ISB',          'DragonMR',      'W3-A22649', 'CAPABILITYDB';
-              'Chrysler CC',  'DragonCC',      'W3-A22649', 'CAPABILITYDB';
-              'ISL',          'Yukon',         'W3-A22649', 'CAPABILITYDB';
-              'Chrysler PU',  'Seahawk',       'W3-A22649', 'CAPABILITYDB';
-              'ISX',          'HDPacific',     'W3-A22649', 'CAPABILITYDB';
-              'Acadia',       'Acadia',        'W3-A22649', 'CAPABILITYDB';
-              'Vanguard',     'Vanguard',      'W3-A22649', 'CAPABILITYDB';
-              'Ventura',      'Ventura',       'W3-A22649', 'CAPABILITYDB';
-              'Pele',         'Pele',          'W3-A22649', 'CAPABILITYDB';
-              'Atlantic',     'Atlantic',      'W3-A22649', 'CAPABILITYDB';
-              'Blazer',       'Blazer',        'W3-A22649', 'CAPABILITYDB';
-              'Bronco',       'Bronco',        'W3-A22649', 'CAPABILITYDB';
-              'Clydesdale',   'Clydesdale',    'W3-A22649', 'CAPABILITYDB';
-              'Mamba',        'Mamba',         'W3-A22649', 'CAPABILITYDB';
-              'Shadowfax',    'Shadowfax',     'W3-A22649', 'CAPABILITYDB';
+              'ISB',          'DragonMR',      'W4-S129433', 'CAPABILITYDB';
+              'Chrysler CC',  'DragonCC',      'W4-S129433', 'CAPABILITYDB';
+              'ISL',          'Yukon',         'W4-S129433', 'CAPABILITYDB';
+              'Chrysler PU',  'Seahawk',       'W4-S129433', 'CAPABILITYDB';
+              'ISX',          'HDPacific',     'W4-S129433', 'CAPABILITYDB';
+              'Acadia',       'Acadia',        'W4-S129433', 'CAPABILITYDB';
+              'Vanguard',     'Vanguard',      'W4-S129433', 'CAPABILITYDB';
+              'Ventura',      'Ventura',       'W4-S129433', 'CAPABILITYDB';
+              'Pele',         'Pele',          'W4-S129433', 'CAPABILITYDB';
+              'Atlantic',     'Atlantic',      'W4-S129433', 'CAPABILITYDB';
+              'Blazer',       'Blazer',        'W4-S129433', 'CAPABILITYDB';
+              'Bronco',       'Bronco',        'W4-S129433', 'CAPABILITYDB';
+              'Clydesdale',   'Clydesdale',    'W4-S129433', 'CAPABILITYDB';
+              'Mamba',        'Mamba',         'W4-S129433', 'CAPABILITYDB';
+              'Shadowfax',    'Shadowfax',     'W4-S129433', 'CAPABILITYDB';
               };
             
             % If program wasn't passed in
@@ -175,7 +175,7 @@ classdef Capability < handle
             if isempty(idx)
                 % Use some default values
                 obj.plotProgramName = '???';
-                obj.server = 'W3-A22649';
+                obj.server = 'W4-S129433';
                 obj.instanceName = 'CAPABILITYDB';
             else
                 % Set these properties
