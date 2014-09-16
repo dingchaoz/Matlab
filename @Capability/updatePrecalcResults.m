@@ -32,7 +32,7 @@ function updatePrecalcResults(obj)
     for i = 1:length(obj.ppi.SEID)
         
         % Display the current system error being worked on
-        fprintf('Working on %s SE %s\r',obj.program,obj.ppi.Name{i})
+        fprintf('Working on %s %s\r',obj.program,obj.ppi.Name{i})
         
         try
             
