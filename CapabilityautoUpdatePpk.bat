@@ -6,7 +6,9 @@
 :: change the directory to C:\Users\kz429\data crunching\GUI code\codeNew
 :: d:
 :: cd Users\kz429\data crunching\GUI code\codeNew
-cd data crunching\GUI code\codeNew
+c:
+cd \
+cd \Users\kz429\data crunching\GUI code\codeNew
 
 :: Call Matlab script
 matlab -r CapabilityUpdatePpk
