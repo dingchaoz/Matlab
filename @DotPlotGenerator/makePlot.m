@@ -192,8 +192,8 @@ function makePlot(obj, visible)
     % - Numerical maximum in each grouping, labeled on the plot
     
     % Lazy, calculate these here once
-    mu = mean(obj.Data);
-    sigma = std(obj.Data);
+    mu = nanmean(obj.Data);
+    sigma = nanstd(obj.Data);
     
     %% Label the Plot
     % Generate the title

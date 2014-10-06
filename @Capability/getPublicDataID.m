@@ -53,6 +53,11 @@ function pdid = getPublicDataID(obj, paramName)
         
         % Find the index of the largest calibration version
         [~, idx] = max(d.Calibration);
+        %  The below if statement was added because V_ATP_pc_Urea_TankLvl's public data ID changed for 50997001. 
+        %  This is not an ideal change, but a temporary work around by Sri Seshadri.        
+        if strcmp('Pele',obj.program)&& strcmp('V_ATP_pc_Urea_TankLvl',paramName)&& max(d.Calibration == 50997001)
+            idx = idx - 1;
+        end
         
         % Update all fields of the paramInfoCache
         obj.paramInfoCache.Data = [obj.paramInfoCache.Data d.Data(idx)];
