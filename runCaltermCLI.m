@@ -17,7 +17,7 @@ function runCaltermCLI(cal,ecfg,filter,export,code)
     
     % Forumulate the CLI command call
     test = sprintf('%s -Cexport -P"%s" -S"%s" -E"%s" -G"%s" -O"%s" -Dfalse -FmatLabMFile -Lcal',...
-        '"C:\Calterm III\CaltermCLI.exe"',code,cal,ecfg,filter,export);
+        '"C:\Software\Calterm III\CaltermCLI.exe"',code,cal,ecfg,filter,export);
     
     % Run the CLI command
     dos(test);
