@@ -76,8 +76,8 @@ Shadowfax = CapabilityUploader('Shadowfax');
 Shadowfax.dataUploader;
 clear Shadowfax
 
-% Move the V8 data
-MoveV8CapData
+% % Move the V8 data
+% MoveV8CapData
 
 % Vanguard
 Vanguard = CapabilityUploader('Vanguard');

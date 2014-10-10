@@ -66,9 +66,9 @@ exportThresholds(r,l,fullfile(atlanticRoot,'FP_Upfit\675_2100'),'Atlantic','Atla
 % Mamba Root
 mambaRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Confidential\Mamba';
 % Mamba Default (use the 460 family)
-exportThresholds(r,l,fullfile(mambaRoot,'LP_Recycle\460_2100'),'Mamba','Default','BGB')
+exportThresholds(r,l,fullfile(mambaRoot,'FP\460_2100'),'Mamba','Default','BGB')
 % Main Mamba (use the 460 family)
-exportThresholds(r,l,fullfile(mambaRoot,'LP_Recycle\460_2100'),'Mamba','Mamba','BGB')
+exportThresholds(r,l,fullfile(mambaRoot,'FP\460_2100'),'Mamba','Mamba','BGB')
 % Mamba 430 @ 2100
 %%%exportThresholds(r,l,fullfile(mambaRoot,'Beta_Upfit\430_2100'),'Mamba','430_2100','BGB')
 % Mamba 460 @ 2100
@@ -180,7 +180,7 @@ exportThresholds(r,l,fullfile(ClydesdaleRoot,'PP1\380_2100_SG'),'Clydesdale','De
 %% Shadowfax
 ShadowfaxRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Shadowfax';
 % Shadowfax Default
-exportThresholds(r,l,fullfile(ShadowfaxRoot,'LP\130_2500'),'Shadowfax','Default','BFV')
+exportThresholds(r,l,fullfile(ShadowfaxRoot,'FP\130_2500'),'Shadowfax','Default','BFV')
 
 %% Copy output to correct location (do this for compatibility reasons at the present time)
 % Copy those outputs to the @SQLProcessor folder for its useage
