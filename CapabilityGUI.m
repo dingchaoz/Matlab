@@ -2337,6 +2337,9 @@ tic
 
 % Update the filtering values with the current settings
 updateFilterValues(handles)
+if handles.c.filt.date(1)>=handles.c.filt.date(2)
+    msgbox('End Date should be greater than Start Date', 'Date Filtering Error', 'error')
+end
 
 % Set the Dot plot object properties
 handles.c.fillDotInfo
