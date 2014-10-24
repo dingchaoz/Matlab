@@ -166,7 +166,8 @@ function data = getEventData(obj, SEID, varargin)
         case 3 % Select data and Matlab serial date number
             select = 'SELECT [DataValue], [datenum]';
         case 4 % Select only the data (for histograms)
-            select = 'SELECT [DataValue]';
+               % have to put a second selected item for Matlab2013, otherwise it will fetch only part of the data set)
+            select = 'SELECT [DataValue], [datenum]';
         otherwise % NaN or anything else, select all the columns
             select = 'SELECT [datenum],[ECMRunTime],[DataValue],[TruckName],[Family],[CalibrationVersion]';
     end
