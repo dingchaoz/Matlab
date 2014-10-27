@@ -166,7 +166,9 @@ function data = getEventData(obj, SEID, varargin)
         case 3 % Select data and Matlab serial date number
             select = 'SELECT [DataValue], [datenum]';
         case 4 % Select only the data (for histograms)
-            select = 'SELECT [DataValue]';
+%             select = 'SELECT [DataValue]';
+               % have to put a second selected item for Matlab2013, otherwise it will fetch only part of the data set
+            select = 'SELECT [DataValue], [datenum]';
         otherwise % NaN or anything else, select all the columns
             select = 'SELECT [datenum],[ECMRunTime],[DataValue],[TruckName],[Family],[CalibrationVersion]';
     end
@@ -202,10 +204,26 @@ function data = getEventData(obj, SEID, varargin)
     where = makeWhere(SEID,p.Results);
     
     %% Fetch the data
-    % Formulate the entire SQL query
-    sql = [select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-           '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
-           ' ORDER BY [TruckName] DESC'];
+    % Formulate the entire SQL query for Pacific with its two archived databases
+    if strcmp(obj.program, 'HDPacific')
+        sql = [select ' FROM [PacificArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
+            select ' FROM [PacificArchive2].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
+            select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
+    % Formulate the entire SQL query for Vanguard with its archived database
+    elseif strcmp(obj.program, 'Vanguard')
+        sql = [select ' FROM [VanguardArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
+            select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
+    % Formulate the entire SQL query for other prgrams
+    else
+        sql = [select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
+            ' ORDER BY [TruckName] DESC'];
+    end
     
     % Move to the use of the common tryfetch to get the data
     data = obj.tryfetch(sql,100000);
