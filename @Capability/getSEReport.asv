@@ -1,32 +1,32 @@
 function result = getSEReport(obj,index,type)
 %Description here
-%
+%   
 %   Usage: result = getSEReport(obj, index)
-%
+%   
 %   asdf asdf asdf
-%
+%   
 %   Inputs ---
 %   index:  The index inside of the processing info that should be worked on
 %   type:   The type of data grouping that is desired
 %             1 - Truck, Software
 %             2 - Truck, Time, Software
-%
+%   
 %   Outputs ---
 %   result: output
-%
+%   
 %   Original Version - Chris Remington - ???????
 %   Revised - Chris Remington - April 8, 2014
 %     - Modified to add the additioinal [TruckType] column that the sql query returns
-
-try % this system error
     
-    % Get the families from the unique listing in the tblTrucks database
-    % Skip the appended 'All' on the front as it is un-needed here
-    family = obj.filtDisp.engfams(2:end);
-    
-    % For each engine family defined
-    for i = 1:length(family)
-        try % try for each family; if errors, error is displayed on the screen and the control moves on to the next family.
+    try % this system error
+        
+        % Get the families from the unique listing in the tblTrucks database
+        % Skip the appended 'All' on the front as it is un-needed here
+        family = obj.filtDisp.engfams(2:end);
+        
+        % For each engine family defined
+        for i = 1:length(family)
+            
             % Hack this in for now
             if obj.ppi.SEID(index) == 7631
                 % Flip them
@@ -188,25 +188,18 @@ try % this system error
                     result.(dataFields{j}) = cat(1,result.(dataFields{j}),output.(dataFields{j}));
                 end
             end
-        catch ex
-            fprintf('----->Problem on system error %s - index %.0f\r',obj.ppi.Name{index},index);
-            % Display the exception
-            disp(ex.getReport)
-            continue
             
-        end  % try for each family; if errors, error is displayed on the screen and the control moves on to the next family.
+        end % loop on next engine family
         
-    end % loop on next engine family
+    catch ex % If anything on this system error failed
+        % Display the system error
+        fprintf('----->Problem on system error %s - index %.0f\r',obj.ppi.Name{index},index);
+        % Display the exception
+        disp(ex.getReport)
+        
+        % Rethrow error for debugging
+        %rethrow(ex)
+        
+    end
     
-catch ex % If anything on this system error failed
-    % Display the system error
-    fprintf('----->Problem on system error %s - index %.0f\r',obj.ppi.Name{index},index);
-    % Display the exception
-    disp(ex.getReport)
-    
-    % Rethrow error for debugging
-    rethrow(ex)
-    
-end
-
 end
