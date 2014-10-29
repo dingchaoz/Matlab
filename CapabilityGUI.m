@@ -2587,8 +2587,13 @@ data(:,14) = handles.c.tblTrucks.MMMTurnedOn;
 data(:,15) = handles.c.tblTrucks.SinceWhenNoCapabilityData;
 data(:,16) = num2cell(handles.c.tblTrucks.DaysofNoCapabilityData);
 data(:,17) = handles.c.tblTrucks.IUPRData;
+<<<<<<< HEAD
+data(:,18) = num2cell(handles.c.tblTrucks.DaysofNoIUPRData);
+data(:,19) = handles.c.tblTrucks.SinceWhenNoIUPRData;
+=======
 data(:,18) = handles.c.tblTrucks.SinceWhenNoIUPRData;
 data(:,19) = num2cell(handles.c.tblTrucks.DaysofNoIUPRData);
+>>>>>>> e37d7d4bfeda9806a8b937eb181446acdf873f36
 
 % Trim rows without a software cache (i.e. vehicle that probably never had data)
 %data = data(~isnan(handles.c.tblTrucks.SoftwareCache),:);
@@ -2605,8 +2610,13 @@ data = sortrows(data,1);
 % Fill in header row
 header = {'Vehicle','Family','Vehicle Type','Rating','Last Software','Cal Rev',...
           'ECM Code','Last File Date','ditw','ETD Version','CaltermVersion',...
+<<<<<<< HEAD
+          'EventData','MinMaxData','Capability Data On','SinceWhenNoCapabilityData','DaysofNoCapabilityData','IUPRData',...
+          'DaysofNoIUPRData','SinceWhenNoIUPRData'};
+=======
           'EventData','MinMaxData','Capability Data On','SinceWhenNoCapabilityData','DaysofNoCapabilityData','IUPRData On',...
           'SinceWhenNoIUPRData','DaysofNoIUPRData'};
+>>>>>>> e37d7d4bfeda9806a8b937eb181446acdf873f36
 
 % Use RawData to display this info
 rawData(data, header, [], ['Truck Information for ' handles.c.program])
