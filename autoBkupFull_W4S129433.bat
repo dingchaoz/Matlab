@@ -17,6 +17,8 @@
 ::   - Commented out the second network save directory
 :: Chris Remington - April 24, 2014
 ::   - Modified system databases to each be backed-up to their own files instead of in one file together
+:: Dingchao Zhang -  Oct 31th, 2014
+::   - Added git pull commands and VanguardArchive in the program
 
 :::: Definitions for the script
 :: Define the server name here
@@ -30,7 +32,11 @@ SET NETWORKSAVDIR=W:\Data Analysis\Storage\W3-A22649_SQLBackups
 :: Set the prefix for the filenames so there are no collisions between capability and iupr database backups
 SET FILEPREFIX=CAPABILITY_
 :: Define the name of all program databases to operate on (with a space between each)
-SET PROGRAMS=Atlantic HDPacific Pele Mamba DragonCC DragonMR Seahawk Yukon Blazer Bronco Clydesdale Shadowfax Vanguard Ventura PacificArchive PacificArchive2 Acadia
+SET PROGRAMS=Atlantic HDPacific Pele Mamba DragonCC DragonMR Seahawk Yukon Blazer Bronco Clydesdale Shadowfax Vanguard Ventura PacificArchive PacificArchive2 Acadia VanguardArchive
+
+:: Pull the latest git from master branch
+git.exe pull origin master
+git.exe pull --tags origin master
 
 
 :::: First do the backup of the server level databases (these are so small so they will always be full backups)
