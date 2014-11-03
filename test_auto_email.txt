@@ -1,0 +1,3 @@
+--just a test added file, to see if auto email will be sent when git get updated,
+this file will be deleted and repush to master to avoid any confusion after test is done.
+--Dingchao Zhang, 11/03/2014
