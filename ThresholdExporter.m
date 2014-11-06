@@ -26,15 +26,15 @@ manualCals = '\\CIDCSDFS01\EBU_Data01$\NACTGx\common\DL_Diag\Data Analysis\Stora
 % Pacific Root
 pacificRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_X';
 % Pacific Default (use the Dragnet X1 as Default because it contains IAT stuff)
-exportThresholds(r,l,fullfile(pacificRoot,'MY15_Beta\X1'),'HDPacific','Default','BDR')
+exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\X1'),'HDPacific','Default','BDR')
 % Pacific Dragnet X1
-exportThresholds(r,l,fullfile(pacificRoot,'MY15_Beta\X1'),'HDPacific','DNET_X1','BDR')
+exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\X1'),'HDPacific','DNET_X1','BDR')
 % Pacific Dragnet X2 (this will be the same as X3)
-exportThresholds(r,l,fullfile(pacificRoot,'MY15_Beta\X3'),'HDPacific','DNET_X2','BDR')
+exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\X3'),'HDPacific','DNET_X2','BDR')
 % Pacific Dragnet X3
-exportThresholds(r,l,fullfile(pacificRoot,'MY15_Beta\X3'),'HDPacific','DNET_X3','BDR')
+exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\X3'),'HDPacific','DNET_X3','BDR')
 % Pacific Dragnet Black / X12(use LE3 as I think all OBD should be common across Black / X12)
-exportThresholds(r,l,fullfile(pacificRoot,'MY15_Beta\12L LE3'),'HDPacific','DNET_Black','BDR')
+exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\12L LE3'),'HDPacific','DNET_Black','BDR')
 % Pacific CPS X1
 exportThresholds(r,l,fullfile(manualCals,'PacificCPS_X1'),'HDPacific','X1','BDR')
 % Pacific CPS X2
@@ -167,7 +167,7 @@ exportThresholds(r,l,fullfile(venturaRoot,'Alpha\Mainline'),'Ventura','Default',
 %% Blazer
 BlazerRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Blazer';
 % Blazer Default
-exportThresholds(r,l,fullfile(BlazerRoot,'LP\140_2200_FEL'),'Blazer','Default','BFU')
+exportThresholds(r,l,fullfile(BlazerRoot,'PP1\173_2500'),'Blazer','Default','BFU')
 
 %% Bronco
 BroncoRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer';
