@@ -172,9 +172,9 @@ exportThresholds(r,l,fullfile(BlazerRoot,'PP1\173_2500'),'Blazer','Default','BFU
 %% Bronco
 BroncoRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer';
 % Bronco Default
-exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\LP\173_2300'),'Bronco','Default','BEE')
-%  Bronco Lite
-exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\LP\173_2300_FEL'),'Bronco','Bronco_Lite','BEE')
+exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\FP\173_2300'),'Bronco','Default','BEE')
+% Bronco Lite
+exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\FP\173_2300'),'Bronco','Bronco_Lite','BEE')
 % Bronco
 exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\PP1_GPU\225_2000'),'Bronco','Bronco','BEE')
 
