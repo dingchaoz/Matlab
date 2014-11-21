@@ -52,6 +52,9 @@ function decodedData = decodeMinMax(obj, publicDataID, data, cal)
 %       data exactly like Calterm would so this is acceptable until the PRCR is completed)
 %   Revised - Yiyuan Chen - 2014/07/28
 %     - Added 4 array datatypes to process (array parameters with only 1 element)
+%   Revised - Yiyuan Chen - 2014/11/06
+%     - Modified so that it will skip unrecognized publicIDs with non-AAAAAAAA data and set it to NaN,
+%       then move on to process others, instead of dumping csv files to error folder
     
     %% Input Checking
     % If the input was a single number

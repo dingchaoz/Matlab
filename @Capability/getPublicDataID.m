@@ -15,6 +15,8 @@ function pdid = getPublicDataID(obj, paramName)
 %   Originial Version - Chris Remington - April 12, 2012
 %   Revised - Chris Remington - April 7, 2014
 %     - Moved to the use of tryfetch from just fetch to commonize error handling
+%   Revised - Yiyuan Chen 2014/11/21
+%     - Avoid the error of no data due to a different PublicID in 50997001 for some parameters 
     
     % Check the input to the function
     if ~ischar(paramName)
@@ -53,9 +55,10 @@ function pdid = getPublicDataID(obj, paramName)
         
         % Find the index of the largest calibration version
         [~, idx] = max(d.Calibration);
-        %  The below if statement was added because V_ATP_pc_Urea_TankLvl's public data ID was changed for 50997001. 
-        %  This is not an ideal change, but a temporary work around by Sri Seshadri.        
-        if strcmp('Pele',obj.program)&& strcmp('V_ATP_pc_Urea_TankLvl',paramName)&& max(d.Calibration == 50997001)
+        %  The below if statement was added because these parameters have a different PublicID in 50997001. 
+        %  This is not an ideal change, but a temporary work around by Sri Seshadri.    
+        doublePublicIDParam={'V_ATP_pc_Urea_TankLvl','V_UDD_tm_DoserInj_Fault'}; 
+        if strcmp('Pele',obj.program)&& ismember(paramName,doublePublicIDParam)&& max(d.Calibration == 50997001)
             idx = idx - 1;
         end
         
