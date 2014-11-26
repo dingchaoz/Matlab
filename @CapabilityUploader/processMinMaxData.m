@@ -39,6 +39,15 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
 %         one instead of relying on the identity column to compute that value. Since the 
 %         ConditionID column is a primary key, any attempt to upload a previously used 
 %         value will throw an error before any MinMax data can be loaded into the database
+%   Revised - Yiyuan Chen - 2014/11/25
+%       - Modified the usage of decodeMinMax.m and thus added one more input (publicIDmatch) 
+%         and one more output (embflag) to identify what problem caused datavalue to be set to NaN
+%       (if PublicIDs match and are valid, decodedData is valid and EMBFlag is 0;
+%        if PublicIDs match but data is AAAA (invalid publicID), decodedData is NaN and EMBFlag is 0;
+%        if PublicIDs match but data is non-AAAA (invalid publicID), decodedData is NaN and EMBFlag is set to 1;
+%        if PublicIDs don't match but are valid, decodedData is valid and EMBFlag is set to 1;
+%        if PublicIDs don't match and are invalid, decodedData is NaN and EMBFlag is set to 1, 
+%           which however won't get uploaded;)
     
     %% Initalize
     % Get the indicies of the valid MinMax data
@@ -117,20 +126,27 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
             if strcmp(MinMax_PublicDataID{globalIdx}, MinMax_PublicDataID{globalIdx1})
                 % Get the public data id and decode both values
                 publicDataID = hex2dec2(MinMax_PublicDataID{globalIdx});
-                % Don't need a little-endian check here because the public data id will get
-                % broadcast in big-endian format on a little-engine ECM
-                a = obj.decodeMinMax(publicDataID, MinMax_Data{globalIdx}, cal);
-                b = obj.decodeMinMax(publicDataID, MinMax_Data{globalIdx1}, cal);
+                publicIDmatch = 1;
+                % Don't need a little-endian check here because the public data id will get broadcast in big-endian format on a little-engine ECM
+                [a, emb_a] = obj.decodeMinMax(publicDataID, MinMax_Data{globalIdx}, cal, publicIDmatch);
+                [b, emb_b] = obj.decodeMinMax(publicDataID, MinMax_Data{globalIdx1}, cal, publicIDmatch);               
+                % Define the EMBFlag value for this pair
+                if emb_a == emb_b
+                else % this should not happen but in case
+                   obj.event.write(sprintf('One value is AAAA while the other one is not, for parameter %.0f.',publicDataID)); 
+                end
+                embflag = max(emb_a,emb_b);
+                
                 % Compare the values to ensure the Min and Max are identified correctly
                 if b >= a || (isnan(a) && isnan(b))
                     % a is the minimum and b is the maximum
                     % Create the entry in MinMax data here
-                    minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, a, b, cal, truckID, [], 0, 0};
+                    minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, a, b, cal, truckID, [], embflag, 0};
                     % Increment the write idx
                     minMaxWriteIdx = minMaxWriteIdx + 1;
                 else % b is the minimum and a is the maximum
                     % Create the entry in MinMax data here
-                    minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, b, a, cal, truckID, [], 0, 0};
+                    minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, b, a, cal, truckID, [], embflag, 0};
                     % Increment the write idx
                     minMaxWriteIdx = minMaxWriteIdx + 1;
                     % Write an entry in the warning log that there was a case of backword
@@ -149,7 +165,8 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
             else % Matching failed
                 % Decode the single value
                 publicDataID = hex2dec2(MinMax_PublicDataID{globalIdx});
-                a = obj.decodeMinMax(publicDataID, MinMax_Data{globalIdx}, cal);
+                publicIDmatch = 0;
+                [a, embflag] = obj.decodeMinMax(publicDataID, MinMax_Data{globalIdx}, cal, publicIDmatch);
                 % Display a warning for this parameter
                 % Try/catch statement in cast of error on getDataInfo when
                 % Public Data ID is not in dib for a given cal
@@ -158,10 +175,15 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
                 catch ex
                     obj.event.write(['Failed to find match for parameter UNKNOWN - ' dec2hex(publicDataID)]);
                 end
-                % Write the single value to both Min and Max and turn on the EMB flag
-                minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], 1, 0};
-                % Increment the write idx
-                minMaxWriteIdx = minMaxWriteIdx + 1;
+                
+                if ~isnan(a)
+                    % Write the single value to both Min and Max and turn on the EMB flag if value is not NaN
+                    minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], embflag, 0}; 
+                    % Increment the write idx
+                    minMaxWriteIdx = minMaxWriteIdx + 1;
+                else % Skip if data value is even NaN while match fails
+                    obj.event.write(['Skipped the data, whose value is also NaN while PublicDataID ' dec2hex(publicDataID) ' fails to match']);
+                end
                 
                 % Only increment the index by one
                 idx = idx + 1;
@@ -195,8 +217,7 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
     % Check that we didn't end and forget about the last orphan
     % parameter at the end or check if there is only one value present
     if idx == 1
-        %--  If there was one and only one piece of MinMax data, do some
-        %--  things over again in here
+        %--  If there was one and only one piece of MinMax data, do some things over again in here
         % Set starting time
         setStartTime = abs_time(idxMinMaxOnly(idx));
         
@@ -232,7 +253,8 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
         %--- Do this code which is identical to the elseif code
         % Decode the single value
         publicDataID = hex2dec2(MinMax_PublicDataID{idxMinMaxOnly(idx)});
-        a = obj.decodeMinMax(publicDataID, MinMax_Data{idxMinMaxOnly(idx)}, cal);
+        publicIDmatch = 0;
+        [a, embflag] = obj.decodeMinMax(publicDataID, MinMax_Data{idxMinMaxOnly(idx)}, cal, publicIDmatch);
         % Display a warning for this parameter
         % Try/catch statement in cast of error on getDataInfo when
         % Public Data ID is not in dib for a given cal
@@ -241,14 +263,19 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
         catch ex
             obj.event.write(['Failed to find match for parameter UNKNOWN - ' dec2hex(publicDataID) ' - This is an orphan at the end of the file.']);
         end
-        % Write the single value to both Min and Max and turn on the EMB flag
-        minMaxData(minMaxWriteIdx,:) = {abs_time(idxMinMaxOnly(idx)), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], 1, 0};
-        % Special addition here becuase we already assigned ConditionID's to
-        % the other parameters in this set, do it here special for this
-        % last one (assosiate with lask known MinMax set)
-        minMaxData{minMaxWriteIdx, 8} = conditionID;
-        % Increment the write idx
-        minMaxWriteIdx = minMaxWriteIdx + 1;
+        
+        if ~isnan(a)
+            % Write the single value to both Min and Max and turn on the EMB flag
+            minMaxData(minMaxWriteIdx,:) = {abs_time(idxMinMaxOnly(idx)), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], embflag, 0};
+            % Special addition here becuase we already assigned ConditionID's to
+            % the other parameters in this set, do it here special for this
+            % last one (assosiate with lask known MinMax set)
+            minMaxData{minMaxWriteIdx, 8} = conditionID;
+            % Increment the write idx
+            minMaxWriteIdx = minMaxWriteIdx + 1;
+        else % Skip if data value is even NaN while match fails
+            obj.event.write(['Skipped the only data, whose value is also NaN while PublicDataID ' dec2hex(publicDataID) 'fails to match']);
+        end
         
     elseif idx == numelMinMaxData
         % If we're exactly on the last element, that means it cannot
@@ -256,7 +283,8 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
         
         % Decode the single value
         publicDataID = hex2dec2(MinMax_PublicDataID{idxMinMaxOnly(idx)});
-        a = obj.decodeMinMax(publicDataID, MinMax_Data{idxMinMaxOnly(idx)}, cal);
+        publicIDmatch = 0;
+        [a, embflag] = obj.decodeMinMax(publicDataID, MinMax_Data{idxMinMaxOnly(idx)}, cal, publicIDmatch);
         % Display a warning for this parameter
         % Try/catch statement in cast of error on getDataInfo when
         % Public Data ID is not in dib for a given cal
@@ -265,15 +293,19 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
         catch ex
             obj.event.write(['Failed to find match for parameter UNKNOWN - ' dec2hex(publicDataID) ' - This is an orpan at the end of the file.']);
         end
-        % Write the single value to both Min and Max and turn on the EMB flag
-        minMaxData(minMaxWriteIdx,:) = {abs_time(idxMinMaxOnly(idx)), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], 1, 0};
-        % Special addition here becuase we already assigned ConditionID's to
-        % the other parameters in this set, do it here special for this
-        % last one (assosiate with lask known MinMax set)
-        minMaxData{minMaxWriteIdx, 8} = conditionID;
-        % Increment the write idx
-        minMaxWriteIdx = minMaxWriteIdx + 1;
         
+        if ~isnan(a)
+            % Write the single value to both Min and Max and turn on the EMB flag
+            minMaxData(minMaxWriteIdx,:) = {abs_time(idxMinMaxOnly(idx)), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], embflag, 0};
+            % Special addition here becuase we already assigned ConditionID's to
+            % the other parameters in this set, do it here special for this
+            % last one (assosiate with lask known MinMax set)
+            minMaxData{minMaxWriteIdx, 8} = conditionID;
+            % Increment the write idx
+            minMaxWriteIdx = minMaxWriteIdx + 1;
+        else % Skip if data value is even NaN while match fails
+            obj.event.write(['Skipped the last data, whose value is also NaN while PublicDataID ' dec2hex(publicDataID) 'fails to match']);
+        end
     end
     
     %% Write Data
