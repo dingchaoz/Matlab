@@ -222,7 +222,7 @@ function data = getEventData(obj, SEID, varargin)
     else
         sql = [select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
-            ' ORDER BY [TruckName] DESC'];
+            ' ORDER BY [TruckName], [datenum] ASC'];
     end
     
     % Move to the use of the common tryfetch to get the data
