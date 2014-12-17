@@ -17,6 +17,12 @@ classdef CapabilityUploader < Capability
 %   Modified - Yiyuan Chen - 2014/11/25
 %       - Modified method decodeMinMax, because one more input and as one more output are needed 
 %         to identify what problem caused datavalue to be set to NaN
+% Modified - Dingchao Zhang - Dec 5, 2014
+%        - Added CANapeUploader.m as a method to call uploading of CANape data
+%        - Added small method to process one truck of data from CANape
+%        - Added CANapeAddCSVFile(obj, fullFileName, truckID)
+%        - Added decodedData = decodeCANapeEvent(obj, xSEID, data, cal)
+%        - Added processCANapeMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_PublicDataID, MinMax_Data, cal, truckID)
     
     %% Protected Properties
     properties (SetAccess = protected)
@@ -177,6 +183,8 @@ classdef CapabilityUploader < Capability
         % Add a .csv data file to the database
         % This has been revised and splits data into two parts and uploades each to the
         % correct database table
+        
+        CANapeAddCSVFile(obj, fullFileName, truckID)
         AddCSVFile(obj, fullFileName, truckID)
         % A variation on AddCSVFile that will instead read in the .mat files that CANape
         % creates after nativly converting a .mdf file to a .mat file (this needs to take
@@ -189,6 +197,7 @@ classdef CapabilityUploader < Capability
         % Take in the Event Driven hex string and xSEID, use hex2scaled to
         % return the properly scaled and decoded value
         decodedData = decodeEvent(obj, xSEID, hexString, cal)
+        decodedData = decodeCANapeEvent(obj, xSEID, data, cal)
         % Take in a Public Data ID and hex string, use hex2scaled to return
         % a properly scaled and decoded value
         [decodedData, EMBFlag] = decodeMinMax(obj, PublicDataID, hexString, cal, PublicIDmatch)
@@ -209,6 +218,10 @@ classdef CapabilityUploader < Capability
         dataUploader(obj)
         % Small method to process one truck of data
         [filesP,timeP,filesE,timeE] = csvUploader(obj, rootDir, truckID)
+        % Master method to run data process for CANape data
+        CANapeUploader(obj)
+        % Small method to process one truck of data from CANape
+        [filesP,timeP,filesE,timeE] = CANapecsvUploader(obj, rootDir, truckID)
         
     end
     
@@ -218,6 +231,7 @@ classdef CapabilityUploader < Capability
         readCaltermIII_EcmDataOnly(obj, filename)
         
         % Process the MinMax data to make them into pairs
+        processCANapeMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_PublicDataID, MinMax_Data, cal, truckID)
         processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_PublicDataID, MinMax_Data, cal, truckID)
     end
     
