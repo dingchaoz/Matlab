@@ -112,7 +112,9 @@ function [matched, header] = matchEventData(obj, SEID, varargin)
 %     - Added additional filtering abilityies matching revised getEventData method
 %   Revised - Chris Remington - April 7, 2014
 %     - Moved to the use of tryfetch from just fetch to commonize error handling
-    
+%   Revised - Yiyuan Chen - 2014/12/17
+%     - Modified the SQL query to fetch data from archived database as well
+
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
     p = inputParser;
