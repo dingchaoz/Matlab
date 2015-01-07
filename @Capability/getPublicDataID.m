@@ -57,7 +57,7 @@ function pdid = getPublicDataID(obj, paramName)
         [~, idx] = max(d.Calibration);
         %  The below if statement was added because these parameters have a different PublicID in 50997001. 
         %  This is not an ideal change, but a temporary work around by Sri Seshadri.    
-        doublePublicIDParam={'V_ATP_pc_Urea_TankLvl','V_UDD_tm_DoserInj_Fault'}; 
+        doublePublicIDParam={'V_ATP_pc_Urea_TankLvl','V_UDD_tm_DoserInj_Fault','V_UTD_trc_TankT_ChrgT_Diff','V_UTD_trc_TankT_CoolantT_Diff'}; 
         if strcmp('Pele',obj.program)&& ismember(paramName,doublePublicIDParam)&& max(d.Calibration == 50997001)
             idx = idx - 1;
         end
