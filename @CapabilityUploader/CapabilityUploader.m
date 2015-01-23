@@ -14,6 +14,9 @@ classdef CapabilityUploader < Capability
 %   Modified - Chris Remington - April 4, 2014
 %       - Added te knownSw propert that gets filled in with the known software versions
 %         present for the selected engine program
+%   Modified - Yiyuan Chen - 2014/11/25
+%       - Modified method decodeMinMax, because one more input and as one more output are needed 
+%         to identify what problem caused datavalue to be set to NaN
     
     %% Protected Properties
     properties (SetAccess = protected)
@@ -188,7 +191,7 @@ classdef CapabilityUploader < Capability
         decodedData = decodeEvent(obj, xSEID, hexString, cal)
         % Take in a Public Data ID and hex string, use hex2scaled to return
         % a properly scaled and decoded value
-        decodedData = decodeMinMax(obj, PublicDataID, hexString, cal)
+        [decodedData, EMBFlag] = decodeMinMax(obj, PublicDataID, hexString, cal, PublicIDmatch)
         
         %----------------Methods to keep track of truck software versions-----------------
         % Method to update the last know sw version of a truck (edits lastSoftwareCache)

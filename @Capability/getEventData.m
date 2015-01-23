@@ -132,6 +132,8 @@ function data = getEventData(obj, SEID, varargin)
 %     - Added the 'fields' parameter to allow only specified columns to be selected
 %   Revised - Chris Remington - April 7, 2014
 %     - Moved to the use of tryfetch from just fetch to commonize error handling
+%   Revised - Yiyuan Chen - 2014/12/17
+%     - Modified the SQL query to fetch data from archived database as well
     
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
@@ -166,7 +168,12 @@ function data = getEventData(obj, SEID, varargin)
         case 3 % Select data and Matlab serial date number
             select = 'SELECT [DataValue], [datenum]';
         case 4 % Select only the data (for histograms)
+<<<<<<< HEAD
                % have to put a second selected item for Matlab2013, otherwise it will fetch only part of the data set)
+=======
+%             select = 'SELECT [DataValue]';
+               % have to put a second selected item for Matlab2013, otherwise it will fetch only part of the data set
+>>>>>>> 00d11b0fde8bf46f68df9369888598b8722ee1ed
             select = 'SELECT [DataValue], [datenum]';
         otherwise % NaN or anything else, select all the columns
             select = 'SELECT [datenum],[ECMRunTime],[DataValue],[TruckName],[Family],[CalibrationVersion]';
@@ -221,7 +228,11 @@ function data = getEventData(obj, SEID, varargin)
     else
         sql = [select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
+<<<<<<< HEAD
             ' ORDER BY [TruckName] DESC'];
+=======
+            ' ORDER BY [TruckName], [datenum] ASC'];
+>>>>>>> 00d11b0fde8bf46f68df9369888598b8722ee1ed
     end
     
     % Move to the use of the common tryfetch to get the data
