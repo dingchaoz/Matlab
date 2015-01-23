@@ -227,11 +227,7 @@ function data = getMinMaxData(obj, pdid, varargin)
     else
         sql = [select ' FROM [dbo].[tblMinMaxData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblMinMaxData].[TruckID] = [tblTrucks].[TruckID] ' where ...
-<<<<<<< HEAD
-            ' ORDER BY [TruckName] DESC'];
-=======
             ' ORDER BY [TruckName], [datenum] ASC'];
->>>>>>> 00d11b0fde8bf46f68df9369888598b8722ee1ed
     end
     
     % Move to the use of the common tryfetch to get the data
