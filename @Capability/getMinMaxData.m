@@ -137,6 +137,8 @@ function data = getMinMaxData(obj, pdid, varargin)
 %     - Added the 'fields' parameter to allow only specified columns to be selected
 %   Revised - Chris Remington - April 7, 2014
 %     - Moved to the use of tryfetch from just fetch to commonize error handling
+%   Revised - Yiyuan Chen - 2014/12/17
+%     - Modified the SQL query to fetch data from archived database as well
     
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
@@ -225,7 +227,7 @@ function data = getMinMaxData(obj, pdid, varargin)
     else
         sql = [select ' FROM [dbo].[tblMinMaxData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblMinMaxData].[TruckID] = [tblTrucks].[TruckID] ' where ...
-            ' ORDER BY [TruckName] DESC'];
+            ' ORDER BY [TruckName], [datenum] ASC'];
     end
     
     % Move to the use of the common tryfetch to get the data

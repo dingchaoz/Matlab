@@ -14,6 +14,9 @@ function updatePrecalcResults(obj)
 %   Revised - Chris Remington - April 14, 2014
 %     - Account for the case where a system error has no data present in the database for
 %       any of the engine families
+%   Revised - Yiyuan Chen - 2014/12/17
+%     - Modified the SQL statements so that only the datasets whose last date
+%       are within last 90 days will be deleted and reuploaded 
     
     %% Initalize
     % Initalize empty structures
@@ -114,13 +117,17 @@ function updatePrecalcResults(obj)
     % Turn autocommit off to do this all at once
     % Skip this for now, may want to add this later
     %set(obj.conn,'AutoCommit','off')
-    
+      
+    % Generate the SQL statement such that only the datasets whose lastdates are within last 90 days will be deleted
+    deleteDataTruckSwsql = 'DELETE FROM [dbo].[tblDataTruckSw] WHERE DATEDIFF(day, EndDate, GETDATE() )<=90';
+    deleteDataTruckTimeSwsql = 'DELETE FROM [dbo].[tblDataTruckTimeSw] WHERE DATEDIFF(day, EndDate, GETDATE() )<=90';
+   
     % Delete from tblDataTruckSw
-    curs = exec(obj.conn, 'DELETE FROM [dbo].[tblDataTruckSw]');
+    curs = exec(obj.conn, deleteDataTruckSwsql);
     close(curs)
     
     % Delete from tblDataTruckTimeSw
-    curs = exec(obj.conn, 'DELETE FROM [dbo].[tblDataTruckTimeSw]');
+    curs = exec(obj.conn, deleteDataTruckTimeSwsql);
     close(curs)
     
     %% Format data for upload

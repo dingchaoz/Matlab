@@ -152,6 +152,18 @@ exportThresholds(r,l,fullfile(yukonRoot,'MY15\L450'),'Yukon','Yukon','BDO')
 % % DragonMR L450
 % exportThresholds(r,l,fullfile(yukonRoot,'Alpha\L450'),'Yukon','L450','BDO')
 
+%% Nighthawk
+% Nighthawk Root
+nighthawkRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Nighthawk_B';
+% Nighthawk Default (use the B260 family)
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B260_LHP'),'Nighthawk','Default','BGU')
+% Nighthawk_LHP (use the B260 family)
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B260_LHP'),'Nighthawk','Nighthawk_LHP','BGU')
+% Nighthawk_MHP (use the B325 family)
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B325_MHP'),'Nighthawk','Nighthawk_MHP','BGU')
+% Nighthawk_HHP (use the B360 family)
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B360_HHP'),'Nighthawk','Nighthawk_HHP','BGU')
+
 %% Vanguard
 % Vanguard Root
 vanguardRoot = '\\CIDCSDFS01\EBU_Data01$\NACEPx\LDD Test Data\Calibrations3230\Vanguard\In Progress';
@@ -176,7 +188,7 @@ exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\FP\173_2300'),'B
 % Bronco Lite
 exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\FP\173_2300'),'Bronco','Bronco_Lite','BEE')
 % Bronco
-exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\PP1_GPU\225_2000'),'Bronco','Bronco','BEE')
+exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\PP1\300_2500'),'Bronco','Bronco','BEE')
 
 %% Clydesdale
 ClydesdaleRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Workhorse Clydesdale';

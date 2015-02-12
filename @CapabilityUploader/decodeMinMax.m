@@ -1,4 +1,4 @@
-function decodedData = decodeMinMax(obj, publicDataID, data, cal)
+function [decodedData, EMBFlag] = decodeMinMax(obj, publicDataID, data, cal, PublicIDmatch)
 %Given a Public Data ID and hex string, return the scaled value as a double
 %   This function is designed to be used to decode MinMax data. It will
 %   take in the raw hex string and Public Data ID that comes home in the
@@ -6,15 +6,18 @@ function decodedData = decodeMinMax(obj, publicDataID, data, cal)
 %   to decode it, and then sends it to hex2scaled to decode and scale it.
 %   
 %   Usage: decodedData = decodeMinMax(obj, publicDataID, data, cal)
+%   Modified Usage: [decodedData, EMBFlag] = decodeMinMax(obj, publicDataID, data, cal, PublicIDmatch)
 %   
 %   Inputs ---
 %   publicDataID: This is the Public Data ID broadcast
 %   data:         The hex string of the raw data as broadcast or an unsigned
 %                 numerical representation of the hexadecimal data
 %   cal:          Numeric value of the calibration version
+%   PublicIDmatch:  Indicates whether PublicIDs appear in a pair
 %   
 %   Outputs--- 
 %   dacodedData:  Properly decoded and scaled value
+%   EMBFlag:  Use it to identify caused datavalue to be set as NaN
 %   
 %   Original Version - Chris Remington - January 23, 2012
 %   Revised - Chris Remington - January 31, 2012
@@ -52,6 +55,18 @@ function decodedData = decodeMinMax(obj, publicDataID, data, cal)
 %       data exactly like Calterm would so this is acceptable until the PRCR is completed)
 %   Revised - Yiyuan Chen - 2014/07/28
 %     - Added 4 array datatypes to process (array parameters with only 1 element)
+%   Revised - Yiyuan Chen - 2014/11/06
+%     - Modified so that it will skip unrecognized publicIDs with non-AAAAAAAA data and set it to NaN,
+%       then move on to process others, instead of dumping csv files to error folder
+%   Revised - Yiyuan Chen - 2014/11/25
+%     - Added PublicIDmatch as one more input and EMBFlag as one more output to identify 
+%       what problem caused datavalue to be set to NaN
+%       (if PublicIDs match and are valid, decodedData is valid and EMBFlag is 0;
+%        if PublicIDs match but data is AAAA (invalid publicID), decodedData is NaN and EMBFlag is 0;
+%        if PublicIDs match but data is non-AAAA (invalid publicID), decodedData is NaN and EMBFlag is set to 1;
+%        if PublicIDs don't match but are valid, decodedData is valid and EMBFlag is set to 1;
+%        if PublicIDs don't match and are invalid, decodedData is NaN and EMBFlag is set to 1, 
+%           which however won't get uploaded in processMinMax.m;)
     
     %% Input Checking
     % If the input was a single number
@@ -68,6 +83,13 @@ function decodedData = decodeMinMax(obj, publicDataID, data, cal)
         % There was invalid input
         error('CapabilityUploader:decodeMinMax:WrongStringLength', ...
             'data must be a character array that is 8 characters long or an unsigned numerical representation of the data');
+    end
+    
+    %% Initialize EMB flag depending on whether the current Public Data ID and next Public Data ID match
+    if PublicIDmatch
+        EMBFlag = 0;
+    else
+        EMBFlag = 1;
     end
     
     %% Little Endian Check Goes Here
@@ -115,6 +137,8 @@ function decodedData = decodeMinMax(obj, publicDataID, data, cal)
                     % datainbuild of wrong cal version specified
                     % Set the decoded data to a NaN
                     decodedData = NaN;
+                    % Turn on EMB flag
+                    EMBFlag = 1;
                     obj.event.write(['CapabilityUploader:decodeMinMax:PossibleCorruptDataInBuild', ...
                         'Parameter of Public Data ID ' sprintf('%.0f ', publicDataID) ...
                         'with cal version specified of ' sprintf('%.0f ', cal) ...

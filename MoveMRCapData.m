@@ -94,7 +94,11 @@ for i = 1:size(programs,1)
             % Copy to processed folder first
             copyfile([currentFolder '\*.csv*'],copyToFolder);
             % Move the MinMax files to ETD_Data
-            movefile([currentFolder '\*.csv*'],moveToFolder);
+            try
+                movefile([currentFolder '\*.csv*'],moveToFolder);
+            catch
+                continue
+            end
             % Display a message
             fprintf('Moved % 3.0f files from %s to %s\r',x,currentFolder,moveToFolder);
         else
