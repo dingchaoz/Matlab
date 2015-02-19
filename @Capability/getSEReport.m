@@ -195,6 +195,7 @@ try % this system error
             continue
             
         end  % try for each family; if errors, error is displayed on the screen and the control moves on to the next family.
+<<<<<<< HEAD
     end % loop on next engine family
     
 catch ex % If anything on this system error failed
@@ -205,6 +206,20 @@ catch ex % If anything on this system error failed
     
     % Rethrow error for debugging
     rethrow(ex)
+=======
+        
+    end % loop on next engine family
+    
+catch ex % If anything on this system error failed
+    % Display the system error
+    fprintf('----->Problem on system error %s - index %.0f\r',obj.ppi.Name{index},index);
+    % Display the exception
+    disp(ex.getReport)
+    
+    % Rethrow error for debugging
+    rethrow(ex)
+    
+>>>>>>> ba81064c6630d4e6a81f3227ec8ff6562e063137
 end
 
 end
