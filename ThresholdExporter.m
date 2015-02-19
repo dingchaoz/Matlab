@@ -58,9 +58,9 @@ exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X3'),'Acadia','Acadia_X3','BGT')
 % Atlantic Root
 atlanticRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Atlantic Red';
 % Atlatnic Default (here just use the highest rating
-exportThresholds(r,l,fullfile(atlanticRoot,'FP_Upfit\675_2100'),'Atlantic','Default','BEF')
+exportThresholds(r,l,fullfile(atlanticRoot,'DIG\675_2100'),'Atlantic','Default','BEF')
 % Highest power rating, may need to additional ones later on
-exportThresholds(r,l,fullfile(atlanticRoot,'FP_Upfit\675_2100'),'Atlantic','Atlantic','BEF')
+exportThresholds(r,l,fullfile(atlanticRoot,'DIG\675_2100'),'Atlantic','Atlantic','BEF')
 
 %% Mamba
 % Mamba Root
@@ -173,8 +173,12 @@ exportThresholds(r,l,fullfile(manualCals,'Vanguard'),'Vanguard','Default','BCX')
 %% Ventura
 % Ventura Root
 venturaRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Ventura';
+% Ventura2 Root
+ventura2Root = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Ventura_II';
 % Ventura Default (use the Alpha Mainline family)
-exportThresholds(r,l,fullfile(venturaRoot,'Alpha\Mainline'),'Ventura','Default','BFY')
+exportThresholds(r,l,fullfile(venturaRoot,'MY15\Mainline'),'Ventura','Default','BFY')
+% Ventura Default (use the Ventura2_MY16 Mainline family)
+exportThresholds(r,l,fullfile(ventura2Root,'MY16\Mainline'),'Ventura','Ventura2','BFY')
 
 %% Blazer
 BlazerRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Blazer';
@@ -198,7 +202,7 @@ exportThresholds(r,l,fullfile(ClydesdaleRoot,'PP1\380_2100_SG'),'Clydesdale','De
 %% Shadowfax
 ShadowfaxRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Shadowfax';
 % Shadowfax Default
-exportThresholds(r,l,fullfile(ShadowfaxRoot,'FP\130_2500'),'Shadowfax','Default','BFV')
+exportThresholds(r,l,fullfile(ShadowfaxRoot,'PP1_Recycle\130_2500'),'Shadowfax','Default','BFV')
 
 %% Copy output to correct location (do this for compatibility reasons at the present time)
 % Copy those outputs to the @SQLProcessor folder for its useage
