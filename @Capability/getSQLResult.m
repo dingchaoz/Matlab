@@ -88,13 +88,8 @@ function data = getSQLResult(obj, varargin)
         % Generate the declare statement for the inputs to the sql query
         declare = sprintf(['DECLARE @lsl float = %s;DECLARE @usl float = %s;',...
                            'DECLARE @seid smallint = %.0f;DECLARE @extid smallint = %.0f;',...
-<<<<<<< HEAD
                            'DECLARE @family varchar(15) = ''%s'';DECLARE @today float = %f'],...
                            lsl,usl,seid,extid,fam,floor(now));
-=======
-                           'DECLARE @family varchar(15) = ''%s'';'],...
-                           lsl,usl,seid,extid,fam);
->>>>>>> ba81064c6630d4e6a81f3227ec8ff6562e063137
         
         % If report type 1
         if rprt == 1
@@ -194,14 +189,9 @@ function data = getSQLResult(obj, varargin)
         
         % Generate the declare statement for the inputs to the sql sqery
         declare = sprintf(['DECLARE @lsl float = %s;DECLARE @usl float = %s;',...
-<<<<<<< HEAD
                            'DECLARE @pdid int = %.0f;DECLARE @family varchar(15) = ''%s'';',...
                            'DECLARE @today float = %f'],...
                            lsl,usl,pdid,fam,floor(now));
-=======
-                           'DECLARE @pdid int = %.0f;DECLARE @family varchar(15) = ''%s'';'],...
-                           lsl,usl,pdid,fam);
->>>>>>> ba81064c6630d4e6a81f3227ec8ff6562e063137
         
         % If report type 1
         if rprt == 1

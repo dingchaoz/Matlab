@@ -206,25 +206,14 @@ function data = getEventData(obj, SEID, varargin)
     where = makeWhere(SEID,p.Results);
     
     %% Fetch the data
-<<<<<<< HEAD
     % Formulate the entire SQL query for Pacific with its two archived databases
     if strcmp(obj.program, 'HDPacific')
-=======
-    % Formulate the entire SQL query for Non-Pacific prgrams
-    if ~strcmp(obj.program,'HDPacific')
-        sql = [select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
-            ' ORDER BY [TruckName] DESC'];
-    % Formulate the entire SQL query for Pacific prgram with its two archived databases 
-    else
->>>>>>> ba81064c6630d4e6a81f3227ec8ff6562e063137
         sql = [select ' FROM [PacificArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
             select ' FROM [PacificArchive2].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
             select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
-<<<<<<< HEAD
     % Formulate the entire SQL query for Vanguard with its archived database
     elseif strcmp(obj.program, 'Vanguard')
         sql = [select ' FROM [VanguardArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
@@ -236,8 +225,6 @@ function data = getEventData(obj, SEID, varargin)
         sql = [select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
             ' ORDER BY [TruckName], [datenum] ASC'];
-=======
->>>>>>> ba81064c6630d4e6a81f3227ec8ff6562e063137
     end
     
     % Move to the use of the common tryfetch to get the data
