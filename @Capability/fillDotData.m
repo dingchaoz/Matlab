@@ -79,7 +79,7 @@ function fillDotData(obj, groupCode, group2Code)
         % If there was no data for this parameter
         if isempty(d)
             % Throw an error so that the GUI can react and execution of this code stops
-            error('Capability:fillBoxData:NoDataFound', 'No data found for the specified filtering conditions.');
+            error('Capability:fillDotData:NoDataFound', 'No data found for the specified filtering conditions.');
         end
         
         % If no thresholds are specified, plot Min and Max data
