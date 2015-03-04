@@ -1749,33 +1749,6 @@ else
     handles.c.filt.engfam = engfam;
 end
 
-% Date filtering
-% Get the datenumber conversion from the txtFromDate field
-[fromDate, ~] = handles.c.getDateInfo(get(handles.txtFromDate, 'String'));
-% Get the datenumber conversion from the txtToDate field
-[toDate, ~] = handles.c.getDateInfo(get(handles.txtToDate, 'String'));
-
-% Set the datenumber of toDate to the max date the data has if it's not specified
-if isnan(toDate)
-    if isnan(handles.c.filt.ExtID) % for MinMax parameters
-        if ~isnan(handles.c.filt.CriticalParam)
-            % Get the public data id
-            pdid = handles.c.getPublicDataID(handles.c.filt.CriticalParam);
-            sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d',handles.c.program, pdid);
-            toDate = cell2mat(struct2cell(fetch(handles.c.conn, sql)));
-        else
-            % Do nothing to toDate if the parameter does not exist yet since it's just a switch to a new platform
-        end
-    else % for EventDriven parameters
-        sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblEventDrivenData WHERE SEID = %d AND ExtID = %d',handles.c.program, handles.c.filt.SEID, handles.c.filt.ExtID);
-        toDate = cell2mat(struct2cell(fetch(handles.c.conn, sql)));
-    end
-else
-end
-
-% Set the filtering in the filter structure (add one to the toDate to include data from that entire day up to midnight the next day)
-handles.c.filt.date = [fromDate toDate+1];
-
 % Software filtering
 % Get the string values of the to and from software filtering
 fromSW = get(handles.txtFromSW, 'String');
@@ -1793,6 +1766,57 @@ else
 end
 % Set the values to the filtering structure
 handles.c.filt.software = [fromSWnum toSWnum];
+
+% Date filtering
+% Get the datenumber conversion from the txtFromDate field
+[fromDate, ~] = handles.c.getDateInfo(get(handles.txtFromDate, 'String'));
+% Get the datenumber conversion from the txtToDate field
+[toDate, ~] = handles.c.getDateInfo(get(handles.txtToDate, 'String'));
+
+% Set the datenumber of toDate to the max date the data has if it's not specified
+if isnan(toDate)
+    if isnan(handles.c.filt.ExtID) % for MinMax parameters
+        if ~isnan(handles.c.filt.CriticalParam)
+            % Get the public data id
+            pdid = handles.c.getPublicDataID(handles.c.filt.CriticalParam);
+            if isnan(fromSWnum)
+                if isnan(toSWnum)
+                    sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d',handles.c.program, pdid);
+                else
+                    sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d And CalibrationVersion <= %d',handles.c.program, pdid, toSWnum);
+                end
+            else
+                if isnan(toSWnum)
+                    sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d And CalibrationVersion >= %d',handles.c.program, pdid, fromSWnum);
+                else
+                    sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d And CalibrationVersion Between %d And %d',handles.c.program, pdid, fromSWnum, toSWnum);
+                end
+            end
+            toDate = cell2mat(struct2cell(fetch(handles.c.conn, sql)));
+        else
+            % Do nothing to toDate if the parameter does not exist yet since it's just a switch to a new platform
+        end
+    else % for EventDriven parameters
+        if isnan(fromSWnum)
+            if isnan(toSWnum)
+                sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblEventDrivenData WHERE SEID = %d AND ExtID = %d',handles.c.program, handles.c.filt.SEID, handles.c.filt.ExtID);
+            else
+                sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblEventDrivenData WHERE SEID = %d AND ExtID = %d And CalibrationVersion <= %d',handles.c.program, handles.c.filt.SEID, handles.c.filt.ExtID, toSWnum);
+            end
+        else
+            if isnan(toSWnum)
+                sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblEventDrivenData WHERE SEID = %d AND ExtID = %d And CalibrationVersion >= %d',handles.c.program, handles.c.filt.SEID, handles.c.filt.ExtID, fromSWnum);
+            else
+                sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblEventDrivenData WHERE SEID = %d AND ExtID = %d And CalibrationVersion Between %d And %d',handles.c.program, handles.c.filt.SEID, handles.c.filt.ExtID, fromSWnum, toSWnum);
+            end
+        end
+        toDate = cell2mat(struct2cell(fetch(handles.c.conn, sql)));
+    end
+else
+end
+
+% Set the filtering in the filter structure (add one to the toDate to include data from that entire day up to midnight the next day)
+handles.c.filt.date = [fromDate toDate+1];
 
 % Trip filtering
 if get(handles.rdoNoTestTrip, 'Value')
