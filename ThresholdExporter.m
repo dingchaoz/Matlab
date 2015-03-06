@@ -48,11 +48,11 @@ exportThresholds(r,l,fullfile(manualCals,'PacificCPS_Black'),'HDPacific','Black'
 % Acadia Root
 acadiaRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Acadia';
 % Acadia Default
-exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X1'),'Acadia','Default','BGT')
+exportThresholds(r,l,fullfile(acadiaRoot,'Beta\X1'),'Acadia','Default','BGT')
 % Acadia X1
-exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X1'),'Acadia','Acadia_X1','BGT')
+exportThresholds(r,l,fullfile(acadiaRoot,'Beta\X1'),'Acadia','Acadia_X1','BGT')
 % Acadia X3
-exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X3'),'Acadia','Acadia_X3','BGT')
+exportThresholds(r,l,fullfile(acadiaRoot,'Beta\X3'),'Acadia','Acadia_X3','BGT')
 
 %% Atlantic
 % Atlantic Root
@@ -183,16 +183,16 @@ exportThresholds(r,l,fullfile(ventura2Root,'MY16\Mainline'),'Ventura','Ventura2'
 %% Blazer
 BlazerRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Blazer';
 % Blazer Default
-exportThresholds(r,l,fullfile(BlazerRoot,'PP1\173_2500'),'Blazer','Default','BFU')
+exportThresholds(r,l,fullfile(BlazerRoot,'DIG\173_2500'),'Blazer','Default','BFU')
 
 %% Bronco
 BroncoRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer';
 % Bronco Default
-exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\FP\173_2300'),'Bronco','Default','BEE')
+exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\DIG\300_2500'),'Bronco','Default','BEE')
 % Bronco Lite
 exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\FP\173_2300'),'Bronco','Bronco_Lite','BEE')
 % Bronco
-exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\PP1\300_2500'),'Bronco','Bronco','BEE')
+exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\DIG\300_2500'),'Bronco','Bronco','BEE')
 
 %% Clydesdale
 ClydesdaleRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Workhorse Clydesdale';
