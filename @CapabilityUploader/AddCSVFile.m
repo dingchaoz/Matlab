@@ -389,8 +389,26 @@ function AddCSVFile(obj, fullFileName, truckID)
             % colNames = {datenum, ECMRunTime, SEID, ExtID, DataValue, CalibrationVersion, TruckID, EMBFlag, TripFlag}
             eventDecoded(writeIdxEvent,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, ExtID, decodedData, cal, truckID, 0, 0};
             
-            % Increment the writeIdxEvent
-            writeIdxEvent = writeIdxEvent + 1;
+            % Generate an extra parameter for DPF_INCOMPLETE_REGEN_ERR & add 1 more line to the eventDecoded cell array
+            if writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==3036 && cell2mat(eventDecoded(writeIdxEvent-1,3))==3036 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.00001
+                % Calculate the difference between the 2 capability parameters
+                % Add the difference value to the eventDecoded cell array, with a fake extID
+                % Increment the writeIdxEvent by 2
+                if ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==0
+                    diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                elseif ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1
+                    diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                else % Increment the writeIdxEvent
+                    writeIdxEvent = writeIdxEvent + 1;
+                end
+            else % for other normal diagnostics
+                % Increment the writeIdxEvent
+                writeIdxEvent = writeIdxEvent + 1;
+            end
             
         elseif ~strcmp(MinMax_Data{i}, 'NaN')
             % MinMax line, ignore
