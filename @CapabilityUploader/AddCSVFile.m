@@ -76,16 +76,13 @@ function AddCSVFile(obj, fullFileName, truckID)
 %   Revised - Chris Remington - April 4, 2014
 %       - Added logic to check if the calibration version was recorded in reverse as
 %         is sometimes the case for the V8 programs
-<<<<<<< HEAD
-%   Revised -Dingchao Zhang - March 18th, 2015
-%  Added update tblTrucks saying that there should have been MinMax data
-%  and wasn't in the condition of no key switch from 1 to 0
-    
-=======
 %   Revised - Yiyuan Chen - 2015/03/06
 %       - Added the feature of processing DPF_Incomplete_Regen when uploading its capability data  
+%   Revised -Dingchao Zhang - March 18th, 2015
+%       -Added update tblTrucks saying that there should have been MinMax data
+%       - and wasn't in the condition of no key switch from 1 to 0
+    
 
->>>>>>> 783ca3fd75408d74aba60d81cfa330cfad8f8eaf
     %% Prerequisite Code
     % Get the name of the truckID to ensure that its a valid truck
     % This will throw an error if an invalid truckID is specified
