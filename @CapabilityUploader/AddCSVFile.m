@@ -76,10 +76,16 @@ function AddCSVFile(obj, fullFileName, truckID)
 %   Revised - Chris Remington - April 4, 2014
 %       - Added logic to check if the calibration version was recorded in reverse as
 %         is sometimes the case for the V8 programs
+<<<<<<< HEAD
 %   Revised -Dingchao Zhang - March 18th, 2015
 %  Added update tblTrucks saying that there should have been MinMax data
 %  and wasn't in the condition of no key switch from 1 to 0
     
+=======
+%   Revised - Yiyuan Chen - 2015/03/06
+%       - Added the feature of processing DPF_Incomplete_Regen when uploading its capability data  
+
+>>>>>>> 783ca3fd75408d74aba60d81cfa330cfad8f8eaf
     %% Prerequisite Code
     % Get the name of the truckID to ensure that its a valid truck
     % This will throw an error if an invalid truckID is specified
@@ -392,8 +398,26 @@ function AddCSVFile(obj, fullFileName, truckID)
             % colNames = {datenum, ECMRunTime, SEID, ExtID, DataValue, CalibrationVersion, TruckID, EMBFlag, TripFlag}
             eventDecoded(writeIdxEvent,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, ExtID, decodedData, cal, truckID, 0, 0};
             
-            % Increment the writeIdxEvent
-            writeIdxEvent = writeIdxEvent + 1;
+            % Generate an extra parameter for DPF_INCOMPLETE_REGEN_ERR & add 1 more line to the eventDecoded cell array
+            if writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==3036 && cell2mat(eventDecoded(writeIdxEvent-1,3))==3036 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.00001
+                % Calculate the difference between the 2 capability parameters
+                % Add the difference value to the eventDecoded cell array, with a fake extID
+                % Increment the writeIdxEvent by 2
+                if ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==0
+                    diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                elseif ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1
+                    diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                else % Increment the writeIdxEvent
+                    writeIdxEvent = writeIdxEvent + 1;
+                end
+            else % for other normal diagnostics
+                % Increment the writeIdxEvent
+                writeIdxEvent = writeIdxEvent + 1;
+            end
             
         elseif ~strcmp(MinMax_Data{i}, 'NaN')
             % MinMax line, ignore

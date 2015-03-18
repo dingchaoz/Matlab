@@ -106,6 +106,7 @@ progMap = {
   'Dragnet_PU  |  Seahawk (Pick-up Truck)',    'Seahawk';
   'Dragnet_X  |  Pacific  |  ISX',             'HDPacific';
   'Mamba',                                     'Mamba';
+  'Nighthawk',                                 'Nighthawk';
   'Pele',                                      'Pele';
   'Shadowfax',                                 'Shadowfax';
   'Vanguard',                                  'Vanguard';
