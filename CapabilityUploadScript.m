@@ -53,6 +53,11 @@ Yukon = CapabilityUploader('Yukon');
 Yukon.dataUploader;
 clear Yukon
 
+% Work on Nighthawk
+Nighthawk = CapabilityUploader('Nighthawk');
+Nighthawk.dataUploader;
+clear Nighthawk
+
 % Move the MR Industrial Data
 MoveMRIndCapData
 
