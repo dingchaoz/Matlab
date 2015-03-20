@@ -81,7 +81,8 @@ function AddCSVFile(obj, fullFileName, truckID)
 %   Revised -Dingchao Zhang - March 18th, 2015
 %       -Added update tblTrucks saying that there should have been MinMax data
 %       - and wasn't in the condition of no key switch from 1 to 0
-    
+%   Revised - Yiyuan Chen - 2015/03/19
+%       - Added the feature of processing DPF_TOO_FREQUENT_REGEN_ERR when uploading its capability data 
 
     %% Prerequisite Code
     % Get the name of the truckID to ensure that its a valid truck
@@ -395,8 +396,9 @@ function AddCSVFile(obj, fullFileName, truckID)
             % colNames = {datenum, ECMRunTime, SEID, ExtID, DataValue, CalibrationVersion, TruckID, EMBFlag, TripFlag}
             eventDecoded(writeIdxEvent,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, ExtID, decodedData, cal, truckID, 0, 0};
             
-            % Generate an extra parameter for DPF_INCOMPLETE_REGEN_ERR & add 1 more line to the eventDecoded cell array
+            % Execute extra processings for some special diagnostics
             if writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==3036 && cell2mat(eventDecoded(writeIdxEvent-1,3))==3036 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.00001
+                % Generate an extra parameter for DPF_INCOMPLETE_REGEN_ERR & add 1 more line to the eventDecoded cell array
                 % Calculate the difference between the 2 capability parameters
                 % Add the difference value to the eventDecoded cell array, with a fake extID
                 % Increment the writeIdxEvent by 2
@@ -405,6 +407,19 @@ function AddCSVFile(obj, fullFileName, truckID)
                     eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
                     writeIdxEvent = writeIdxEvent + 2;
                 elseif ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1
+                    diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                else % Increment the writeIdxEvent
+                    writeIdxEvent = writeIdxEvent + 1;
+                end
+            elseif writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==3590 && cell2mat(eventDecoded(writeIdxEvent-1,3))==3590 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.000005
+                % Similarly process for DPF_TOO_FREQUENT_REGEN_ERR
+                if ExtID==2 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1
+                    diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                elseif ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==2
                     diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
                     eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
                     writeIdxEvent = writeIdxEvent + 2;
