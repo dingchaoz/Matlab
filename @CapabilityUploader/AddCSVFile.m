@@ -82,7 +82,9 @@ function AddCSVFile(obj, fullFileName, truckID)
 %       -Added update tblTrucks saying that there should have been MinMax data
 %       - and wasn't in the condition of no key switch from 1 to 0
 %   Revised - Yiyuan Chen - 2015/03/19
-%       - Added the feature of processing DPF_TOO_FREQUENT_REGEN_ERR when uploading its capability data 
+%       - Added the feature of processing DPF_TOO_FREQUENT_REGEN_ERR when uploading its capability data
+%   Revised - Yiyuan Chen - 2015/03/25
+%       - Added the feature of processing DOSER_USEDUP_DFM_ERR when uploading its capability data
 
     %% Prerequisite Code
     % Get the name of the truckID to ensure that its a valid truck
@@ -422,6 +424,15 @@ function AddCSVFile(obj, fullFileName, truckID)
                 elseif ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==2
                     diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
                     eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                else % Increment the writeIdxEvent
+                    writeIdxEvent = writeIdxEvent + 1;
+                end
+            elseif writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==4748 && cell2mat(eventDecoded(writeIdxEvent-1,3))==4748 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.000005
+                % Similarly process for DOSER_USEDUP_DFM_ERR but calculate the product
+                if (ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1) || (ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==0)
+                    prodData = decodedData * cell2mat(eventDecoded(writeIdxEvent-1,5));
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, prodData, cal, truckID, 0, 0};
                     writeIdxEvent = writeIdxEvent + 2;
                 else % Increment the writeIdxEvent
                     writeIdxEvent = writeIdxEvent + 1;
