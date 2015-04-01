@@ -1,4 +1,4 @@
-function data = getEventData(obj, SEID, varargin)
+function data = getEventFCData(obj, SEID, varargin)
 %Pull Event Driven data from the database
 %   Pull Event Driven data from the database. Only return data the meets all of the
 %   optional specified data filters.
@@ -109,33 +109,8 @@ function data = getEventData(obj, SEID, varargin)
 %   Outputs ---
 %   data:      Structure of data straight from the database toolbox
 %   
-%   Original Version - Chris Remington - April 11, 2012
-%   Revised - Chris Remington - April 24, 2012
-%     - Added ability to specify only an xSEID as opposed to requiring a SEID and ExtID
-%   Revised - Chris Remington - May 11, 2012
-%     - Changed the "absent" filtering in the software and date filters from Inf to NaN
-%     - Added method where having both software filters being a NaN results in no
-%       filtering (just like the default case with an empty set passed in)
-%   Revised - Chris Remington - September 4, 2012
-%     - Added ability to coltrol filtering data by EMBFlag and TripFlag columns
-%   Revised - Chris Remington - October 3, 2012
-%     - Added ability to input [NaN NaN] to the date parameter and have default behavior
-%   Revised - Chris Remington - October 8, 2012
-%     - Added the functionality of the 'grouping' input parameter
-%   Revised - Chris Remington - October 9, 2012
-%     - Added the 'values' property and functionality to filter return data by value
-%   Revised - Chris Remington - October 26, 2012
-%     - Added try/catch logic on the fecth command to try to reset the database
-%       connection first and attempt to fetch data again before throwing an error
-%   Revised - Chris Remington - January 30, 2014
-%     - Added the 'engfam', 'vehtype', 'vehicle', and 'rating' parameters to filter data
-%     - Added the 'fields' parameter to allow only specified columns to be selected
-%   Revised - Chris Remington - April 7, 2014
-%     - Moved to the use of tryfetch from just fetch to commonize error handling
-%   Revised - Yiyuan Chen - 2014/12/17
-%     - Modified the SQL query to fetch data from archived database as well
-%   Revised - Dingchao Zhang - March 20, 2015
-%     - Added the SQL query to fetch fault code matching data from table dbo.FC
+%   Original Version - Dingchao Zhang - March 23, 2015
+
     
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
@@ -245,9 +220,9 @@ function data = getEventData(obj, SEID, varargin)
 %      if isnan(obj.dot.USL) && isnan(obj.dot.LSL)
 %        data.fc = ([]);
    
-     if ~isnan(obj.dot.USL)
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) 'AND DataValue > ' num2str(obj.dot.USL) ' )' selectfc_tail];
+     if ~isnan(obj.filt.USL)
+       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) 'AND DataValue > ' num2str(obj.filt.USL) ' )' selectfc_tail];
        % Add the FC match results to data.fc structure
        data.fc = obj.tryfetch(sql_fc,100000);
 %        try
@@ -258,9 +233,9 @@ function data = getEventData(obj, SEID, varargin)
 %            data.fc = ([]);
 %            end
 %        end
-     elseif ~isnan(obj.dot.LSL)
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) ' AND DataValue < ' num2str(obj.dot.LSL) ' )' selectfc_tail];
+     elseif ~isnan(obj.filt.LSL)
+       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' AND DataValue < ' num2str(obj.filt.LSL) ' )' selectfc_tail];
        % Add the FC match results to data.fc structure
       data.fc = obj.tryfetch(sql_fc,100000);
         

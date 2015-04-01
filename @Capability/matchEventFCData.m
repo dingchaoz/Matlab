@@ -1,20 +1,15 @@
-function data = getEventData(obj, SEID, varargin)
-%Pull Event Driven data from the database
-%   Pull Event Driven data from the database. Only return data the meets all of the
-%   optional specified data filters.
+function [matched, header] = matchEventFCData(obj, SEID, varargin)
+%Matches multiple ExtID parameters from one diagnostic with each other
+%   Since Event Driven data is recorded with only one parameter per line and stored as
+%   such, this script will attempt to read in the event driven data (sorted a special way)
+%   and "time-grids" the data where multiple different parameters were broadcast at the
+%   same time.
 %   
-%   Usage: data = getEventData(SEID, ExtID, 'property', value, ...)
-%          data = getEventData(xSEID, 'property', value, ...)
-%   
-%   For example,
-%   data = getMinMaxData(7613, 1, 'family', 'x1', 'software', [510001])
-%       This will return the data from SEID = 7613 and ExtID = 1 for trucks with an X1
-%       engine and software version of 510001.
+%   Usage: [matched, header] = matchEventData(obj, SEID, 'property', value, ...)
 %   
 %   Inputs ---
-%   SEID:      System Error ID to get data for
-%   ExtID:     Extension ID of the parameter to grab
-%   varargin:  listing of properties and their values. (see below)
+%   SEID:      System Error ID of the system error that you want to match ExtID values of
+%   varargin:  Listing of properties and their values. (see below)
 %   
 %              'engfam'    Specifies the filtering based on an engine family
 %                          {''}            - Returns data from all families (Default)
@@ -71,11 +66,6 @@ function data = getEventData(obj, SEID, varargin)
 %                          1               - Only reutrn values from test trips
 %                          NaN             - Return both test trip and non-test trip data
 %   
-%              'fields'    Specified the fields of data to retrieve
-%                          {''}            - Retrieve all columns with the data (Default)
-%                          {'All'}         - Retrieve all columns with the data
-%                          {'col1', ...}   - Retrieve the specified columns with the data
-%   
 %              'values'    Specifies the filtering based on the value of the data point
 %                          []              - No filtering by the DataValue (Default)
 %                          [NaN NaN]       - Analogous to an empty set above, no filtering
@@ -97,142 +87,71 @@ function data = getEventData(obj, SEID, varargin)
 %                          'field' - Get data only from field test trucks
 %                          'eng'   - Get data only from engineering trucks
 %   
-%              %%%%%%%%%%%%%%%%%%%%%%%%%%%% Antiquated Field %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%              'grouping'  Specifies the columns of data to SELECT depending on the need
-%                          NaN             - Returns all columns (Default)
-%                          0               - Returns DataValue and CalibrationVersion
-%                          1               - Returns DataValue and TruckName
-%                          2               - Returns DataValue and Family
-%                          3               - Returns DataValue and datenum
-%                          4               - Returns DataValue only (for histograms)
+%   Outputs---
+%   matched:   Cell array of data matched to each other, columns 6 and later contain the
+%              actual data values
 %   
-%   Outputs ---
-%   data:      Structure of data straight from the database toolbox
-%   
-%   Original Version - Chris Remington - April 11, 2012
-%   Revised - Chris Remington - April 24, 2012
-%     - Added ability to specify only an xSEID as opposed to requiring a SEID and ExtID
-%   Revised - Chris Remington - May 11, 2012
-%     - Changed the "absent" filtering in the software and date filters from Inf to NaN
-%     - Added method where having both software filters being a NaN results in no
-%       filtering (just like the default case with an empty set passed in)
-%   Revised - Chris Remington - September 4, 2012
-%     - Added ability to coltrol filtering data by EMBFlag and TripFlag columns
-%   Revised - Chris Remington - October 3, 2012
-%     - Added ability to input [NaN NaN] to the date parameter and have default behavior
-%   Revised - Chris Remington - October 8, 2012
-%     - Added the functionality of the 'grouping' input parameter
-%   Revised - Chris Remington - October 9, 2012
-%     - Added the 'values' property and functionality to filter return data by value
-%   Revised - Chris Remington - October 26, 2012
-%     - Added try/catch logic on the fecth command to try to reset the database
-%       connection first and attempt to fetch data again before throwing an error
-%   Revised - Chris Remington - January 30, 2014
-%     - Added the 'engfam', 'vehtype', 'vehicle', and 'rating' parameters to filter data
-%     - Added the 'fields' parameter to allow only specified columns to be selected
-%   Revised - Chris Remington - April 7, 2014
-%     - Moved to the use of tryfetch from just fetch to commonize error handling
-%   Revised - Yiyuan Chen - 2014/12/17
-%     - Modified the SQL query to fetch data from archived database as well
-%   Revised - Dingchao Zhang - March 20, 2015
-%     - Added the SQL query to fetch fault code matching data from table dbo.FC
-    
+%   Original Version - Dingchao Zhang - March 23, 2015
+
+
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
     p = inputParser;
     % Add the four properties and their default falues
-    p.addOptional('ExtID', 0, @isnumeric);
     p.addParamValue('family', 'all', @ischar)%antiquated
     p.addParamValue('truck', 'all', @ischar)%antiquated
     p.addParamValue('software', [], @isnumeric)
     p.addParamValue('date', [], @isnumeric)
     p.addParamValue('emb', 0, @isnumeric)
     p.addParamValue('trip', 0, @isnumeric)
-    p.addParamValue('grouping', NaN, @isnumeric)%antiquated
     p.addParamValue('values', [], @isnumeric)
-    p.addParamValue('fields', {''}, @iscellstr)
     p.addParamValue('engfam', {''}, @iscellstr)
     p.addParamValue('vehtype', {''}, @iscellstr)
     p.addParamValue('vehicle', {''}, @iscellstr)
     p.addParamValue('rating', {''}, @iscellstr)
-    
     % Parse the actual inputs passed in
     p.parse(varargin{:});
     
-    %% Generate the start of the SELECT statement
-    switch p.Results.grouping
-        case 0 % Select data and software version
-            select = 'SELECT [DataValue], [CalibrationVersion]';
-        case 1 % Select data and truck name
-            select = 'SELECT [DataValue], [TruckName]';
-        case 2 % Select data and engine family
-            select = 'SELECT [DataValue], [Family]';
-        case 3 % Select data and Matlab serial date number
-            select = 'SELECT [DataValue], [datenum]';
-        case 4 % Select only the data (for histograms)
-%             select = 'SELECT [DataValue]';
-               % have to put a second selected item for Matlab2013, otherwise it will fetch only part of the data set
-            select = 'SELECT [DataValue], [datenum]';
-        otherwise % NaN or anything else, select all the columns
-            select = 'SELECT [datenum],[ECMRunTime],[DataValue],[TruckName],[Family],[CalibrationVersion]';
-    end
-    
-    %% Create the SELECT based on the desired fields (overrides grouping if specified)
-    % Check is a specified field list was passed in
-    if ~isempty(p.Results.fields{1})
-        % If any of the fields specified is 'All', do them all
-        if ~any(strcmp('All',p.Results.fields))
-            % Start the where
-            select = 'SELECT ';
-            % For each family name specified
-            for i = 1:length(p.Results.fields)
-                % Build up the where
-                if i==length(p.Results.fields)
-                    % Last one (or only one in the case of length = 1)
-                    select = sprintf('%s[%s]',select,p.Results.fields{i});
-                else
-                    % First or middle one
-                    select = sprintf('%s[%s],',select,p.Results.fields{i});
-                end
-            end
-        else
-            % Select everything
-            select = 'SELECT [datenum],[ECMRunTime],[DataValue],[TruckName],[Family],[TruckType],[Rating],[CalibrationVersion]';
-        end
-    elseif isnan(p.Results.grouping)
-        % Select all the fields (Default)
-        select = 'SELECT [datenum],[ECMRunTime],[DataValue],[TruckName],[Family],[TruckType],[Rating],[CalibrationVersion]';
-    end
-    
-    %% Generate the WHERE clause
-    where = makeWhere(SEID,p.Results);
-    
-    %% Fetch the data
+    %% Grab Data from Database
+    % Define the sql for the fetch command
+    % Make the where statement
+    where = makeWhere(SEID, p.Results);
+    % Sort the data by truck, then by date, then by ExtID to aid in matching  %%--%%
     % Formulate the entire SQL query for Pacific with its two archived databases
     if strcmp(obj.program, 'HDPacific')
-        sql = [select ' FROM [PacificArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+        sql = ['SELECT [datenum],[ECMRunTime],[ExtID],[DataValue],[TruckName],[Family],[CalibrationVersion] ' ...
+            'FROM [PacificArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
-            select ' FROM [PacificArchive2].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            'SELECT [datenum],[ECMRunTime],[ExtID],[DataValue],[TruckName],[Family],[CalibrationVersion] ' ...
+            'FROM [PacificArchive2].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
-            select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
+            'SELECT [datenum],[ECMRunTime],[ExtID],[DataValue],[TruckName],[Family],[CalibrationVersion] ' ...
+            'FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
+            ' ORDER BY [TruckName], [datenum], [ExtID] ASC'];
     % Formulate the entire SQL query for Vanguard with its archived database
     elseif strcmp(obj.program, 'Vanguard')
-        sql = [select ' FROM [VanguardArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+        sql = ['SELECT [datenum],[ECMRunTime],[ExtID],[DataValue],[TruckName],[Family],[CalibrationVersion] ' ...
+            'FROM [VanguardArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
-            select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
+            'SELECT [datenum],[ECMRunTime],[ExtID],[DataValue],[TruckName],[Family],[CalibrationVersion] ' ...
+            'FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
+            ' ORDER BY [TruckName], [datenum], [ExtID] ASC'];
     % Formulate the entire SQL query for other prgrams
     else
-        sql = [select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+        sql = ['SELECT [datenum],[ECMRunTime],[ExtID],[DataValue],[TruckName],[Family],[CalibrationVersion] ' ...
+            'FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
-            ' ORDER BY [TruckName], [datenum] ASC'];
+            ' ORDER BY [TruckName], [datenum], [ExtID] ASC'];
     end
     
-    % Move to the use of the common tryfetch to get the data
-    data = obj.tryfetch(sql,100000);
+    % Move to the useage of the common tryfetch
+    rawData = obj.tryfetch(sql,100000);
     
-    % Generate the select statement for FC matches in MinMaxFC view
+     % Generate the select statement for FC matches in MinMaxFC view
+     
+%      rawData.fc = obj.dot.FaultCode;
     
     % Create the head of the SQL query
     selectfc_head = 'SELECT DISTINCT t3.TruckName, t1.[Cal Version], t1.Date,t1.abs_time,t1.[Active Fault Code], t1.[ECM Run Time(s)], t1.TruckID, t2.*,t3.[Family],t3.[TruckType] FROM (SELECT * FROM dbo.FC';
@@ -243,13 +162,13 @@ function data = getEventData(obj, SEID, varargin)
  
     % Combine the head, body, tail together to form the SQL query %
 %      if isnan(obj.dot.USL) && isnan(obj.dot.LSL)
-%        data.fc = ([]);
+%        rawData.fc = ([]);
    
-     if ~isnan(obj.dot.USL)
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) 'AND DataValue > ' num2str(obj.dot.USL) ' )' selectfc_tail];
+     if ~isnan(obj.filt.USL)
+       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) 'AND DataValue > ' num2str(obj.filt.USL) ' )' selectfc_tail];
        % Add the FC match results to data.fc structure
-       data.fc = obj.tryfetch(sql_fc,100000);
+       rawData.fc = obj.tryfetch(sql_fc,100000);
 %        try
 %     % Fill the data into the dot object
 %        handles.c.fillDotData(group,group2)
@@ -258,32 +177,220 @@ function data = getEventData(obj, SEID, varargin)
 %            data.fc = ([]);
 %            end
 %        end
-     elseif ~isnan(obj.dot.LSL)
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) ' AND DataValue < ' num2str(obj.dot.LSL) ' )' selectfc_tail];
+     elseif ~isnan(obj.filt.LSL)
+       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' AND DataValue < ' num2str(obj.filt.LSL) ' )' selectfc_tail];
        % Add the FC match results to data.fc structure
-      data.fc = obj.tryfetch(sql_fc,100000);
+      rawData.fc = obj.tryfetch(sql_fc,100000);
         
    end
     
+    % If there was no data in the database
+    if isempty(rawData)
+        % return an empty set
+        matched = [];
+        header = [];
+        % Exit the function
+        return
+    end
+    
+    % Find the number of ExtIDs present
+    numParams = max(rawData.ExtID)+1;
+    % Below is the old method that has a problem when a system error only
+    % broadcast one parameter on an ExtID of 1 (specifically SEID 7834)
+    %numParams = length(unique(rawData.ExtID));
+    
+    %% Process Data
+    
+    % Initalize the output (make it as long as rawData, trim at the end)
+%     matched = cell(length(rawData.fc.datenum),numParams+7);
+    matched = cell(length(rawData.fc.datenum),7);
+    % datenum | ECMRunTime | TruckName | Family | Software | Param0 | Param1 | Param2 | Param3 | Param4
+%     writeIdx = 1;
+    
+    % Create the header row
+    header = cell(1,numParams+7);
+    header(1:7) = {'TruckName', 'Software','Family', 'TruckType','DateTime','ActiveFaultCode', 'DataValue'};
+    % Fill in the parameter names
+%     for i = 1:numParams
+%         % Fill in the name of this parameter
+%         header{i+5} = obj.getEvddInfo(SEID, i-1, 0);
+%     end
+    
+    % If there is only data from 1 SEID present, do this the easy way
+%     if numParams == 1
+        
+         % Convert to a cell array ready for the rawData GUI window
+         matched(:,1) = rawData.fc.TruckName;
+         matched(:,2) = num2cell(rawData.fc.CalVersion);
+         matched(:,3) = rawData.fc.Family;
+         matched(:,4) = rawData.fc.TruckType;
+%          matched(:,5) = cellstr(datestr(rawData.fc.datenum,31));
+         matched(:,5) = num2cell(rawData.fc.datenum);
+         matched(:,6) = rawData.fc.ActiveFaultCode;
+         matched(:,7) = num2cell(rawData.fc.DataValue);
+       
+        % Return out of the function as matched and header have been defined
+%         return
+%     end
+    
+%     % Otherwise, time-grid the parameters together
+%     % Initalize the readIdx at 1
+%     readIdx = 1;
+%     % Initalize the structure to hold onto the current value to fill the columns above
+%     d = struct('TruckName', [],'Software',[],'Family',[], 'TruckType',[],'DateTime',[],'ActiveFaultCode',[], 'DataValue',[]);
+%     % Loop through the listing of data, try to find matches for each parameter
+%     while readIdx <= length(rawData.fc.datenum)
+%         
+%         % Fill in the current value for these parameters based on the current line
+%         d.DateTime = rawData.fc.datenum(readIdx);
+%         d.ActiveFaultCode = rawData.fc.ActiveFaultCode{readIdx};
+%         d.DataValue = rawData.fc.DataValue(readIdx);
+%         d.TruckType = rawData.fc.TruckType{readIdx};
+%         d.TruckName = rawData.fc.TruckName{readIdx};
+%         d.Family = rawData.fc.Family{readIdx};
+%         d.Software = rawData.fc.CalVersion(readIdx);
+%         
+%         % Search out the number of matching timestamps that are within 1/2 second of
+%         % eachother. This would imply all of that data is from one broadcast "set"
+%         % Look at the next "numParams" of lines to see how many match
+%         for j = 0:(numParams-1) % Counts up to the value of the largest ExtID
+%             
+%             try
+%                 % If the next timestamp is more than 0.5 seconds in the future
+%                 % or the name of the truck changed
+%                 if abs(rawData.fc.datenum(readIdx+j+1)-d.DateTime) > 1/86400 || ...
+%                         ~strcmp(d.TruckName, rawData.fc.TruckName{readIdx+j+1})
+%                     % break the for loop
+%                     break
+%                     % This leaves j at the number of additional matching lines beyone readIdx
+%                 end
+%             catch ex
+%                 % If the error was not because we reached the end of the matrix
+%                 if ~strcmp(ex.identifier, 'MATLAB:badsubscript')
+%                     % Rethrow the original exception
+%                     rethrow(ex)
+%                 end
+%                 % Otherwise ignor the error, as it will leave j at the correct value
+%                 % Break out of the loop as we're at the end
+%                 break
+%             end
+%         end
+%         
+%         % Print the data out to one line of the output cell array
+%         % Pass in only the 2 - 5 lines that need matching
+%         try
+%             % Try to match the parameters together
+%             matched(writeIdx,:) = createLine(d, numParams, ...
+%                 rawData.ExtID(readIdx:readIdx+j), rawData.DataValue(readIdx:readIdx+j));
+%         catch ex
+%             % If there was an error, move on to the next line
+%             if strcmp(ex.identifier, 'EventProcessor:matchEventData:createLine:DuplicateData')
+%                 readIdx = readIdx + j + 1;
+%                 % Don't increment the writeIdx so that this line get re-written
+%                 % Continue to the next itaration
+%                 continue
+%             elseif strcmp(ex.identifier, 'EventProcessor:matchEventData:createLine:MatchingFailure')
+%                 % In reality, this exception is thrown when a truly unknown thing is
+%                 % happening. For now, just ignor it like above and continue
+%                 readIdx = readIdx + j + 1;
+%                 continue
+%             else
+%                 % Otherwise, rethrow the original exception as it is really unknown
+%                 rethrow(ex)
+%             end
+%         end
+%         % Increment readIdx the appropriate number of lines
+%         readIdx = readIdx + j + 1;
+%         % Add one to the writeIdx
+%         writeIdx = writeIdx + 1;
+%         
+%     end
+%     
+%     % Trim the empty cells that were left behind on the bottom of "matched"
+%     matched = matched(1:writeIdx-1,:);
+    
+%     end
 end
 
+% function line = createLine(d, numParams, ExtID, DataValue)
+% %   This takes in the separate parameter values for a "set" of parameters that were
+% %   broadcast and writes them into a single line
+% %   
+% %   ExtID is a small numeric array with the ExtID value, e.g., [0 1 2 3 4] or [2 4] for
+% %   partial data sets
+% %   DataValue is a small numberic array with the data values, e.g., [20 1.23 5543 0 0] or
+% %   [5543 0] for partial sets
+%     
+%     % Initalize output and fill in the metadata
+% %     line = cell(1,numParams+5);
+% %     line{1} = d.datenum;
+% %     line{2} = d.ECMRunTime;
+% %     line{3} = d.TruckName;
+% %     line{4} = d.Family;
+% %     line{5} = d.Software;
+%      line = cell(1,numParams+7);
+%      line(:,1) = cellstr(d.TruckName);
+%      line(:,2) = num2cell(d.Software);
+%      line(:,3) = cellstr(d.Family);
+%      line(:,4) = cellstr(d.TruckType);
+%      line(:,5) = num2cell(d.DateTime);
+%      line(:,6) = cellstr(d.ActiveFaultCode);
+%      line(:,7) = num2cell(d.DataValue);
+%    
+%     % For each parameter that should be present (each ExtID that should have data)
+%     for i = 0:(numParams-1)
+%         % Get the index of the ExtID
+%         idx = ExtID==i;
+%         % If it is in the list of data passed in
+%         if sum(idx) == 1
+%             % Add it to the appropriate location
+%             line{6+i} = DataValue(idx);
+%         elseif sum(idx) == 0
+%             % Else set that location to a NaN
+%             line{6+i} = NaN;
+%         else % there was more than one match
+%             % Check to see if there is duplicate data present in the database
+%             if length(unique(DataValue)) < length(DataValue)
+%                 % Throw an appropriate error for duplicate data
+%                 error('EventProcessor:matchEventData:createLine:DuplicateData', ...
+%                       'There was duplicate data entries in the database, failed to properly match input');
+%             else
+%                 % Throw an error that this was an unknown failure type
+%                 % Getting here means there is really some type of unhandled exception
+%                 % happening
+%                 error('EventProcessor:matchEventData:createLine:MatchingFailure', ...
+%                       'There was more than one unique value with ExtID %.0f passed in. Failed to recover from the case of duplicated data points.', i);
+%             end
+%         end
+%     end
+%     
+%     % Output would be either
+%     % {datenum, ECMRunTime, TruckName, Engine, Software, 20, 1.23, 5543, 0, 0} or
+%     % {datenum, ECMRunTime, TruckName, Engine, Software, NaN, NaN, 5543, NaN, 0}
+%     % depending on which of the example inputs was passed into the function
+%     
+% end
+
+% Copied from getEventData, slightly modified to remove the ExtID filter condition
 function where = makeWhere(xseid, args)
     % This function processses the input options and generates the proper WHERE clause
     
     % Evaluate the xseid that was passed in 
     if xseid > 65535 % >= 2^16
         % Then this must be an xSEID, decompose into SEID and ExtID for the where clause
-        [seid, extid] = decomposexSEID(xseid);
+        % [seid, extid] = decomposexSEID(xseid); %%%%%%%%%%%%%%%%
+        [seid, ~] = decomposexSEID(xseid);
     else
         % Either an xseid < 2^16 was passed in (meaning that the ExtID = 0, the default)
         % Or a seid was passed in with a non-zero ExtID specified
         seid = xseid;
-        extid = args.ExtID;
+        % extid = args.ExtID; %%%%%%%%%%%%%%%
     end
     
     % Start the where clause with the Public Data ID
-    where = sprintf('WHERE [SEID] = %.0f And [ExtID] = %.0f',seid, extid);
+    %where = sprintf('WHERE [SEID] = %.0f And [ExtID] = %.0f',seid, extid); %%%%%%%%%%%%%
+    where = sprintf('WHERE [SEID] = %.0f',seid);
     
     %% Add filtering based on the EMBFlag if needed
     if args.emb == 0
@@ -320,9 +427,11 @@ function where = makeWhere(xseid, args)
         case 'black' % Filter only black trucks out
             % Add this phrase to the end of the WHERE clause
             where = strcat(where, ' And [Family] = ''Black''');
+        case 'Atlantic'
+            where = strcat(where, ' And [Family] = ''Atlantic''');
         otherwise
             % Throw an error as there was invalid input
-            error('Capability:getEventData:InvalidFamily','''family'' input must be either ''all'', ''x1'', ''x3'', or ''black''');
+            error('Capability:matchEventData:InvalidFamily','''family'' input must be either ''all'', ''x1'', ''x3'', or ''black''');
     end
     
     %% Add filtering based on the truck type desired
@@ -336,7 +445,7 @@ function where = makeWhere(xseid, args)
             where = strcat(where, ' And LEFT([TruckName],4) = ''ENG_''');
         otherwise
             % Throw an error as there was invalid input
-            error('Capability:getEventData:InvalidTruck','''truck'' input must be either ''all'', ''field'', or ''eng''');
+            error('Capability:matchEventData:InvalidTruck','''truck'' input must be either ''all'', ''field'', or ''eng''');
     end
     
     %% Add filtering by the date
@@ -355,7 +464,7 @@ function where = makeWhere(xseid, args)
             % else both were a NaN, don't do any filtering
             end
         else
-            error('Capability:getEventData:InvalidInput', 'Invalid input for property ''date''')
+            error('Capability:matchEventData:InvalidInput', 'Invalid input for property ''date''')
         end
     end
     
@@ -391,13 +500,13 @@ function where = makeWhere(xseid, args)
                 
             % Too many software filters specified
             otherwise 
-                error('Capability:getEventData:InvalidInput', 'Invalid input for property ''software''')
+                error('Capability:matchEventData:InvalidInput', 'Invalid input for property ''software''')
         end
     end
     
     %% Add filtering by the data value itself
     % If the input is not an empty set (the default to indicate no value filtering)
-    if ~isempty(args.values)
+    if~isempty(args.values)
         switch length(args.values)
             case 2 % There were two entries specified
                 if isnan(args.values(1)) && ~isnan(args.values(2))
@@ -414,7 +523,7 @@ function where = makeWhere(xseid, args)
                 % Filtering by values smaller than ValA and greater than ValB
                 where = sprintf('%s And ([DataValue] <= %g Or [DataValue] >= %g)',where,args.values(1),args.values(3));
             otherwise
-                error('Capability:getEventData:InvalidInput', 'Invalid input for property ''values''')
+                error('Capability:matchEventData:InvalidInput', 'Invalid input for property ''values''')
         end
     end
     

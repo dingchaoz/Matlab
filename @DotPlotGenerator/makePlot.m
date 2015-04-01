@@ -28,7 +28,8 @@ function makePlot(obj, visible)
 %       - Modified labeling: added Ppk, Mean, Sigma, FC; removed a few things
 %   Revised - Chris Remington - April 10, 2014
 %       - Adapted from boxplot to a dot plot, added ability to do 2 grouping
-    
+%   Revised - Dingchao Zhang - March 20, 2015
+%       - Added variable to count fault code match instances and to display it    
     %% Sort Data
     % If the group order isn't manually specified
     if isempty(obj.GroupOrder)
@@ -227,6 +228,14 @@ function makePlot(obj, visible)
     xText = [xText {sprintf('Sample Size: %.0f   Failures: %0.f   Ppk: %.3f',length(obj.Data),calcNumFail,calcPpk)}];
     % Global minima and global maxima
     xText = [xText {sprintf('Min: %g   Max: %g  Mean: %g   Std: %g',min(obj.Data),max(obj.Data),mu,sigma)}];
+    % Global minima and global maxima
+    %FC_count = length(unique(fc_match.Date));
+    if isempty(obj.FaultCode)
+        FC_count = 0 ;
+    else
+        FC_count = length(unique(obj.FaultCode.Date));
+    end
+    xText = [xText {sprintf('FaultCode Instances: %.0f',FC_count)}];
     % Set the actual strings to the xlabel
     xlabel(xText,'FontSize',13);
     

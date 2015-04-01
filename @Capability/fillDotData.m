@@ -31,6 +31,9 @@ function fillDotData(obj, groupCode, group2Code)
 %     - Merged Sri's functions for the dot plot into the main code
 %   Revised - Chris Remington - April 10, 2014
 %     - Added functionality to plot the second grouping if desired
+%   Revised -Dingchao Zhang - March 20, 2015
+% Add the Fault Code matching data to the obg.dot object
+ 
     
     % Pull out the filtering values from the filt structure
     sw = obj.filt.software;
@@ -76,6 +79,7 @@ function fillDotData(obj, groupCode, group2Code)
         %d = obj.getMinMaxData(pdid,'software',sw,'date',date,'trip',trip,'emb',emb,'grouping',groupCode,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
         d = obj.getMinMaxData(pdid,'software',sw,'date',date,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
         
+        
         % If there was no data for this parameter
         if isempty(d)
             % Throw an error so that the GUI can react and execution of this code stops
@@ -116,6 +120,9 @@ function fillDotData(obj, groupCode, group2Code)
             assignGroupDataM(obj, d, groupCode, group2Code, true);
         end
         
+        % Add the Fault Code matching data to the obg.dot object
+        obj.dot.FaultCode = d.fc;
+        
     else % ExtID ~= NaN
         % Get the SEID and ExtID
         SEID = obj.filt.SEID;
@@ -134,8 +141,11 @@ function fillDotData(obj, groupCode, group2Code)
         % Add the plotting data to the box object
         obj.dot.Data = d.DataValue;
         % Set the label for the data set that is being plotted
-        obj.dot.DataType = 'Event Driven Data';
-        % Set the group data properly based on the groupCode
+        obj.dot.DataType = 'Event Driven Data';       
+        % Add the Fault Code matching data to the obg.dot object
+        obj.dot.FaultCode = d.fc;
+        
+         % Set the group data properly based on the groupCode
         assignGroupDataE(obj, d, groupCode, group2Code);
     end
 end

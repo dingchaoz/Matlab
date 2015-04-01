@@ -1,19 +1,17 @@
-function data = getEventData(obj, SEID, varargin)
-%Pull Event Driven data from the database
-%   Pull Event Driven data from the database. Only return data the meets all of the
-%   optional specified data filters.
+function [data] = getMinMaxFCData(obj, pdid, varargin)
+%Pull MinMax data from the database
+%   Pull MinMax data from the database. Only return data the meets all of the optional
+%   specified data filters.
 %   
-%   Usage: data = getEventData(SEID, ExtID, 'property', value, ...)
-%          data = getEventData(xSEID, 'property', value, ...)
+%   Usage: data = getMinMaxData(publicDataID, property, value,...)
 %   
 %   For example,
-%   data = getMinMaxData(7613, 1, 'family', 'x1', 'software', [510001])
-%       This will return the data from SEID = 7613 and ExtID = 1 for trucks with an X1
-%       engine and software version of 510001.
+%   data = getMinMaxData(28, 'family', 'x1', 'software', [510001])
+%       This will return the data from Public Data ID = 28 (Engine_Run_Time) for trucks
+%       with an X1 engine and software of 510001.
 %   
 %   Inputs ---
-%   SEID:      System Error ID to get data for
-%   ExtID:     Extension ID of the parameter to grab
+%   pdid:      Public Data ID of the parameter
 %   varargin:  listing of properties and their values. (see below)
 %   
 %              'engfam'    Specifies the filtering based on an engine family
@@ -76,8 +74,16 @@ function data = getEventData(obj, SEID, varargin)
 %                          {'All'}         - Retrieve all columns with the data
 %                          {'col1', ...}   - Retrieve the specified columns with the data
 %   
-%              'values'    Specifies the filtering based on the value of the data point
-%                          []              - No filtering by the DataValue (Default)
+%              'valuemin'  Specifies the filtering based on the [DataMin] of the Min/Max data point
+%                          []              - No filtering by the DataMin (Default)
+%                          [NaN NaN]       - Analogous to an empty set above, no filtering
+%                          [NaN ValB]      - Keep values <= ValB
+%                          [ValA NaN]      - Keep values >= ValA
+%                          [ValA ValB]     - Keep values between ValA and ValB
+%                          [ValA NaN ValB] - Keep values <= ValA or >= ValB
+%   
+%              'valuemax'  Specifies the filtering based on the [DataMax] of the Min/Max data point
+%                          []              - No filtering by the DataMin (Default)
 %                          [NaN NaN]       - Analogous to an empty set above, no filtering
 %                          [NaN ValB]      - Keep values <= ValB
 %                          [ValA NaN]      - Keep values >= ValA
@@ -100,48 +106,21 @@ function data = getEventData(obj, SEID, varargin)
 %              %%%%%%%%%%%%%%%%%%%%%%%%%%%% Antiquated Field %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %              'grouping'  Specifies the columns of data to SELECT depending on the need
 %                          NaN             - Returns all columns (Default)
-%                          0               - Returns DataValue and CalibrationVersion
-%                          1               - Returns DataValue and TruckName
-%                          2               - Returns DataValue and Family
-%                          3               - Returns DataValue and datenum
-%                          4               - Returns DataValue only (for histograms)
+%                          0               - Returns DataMin/Max and CalibrationVersion
+%                          1               - Returns DataMin/Max and TruckName
+%                          2               - Returns DataMin/Max and Family
+%                          3               - Returns DataMin/Max and datenum
+%                          4               - Returns DataMin/Max only (for histograms)
 %   
 %   Outputs ---
 %   data:      Structure of data straight from the database toolbox
 %   
-%   Original Version - Chris Remington - April 11, 2012
-%   Revised - Chris Remington - April 24, 2012
-%     - Added ability to specify only an xSEID as opposed to requiring a SEID and ExtID
-%   Revised - Chris Remington - May 11, 2012
-%     - Changed the "absent" filtering in the software and date filters from Inf to NaN
-%     - Added method where having both software filters being a NaN results in no
-%       filtering (just like the default case with an empty set passed in)
-%   Revised - Chris Remington - September 4, 2012
-%     - Added ability to coltrol filtering data by EMBFlag and TripFlag columns
-%   Revised - Chris Remington - October 3, 2012
-%     - Added ability to input [NaN NaN] to the date parameter and have default behavior
-%   Revised - Chris Remington - October 8, 2012
-%     - Added the functionality of the 'grouping' input parameter
-%   Revised - Chris Remington - October 9, 2012
-%     - Added the 'values' property and functionality to filter return data by value
-%   Revised - Chris Remington - October 26, 2012
-%     - Added try/catch logic on the fecth command to try to reset the database
-%       connection first and attempt to fetch data again before throwing an error
-%   Revised - Chris Remington - January 30, 2014
-%     - Added the 'engfam', 'vehtype', 'vehicle', and 'rating' parameters to filter data
-%     - Added the 'fields' parameter to allow only specified columns to be selected
-%   Revised - Chris Remington - April 7, 2014
-%     - Moved to the use of tryfetch from just fetch to commonize error handling
-%   Revised - Yiyuan Chen - 2014/12/17
-%     - Modified the SQL query to fetch data from archived database as well
-%   Revised - Dingchao Zhang - March 20, 2015
-%     - Added the SQL query to fetch fault code matching data from table dbo.FC
+%   Original Version - Dingchao Zhang - March 20, 2015
     
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
     p = inputParser;
     % Add the four properties and their default falues
-    p.addOptional('ExtID', 0, @isnumeric);
     p.addParamValue('family', 'all', @ischar)%antiquated
     p.addParamValue('truck', 'all', @ischar)%antiquated
     p.addParamValue('software', [], @isnumeric)
@@ -149,7 +128,8 @@ function data = getEventData(obj, SEID, varargin)
     p.addParamValue('emb', 0, @isnumeric)
     p.addParamValue('trip', 0, @isnumeric)
     p.addParamValue('grouping', NaN, @isnumeric)%antiquated
-    p.addParamValue('values', [], @isnumeric)
+    p.addParamValue('valuemin', [], @isnumeric)
+    p.addParamValue('valuemax', [], @isnumeric)
     p.addParamValue('fields', {''}, @iscellstr)
     p.addParamValue('engfam', {''}, @iscellstr)
     p.addParamValue('vehtype', {''}, @iscellstr)
@@ -162,19 +142,17 @@ function data = getEventData(obj, SEID, varargin)
     %% Generate the start of the SELECT statement
     switch p.Results.grouping
         case 0 % Select data and software version
-            select = 'SELECT [DataValue], [CalibrationVersion]';
+            select = 'SELECT [DataMin], [DataMax], [CalibrationVersion]';
         case 1 % Select data and truck name
-            select = 'SELECT [DataValue], [TruckName]';
+            select = 'SELECT [DataMin], [DataMax], [TruckName]';
         case 2 % Select data and engine family
-            select = 'SELECT [DataValue], [Family]';
+            select = 'SELECT [DataMin], [DataMax], [Family]';
         case 3 % Select data and Matlab serial date number
-            select = 'SELECT [DataValue], [datenum]';
+            select = 'SELECT [DataMin], [DataMax], [datenum]';
         case 4 % Select only the data (for histograms)
-%             select = 'SELECT [DataValue]';
-               % have to put a second selected item for Matlab2013, otherwise it will fetch only part of the data set
-            select = 'SELECT [DataValue], [datenum]';
+            select = 'SELECT [DataMin], [DataMax]';
         otherwise % NaN or anything else, select all the columns
-            select = 'SELECT [datenum],[ECMRunTime],[DataValue],[TruckName],[Family],[CalibrationVersion]';
+            select = 'SELECT [datenum],[ECMRunTime],[DataMin],[DataMax],[TruckName],[Family],[CalibrationVersion],[ConditionID]';
     end
     
     %% Create the SELECT based on the desired fields (overrides grouping if specified)
@@ -197,42 +175,43 @@ function data = getEventData(obj, SEID, varargin)
             end
         else
             % Select everything
-            select = 'SELECT [datenum],[ECMRunTime],[DataValue],[TruckName],[Family],[TruckType],[Rating],[CalibrationVersion]';
+            select = 'SELECT [datenum],[ECMRunTime],[DataMin],[DataMax],[TruckName],[Family],[TruckType],[Rating],[CalibrationVersion],[ConditionID]';
         end
     elseif isnan(p.Results.grouping)
         % Select all the fields (Default)
-        select = 'SELECT [datenum],[ECMRunTime],[DataValue],[TruckName],[Family],[TruckType],[Rating],[CalibrationVersion]';
+        select = 'SELECT [datenum],[ECMRunTime],[DataMin],[DataMax],[TruckName],[Family],[TruckType],[Rating],[CalibrationVersion],[ConditionID]';
     end
     
     %% Generate the WHERE clause
-    where = makeWhere(SEID,p.Results);
+    where = makeWhere(pdid, p.Results);
     
     %% Fetch the data
     % Formulate the entire SQL query for Pacific with its two archived databases
     if strcmp(obj.program, 'HDPacific')
-        sql = [select ' FROM [PacificArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
-            select ' FROM [PacificArchive2].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
-            select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
+        sql = [select ' FROM [PacificArchive].[dbo].[tblMinMaxData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblMinMaxData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
+            select ' FROM [PacificArchive2].[dbo].[tblMinMaxData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblMinMaxData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
+            select ' FROM [dbo].[tblMinMaxData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblMinMaxData].[TruckID] = [tblTrucks].[TruckID] ' where];
     % Formulate the entire SQL query for Vanguard with its archived database
     elseif strcmp(obj.program, 'Vanguard')
-        sql = [select ' FROM [VanguardArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
-            select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
+        sql = [select ' FROM [VanguardArchive].[dbo].[tblMinMaxData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblMinMaxData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
+            select ' FROM [dbo].[tblMinMaxData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblMinMaxData].[TruckID] = [tblTrucks].[TruckID] ' where];
     % Formulate the entire SQL query for other prgrams
     else
-        sql = [select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
+        sql = [select ' FROM [dbo].[tblMinMaxData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblMinMaxData].[TruckID] = [tblTrucks].[TruckID] ' where ...
             ' ORDER BY [TruckName], [datenum] ASC'];
     end
-    
+         
     % Move to the use of the common tryfetch to get the data
     data = obj.tryfetch(sql,100000);
     
-    % Generate the select statement for FC matches in MinMaxFC view
+           
+    % Generate the select statement for FC matches
     
     % Create the head of the SQL query
     selectfc_head = 'SELECT DISTINCT t3.TruckName, t1.[Cal Version], t1.Date,t1.abs_time,t1.[Active Fault Code], t1.[ECM Run Time(s)], t1.TruckID, t2.*,t3.[Family],t3.[TruckType] FROM (SELECT * FROM dbo.FC';
@@ -242,12 +221,12 @@ function data = getEventData(obj, SEID, varargin)
      ' AND (ABS(t1.abs_time - t2.datenum) <= 0.5)'];
  
     % Combine the head, body, tail together to form the SQL query %
-%      if isnan(obj.dot.USL) && isnan(obj.dot.LSL)
+%    if isnan(obj.dot.USL) && isnan(obj.dot.LSL)
 %        data.fc = ([]);
    
-     if ~isnan(obj.dot.USL)
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) 'AND DataValue > ' num2str(obj.dot.USL) ' )' selectfc_tail];
+   if ~isnan(obj.filt.USL)
+       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       '(SELECT * FROM dbo.tblMinMaxData WHERE PublicDataID = ' num2str(pdid) ' AND DataMax > ' num2str(obj.filt.USL) ' )' selectfc_tail];
        % Add the FC match results to data.fc structure
        data.fc = obj.tryfetch(sql_fc,100000);
 %        try
@@ -258,32 +237,24 @@ function data = getEventData(obj, SEID, varargin)
 %            data.fc = ([]);
 %            end
 %        end
-     elseif ~isnan(obj.dot.LSL)
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) ' AND DataValue < ' num2str(obj.dot.LSL) ' )' selectfc_tail];
+   elseif ~isnan(obj.filt.LSL)
+       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       '(SELECT * FROM dbo.tblMinMaxData WHERE PublicDataID = ' num2str(pdid) ' AND DataMin < ' num2str(obj.filt.LSL) ' )' selectfc_tail];
        % Add the FC match results to data.fc structure
       data.fc = obj.tryfetch(sql_fc,100000);
         
    end
+            
     
-end
+   
+    
+end  
 
-function where = makeWhere(xseid, args)
+function where = makeWhere(pdid, args)
     % This function processses the input options and generates the proper WHERE clause
     
-    % Evaluate the xseid that was passed in 
-    if xseid > 65535 % >= 2^16
-        % Then this must be an xSEID, decompose into SEID and ExtID for the where clause
-        [seid, extid] = decomposexSEID(xseid);
-    else
-        % Either an xseid < 2^16 was passed in (meaning that the ExtID = 0, the default)
-        % Or a seid was passed in with a non-zero ExtID specified
-        seid = xseid;
-        extid = args.ExtID;
-    end
-    
     % Start the where clause with the Public Data ID
-    where = sprintf('WHERE [SEID] = %.0f And [ExtID] = %.0f',seid, extid);
+    where = sprintf('WHERE [PublicDataID] = %.0f',pdid);
     
     %% Add filtering based on the EMBFlag if needed
     if args.emb == 0
@@ -308,7 +279,6 @@ function where = makeWhere(xseid, args)
     % the TripFlag at all
     
     %% Add filtering based on the engine family desired
-    % Old Manual filtering for Pacific
     switch args.family
         case 'all' % Default, Do nothing, there should be no additional filtering for this
         case 'x1' % Filter only X1 trucks out
@@ -322,7 +292,7 @@ function where = makeWhere(xseid, args)
             where = strcat(where, ' And [Family] = ''Black''');
         otherwise
             % Throw an error as there was invalid input
-            error('Capability:getEventData:InvalidFamily','''family'' input must be either ''all'', ''x1'', ''x3'', or ''black''');
+            error('Capability:getMinMaxData:InvalidFamily','''family'' input must be either ''all'', ''x1'', ''x3'', or ''black''');
     end
     
     %% Add filtering based on the truck type desired
@@ -336,7 +306,7 @@ function where = makeWhere(xseid, args)
             where = strcat(where, ' And LEFT([TruckName],4) = ''ENG_''');
         otherwise
             % Throw an error as there was invalid input
-            error('Capability:getEventData:InvalidTruck','''truck'' input must be either ''all'', ''field'', or ''eng''');
+            error('Capability:getMinMaxData:InvalidTruck','''truck'' input must be either ''all'', ''field'', or ''eng''');
     end
     
     %% Add filtering by the date
@@ -355,7 +325,7 @@ function where = makeWhere(xseid, args)
             % else both were a NaN, don't do any filtering
             end
         else
-            error('Capability:getEventData:InvalidInput', 'Invalid input for property ''date''')
+            error('Capability:getMinMaxData:InvalidInput', 'Invalid input for property ''date''')
         end
     end
     
@@ -391,30 +361,53 @@ function where = makeWhere(xseid, args)
                 
             % Too many software filters specified
             otherwise 
-                error('Capability:getEventData:InvalidInput', 'Invalid input for property ''software''')
+                error('Capability:getMinMaxData:InvalidInput', 'Invalid input for property ''software''')
         end
     end
     
-    %% Add filtering by the data value itself
+    %% Add filtering by the DataMin value itself
     % If the input is not an empty set (the default to indicate no value filtering)
-    if ~isempty(args.values)
-        switch length(args.values)
+    if~isempty(args.valuemin)
+        switch length(args.valuemin)
             case 2 % There were two entries specified
-                if isnan(args.values(1)) && ~isnan(args.values(2))
+                if isnan(args.valuemin(1)) && ~isnan(args.valuemin(2))
                     % Filtering by values smaller than ValB
-                    where = sprintf('%s And [DataValue] <= %g',where,args.values(2));
-                elseif ~isnan(args.values(1)) && isnan(args.values(2))
+                    where = sprintf('%s And [DataMin] <= %g',where,args.valuemin(2));
+                elseif ~isnan(args.valuemin(1)) && isnan(args.valuemin(2))
                     % Filtering by values larger than ValA
-                    where = sprintf('%s And [DataValue] >= %g',where,args.values(1));
-                elseif ~isnan(args.values(1)) && ~isnan(args.values(2))
+                    where = sprintf('%s And [DataMin] >= %g',where,args.valuemin(1));
+                elseif ~isnan(args.valuemin(1)) && ~isnan(args.valuemin(2))
                     % Filtering by values between ValA and ValB
-                    where = sprintf('%s And [DataValue] Between %g And %g',where,args.values(1),args.values(2));
+                    where = sprintf('%s And [DataMin] Between %g And %g',where,args.valuemin(1),args.valuemin(2));
                 end % else both NaN, don't do any filtering either
             case 3 % There were three entries specified
                 % Filtering by values smaller than ValA and greater than ValB
-                where = sprintf('%s And ([DataValue] <= %g Or [DataValue] >= %g)',where,args.values(1),args.values(3));
+                where = sprintf('%s And ([DataMin] <= %g Or [DataMin] >= %g)',where,args.valuemin(1),args.valuemin(3));
             otherwise
-                error('Capability:getEventData:InvalidInput', 'Invalid input for property ''values''')
+                error('Capability:getMinMaxData:InvalidInput', 'Invalid input for property ''valuemin''')
+        end
+    end
+    
+    %% Add filtering by the DataMax value itself
+    % If the input is not an empty set (the default to indicate no value filtering)
+    if~isempty(args.valuemax)
+        switch length(args.valuemax)
+            case 2 % There were two entries specified
+                if isnan(args.valuemax(1)) && ~isnan(args.valuemax(2))
+                    % Filtering by values smaller than ValB
+                    where = sprintf('%s And [DataMax] <= %g',where,args.valuemax(2));
+                elseif ~isnan(args.valuemax(1)) && isnan(args.valuemax(2))
+                    % Filtering by values larger than ValA
+                    where = sprintf('%s And [DataMax] >= %g',where,args.valuemax(1));
+                elseif ~isnan(args.valuemax(1)) && ~isnan(args.valuemax(2))
+                    % Filtering by values between ValA and ValB
+                    where = sprintf('%s And [DataMax] Between %g And %g',where,args.valuemax(1),args.valuemax(2));
+                end % else both NaN, don't do any filtering either
+            case 3 % There were three entries specified
+                % Filtering by values smaller than ValA and greater than ValB
+                where = sprintf('%s And ([DataMax] <= %g Or [DataMax] >= %g)',where,args.valuemax(1),args.valuemax(3));
+            otherwise
+                error('Capability:getMinMaxData:InvalidInput', 'Invalid input for property ''valuemax''')
         end
     end
     
@@ -506,12 +499,4 @@ function where = makeWhere(xseid, args)
         % No filtering is needed for 'All' vehicles
     end
     
-end
-
-function [seid, extid] = decomposexSEID(xSEID)
-% Decompese the xSEID into separate SEID and ExtID parts
-    % Pull the ExtID off the front of the bytes (shift 2 bytes right)
-    extid = floor(xSEID/65536);
-    % Use the result to get back the SEID
-    seid = xSEID - extid*65536;
 end
