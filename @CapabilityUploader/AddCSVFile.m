@@ -85,6 +85,8 @@ function AddCSVFile(obj, fullFileName, truckID)
 %       - Added the feature of processing DPF_TOO_FREQUENT_REGEN_ERR when uploading its capability data
 %   Revised - Yiyuan Chen - 2015/03/25
 %       - Added the feature of processing DOSER_USEDUP_DFM_ERR when uploading its capability data
+%   Revised - Yiyuan Chen - 2015/04/05
+%       - Added the feature of processing some more special diagnostics when uploading its capability data
 
     %% Prerequisite Code
     % Get the name of the truckID to ensure that its a valid truck
