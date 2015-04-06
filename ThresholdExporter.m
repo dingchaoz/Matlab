@@ -141,7 +141,7 @@ yukonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calb
 exportThresholds(r,l,fullfile(yukonRoot,'MY16\L450'),'Yukon','Default','BDO')
 % Yukon Dragnet_L (use the L450 family)
 exportThresholds(r,l,fullfile(yukonRoot,'MY15\L450'),'Yukon','Dragnet_L','BDO')
-% Yukon Dragnet_L (use the L450 family)
+% Yukon Dragnet_L_16 (use the L450 family)
 exportThresholds(r,l,fullfile(yukonRoot,'MY16\L450'),'Yukon','Dragnet_L_16','BDO')
 % Plain Yukon  (should update this to use a current product calibration)
 exportThresholds(r,l,fullfile(yukonRoot,'MY15\L450'),'Yukon','Yukon','BDO')

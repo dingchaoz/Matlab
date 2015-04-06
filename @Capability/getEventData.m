@@ -134,6 +134,8 @@ function data = getEventData(obj, SEID, varargin)
 %     - Moved to the use of tryfetch from just fetch to commonize error handling
 %   Revised - Yiyuan Chen - 2014/12/17
 %     - Modified the SQL query to fetch data from archived database as well
+%   Revised - Yiyuan Chen - 2015/04/05
+%     - Modified the SQL query to fetch data from Acadia's archived database as well
     
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
@@ -217,6 +219,12 @@ function data = getEventData(obj, SEID, varargin)
     % Formulate the entire SQL query for Vanguard with its archived database
     elseif strcmp(obj.program, 'Vanguard')
         sql = [select ' FROM [VanguardArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
+            select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
+    % Formulate the entire SQL query for Acadia with its archived database
+    elseif strcmp(obj.program, 'Acadia')
+        sql = [select ' FROM [AcadiaArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
             select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
