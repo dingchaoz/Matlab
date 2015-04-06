@@ -399,7 +399,7 @@ function AddCSVFile(obj, fullFileName, truckID)
             eventDecoded(writeIdxEvent,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, ExtID, decodedData, cal, truckID, 0, 0};
             
             % Execute extra processings for some special diagnostics
-            if writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==3036 && cell2mat(eventDecoded(writeIdxEvent-1,3))==3036 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.00001
+            if writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==3036 && cell2mat(eventDecoded(writeIdxEvent-1,3))==3036 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.000005
                 % Generate an extra parameter for DPF_INCOMPLETE_REGEN_ERR & add 1 more line to the eventDecoded cell array
                 % Calculate the difference between the 2 capability parameters
                 % Add the difference value to the eventDecoded cell array, with a fake extID
@@ -433,6 +433,27 @@ function AddCSVFile(obj, fullFileName, truckID)
                 if (ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1) || (ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==0)
                     prodData = decodedData * cell2mat(eventDecoded(writeIdxEvent-1,5));
                     eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, prodData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                else % Increment the writeIdxEvent
+                    writeIdxEvent = writeIdxEvent + 1;
+                end
+            elseif writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==1752 && cell2mat(eventDecoded(writeIdxEvent-1,3))==1752 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.000005
+                % Similarly process for DPF_NOT_PRESENT_ERR
+                if ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1
+                    diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                elseif ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==0
+                    diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                elseif ExtID==2 && cell2mat(eventDecoded(writeIdxEvent-1,4))==3
+                    diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 8, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                elseif ExtID==3 && cell2mat(eventDecoded(writeIdxEvent-1,4))==2
+                    diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 8, diffData, cal, truckID, 0, 0};
                     writeIdxEvent = writeIdxEvent + 2;
                 else % Increment the writeIdxEvent
                     writeIdxEvent = writeIdxEvent + 1;
