@@ -101,9 +101,9 @@ function UploadMDLInfoCapDB(fileName)
     %% Define MDL mapping to use for each engine program of MDL data
     
 Programs = {'Dragnet X1 2016','Dragnet B 2016','Dragnet PU 2016','Dragnet CC 2016','Dragnet L 2016','Nighthawk',...
-    'Vanguard','Ventura','Pele/Zico','Acadia X1'};
+    'Vanguard','Ventura','Pele/Zico','Acadia X1','Ayrton'};
 Database = {'Pacific','DragonMR','Seahawk','DragonCC','Yukon','Nighthawk',...
-    'Vanguard','Ventura','Pele','Acadia'};
+    'Vanguard','Ventura','Pele','Acadia','Ayrton'};
 [~,s] = size(Programs);
 for count = 1:s
     a = cellfun(@(x) strcmp(Programs{count},x), raw(1,:));
