@@ -17,6 +17,11 @@ Atlantic = CapabilityUploader('Atlantic');
 Atlantic.dataUploader;
 clear Atlantic
 
+% Work on Ayrton
+Ayrton = CapabilityUploader('Ayrton');
+Ayrton.dataUploader;
+clear Ayrton
+
 % Work on Mamba
 Mamba = CapabilityUploader('Mamba');
 Mamba.dataUploader;

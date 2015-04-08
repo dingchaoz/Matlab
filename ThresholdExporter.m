@@ -164,6 +164,19 @@ exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B325_MHP'),'Nighthawk','Nighth
 % Nighthawk_HHP (use the B360 family)
 exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B360_HHP'),'Nighthawk','Nighthawk_HHP','BGU')
 
+%% Ayrton
+% Ayrton Root
+AyrtonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\MR_Worldwide_2\Ayrton';
+% Ayrton 
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Default','BGU')
+% Nighthawk_LHP 
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton','Ayrton_96KW_GAZ','BGU')
+% Nighthawk_MHP 
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_120 kW GAZ'),'Ayrton','Ayrton_120KW_GAZ','BGU')
+% Nighthawk_HHP 
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_130 kW FOTON'),'Ayrton','Ayrton_130KW_FOTON','BGU')
+
+
 %% Vanguard
 % Vanguard Root
 % vanguardRoot = '\\CIDCSDFS01\EBU_Data01$\NACEPx\LDD Test Data\Calibrations3230\Vanguard\In Progress';
