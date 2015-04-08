@@ -33,6 +33,9 @@ function fillDotData(obj, groupCode, group2Code)
 %     - Added functionality to plot the second grouping if desired
 %   Revised -Dingchao Zhang - March 20, 2015
 % Add the Fault Code matching data to the obg.dot object
+%   Revised -Dingchao Zhang - April 6, 2015
+% Add the Fault Code group data to the obg.dot.FaultCode.GroupData, 
+% GroupOrder,Group2Data, Group2Order objects if required by grouping
  
     
     % Pull out the filtering values from the filt structure
@@ -160,23 +163,32 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
             % Need to convert these to individual strings because software over 100000
             % causes %g to output group names in scientific notation confusing boxplot
             obj.dot.GroupData = cellstr(num2str(d.CalibrationVersion,'%.0f'));
+            obj.dot.FaultCode.GroupData = cellstr(num2str(obj.dot.FaultCode.CalVersion,'%.0f'));
             % Set the group data to be the calibration version
             %obj.dot.GroupData = d.CalibrationVersion;
             % Set the group order and labels to their default
             obj.dot.Labels = [];
             obj.dot.GroupOrder = [];
+            obj.dot.FaultCode.GroupOrder = [];
+            obj.dot.FaultCode.Labels = [];
         case 1 % Group data by truck name
             % Set the group data to be the truck name
             obj.dot.GroupData = d.TruckName;
+            obj.dot.FaultCode.GroupData = obj.dot.FaultCode.TruckName;
             % Set the group order and labels to their default
             obj.dot.Labels = [];
             obj.dot.GroupOrder = [];
+            obj.dot.FaultCode.GroupOrder = [];
+            obj.dot.FaultCode.Labels = [];
         case 2 % Group data by family
             % Set the group data to be the family
             obj.dot.GroupData = d.Family;
+            obj.dot.FaultCode.GroupData = obj.dot.FaultCode.Family;
             % Set the group order and labels to their default
             obj.dot.Labels = [];
             obj.dot.GroupOrder = [];
+            obj.dot.FaultCode.GroupOrder = [];
+            obj.dot.FaultCode.Labels = [];
         case 3 % Group data by month
             %%% This was the old method, simple to understand, but took forever
             % Set the group data to be a string generated from the timestamp that
@@ -186,17 +198,22 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
             %%% Below is way faster than the above, but it is quite complex and obscure
             % Calculate the date vectors of all the serial date numbers
             vecs = datevec(d.datenum);
+            fcvecs = datevec(obj.dot.FaultCode.datenum);
             % Calculate a unique number calculation based on the month and year, this will
             % be the group value for each individual data point
             obj.dot.GroupData = cellstr(num2str(vecs(:,1)+vecs(:,2)/20,'%.2f'));
+            obj.dot.FaultCode.GroupData = cellstr(num2str(fcvecs(:,1)+fcvecs(:,2)/20,'%.2f'));
             % Get the unique month and year combinations
             obj.dot.GroupOrder = flipud(unique(obj.dot.GroupData));
+            obj.dot.FaultCode.GroupOrder = flipud(unique(obj.dot.FaultCode.GroupData));
             % Flush those out to fake date vectors
             uniqueYearMonthCalc = flipud(unique(vecs(:,1)+vecs(:,2)/20));
+            fcuniqueYearMonthCalc = flipud(unique(fcvecs(:,1)+fcvecs(:,2)/20));
             labelDateVecs = [floor(uniqueYearMonthCalc) round(mod(uniqueYearMonthCalc,1)*20) ones(length(uniqueYearMonthCalc),4)];
+            fclabelDateVecs = [floor(fcuniqueYearMonthCalc) round(mod(fcuniqueYearMonthCalc,1)*20) ones(length(fcuniqueYearMonthCalc),4)];
             % Pull the result in to make the text label strings
             obj.dot.Labels = strcat(cellstr(datestr(labelDateVecs, 'mmmm')),cellstr(datestr(labelDateVecs, ' yyyy')));
-            
+            obj.dot.FaultCode.Labels = strcat(cellstr(datestr(fclabelDateVecs, 'mmmm')),cellstr(datestr(fclabelDateVecs, ' yyyy')));
             % As a side note, this fcn will give you unqie year/month combinations
             % unique(vecs(:,1:2), 'rows')
     end
@@ -206,27 +223,39 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
             obj.dot.Group2Data = [];
             obj.dot.Labels2 = [];
             obj.dot.Group2Order = [];
+            obj.dot.FaultCode.Group2Data = [];
+            obj.dot.FaultCode.Group2Order = [];
+            obj.dot.FaultCode.Labels2 = [];
         case 0 % Group data by software version
             % Need to convert these to individual strings because software over 100000
             % causes %g to output group names in scientific notation confusing boxplot
             obj.dot.Group2Data = cellstr(num2str(d.CalibrationVersion,'%.0f'));
+            obj.dot.FaultCode.Group2Data = cellstr(num2str(obj.dot.FaultCode.CalVersion,'%.0f'));
             % Set the group data to be the calibration version
             %obj.dot.GroupData = d.CalibrationVersion;
             % Set the group order and labels to their default
             obj.dot.Labels2 = [];
             obj.dot.Group2Order = [];
+            obj.dot.FaultCode.Group2Order = [];
+            obj.dot.FaultCode.Labels2 = [];
         case 1 % Group data by truck name
             % Set the group data to be the truck name
             obj.dot.Group2Data = d.TruckName;
+            obj.dot.FaultCode.Group2Data = obj.dot.FaultCode.TruckName;
             % Set the group order and labels to their default
             obj.dot.Labels2 = [];
             obj.dot.Group2Order = [];
+            obj.dot.FaultCode.Group2Order = [];
+            obj.dot.FaultCode.Labels2 = [];
         case 2 % Group data by family
             % Set the group data to be the family
             obj.dot.Group2Data = d.Family;
+            obj.dot.FaultCode.Group2Data = obj.dot.FaultCode.Family;
             % Set the group order and labels to their default
             obj.dot.Labels2 = [];
             obj.dot.Group2Order = [];
+            obj.dot.FaultCode.Group2Order = [];
+            obj.dot.FaultCode.Labels2 = [];
         case 3 % Group data by month
             %%% This was the old method, simple to understand, but took forever
             % Set the group data to be a string generated from the timestamp that
@@ -236,16 +265,22 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
             %%% Below is way faster than the above, but it is quite complex and obscure
             % Calculate the date vectors of all the serial date numbers
             vecs = datevec(d.datenum);
+            fcvecs = datevec(obj.dot.FaultCode.datenum);
             % Calculate a unique number calculation based on the month and year, this will
             % be the group value for each individual data point
             obj.dot.Group2Data = cellstr(num2str(vecs(:,1)+vecs(:,2)/20,'%.2f'));
+            obj.dot.FaultCode.Group2Data = cellstr(num2str(fcvecs(:,1)+fcvecs(:,2)/20,'%.2f'));
             % Get the unique month and year combinations
             obj.dot.Group2Order = flipud(unique(obj.dot.Group2Data));
+            obj.dot.FaultCode.Group2Order = flipud(unique(obj.dot.FaultCode.Group2Data));
             % Flush those out to fake date vectors
             uniqueYearMonthCalc = flipud(unique(vecs(:,1)+vecs(:,2)/20));
+            fcuniqueYearMonthCalc = flipud(unique(fcvecs(:,1)+fcvecs(:,2)/20));
             labelDateVecs = [floor(uniqueYearMonthCalc) round(mod(uniqueYearMonthCalc,1)*20) ones(length(uniqueYearMonthCalc),4)];
+            fclabelDateVecs = [floor(fcuniqueYearMonthCalc) round(mod(fcuniqueYearMonthCalc,1)*20) ones(length(fcuniqueYearMonthCalc),4)];
             % Pull the result in to make the text label strings
             obj.dot.Labels2 = strcat(cellstr(datestr(labelDateVecs, 'mmmm')),cellstr(datestr(labelDateVecs, ' yyyy')));
+            obj.dot.FaultCode.Labels2 = strcat(cellstr(datestr(fclabelDateVecs, 'mmmm')),cellstr(datestr(fclabelDateVecs, ' yyyy')));
             
             % As a side note, this fcn will give you unqie year/month combinations
             % unique(vecs(:,1:2), 'rows')

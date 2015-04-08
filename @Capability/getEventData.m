@@ -244,7 +244,8 @@ function data = getEventData(obj, SEID, varargin)
     % Combine the head, body, tail together to form the SQL query %
 %      if isnan(obj.dot.USL) && isnan(obj.dot.LSL)
 %        data.fc = ([]);
-   
+  % Proceed to fetch fault code data only when capability data is not empty
+   if ~isempty(data)
      if ~isnan(obj.dot.USL)
        sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
        '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) 'AND DataValue > ' num2str(obj.dot.USL) ' )' selectfc_tail];
@@ -264,6 +265,7 @@ function data = getEventData(obj, SEID, varargin)
        % Add the FC match results to data.fc structure
       data.fc = obj.tryfetch(sql_fc,100000);
         
+     end
    end
     
 end
