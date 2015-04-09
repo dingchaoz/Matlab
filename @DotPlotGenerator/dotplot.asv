@@ -107,7 +107,9 @@ function separationLines = dotplot(obj,data,group,groupOrder,groupLabels,group2,
         end
     end
     
-  
+    %Initiate the fault code data array
+    fcdata = [];
+    
     %Assign the fault code data values
     
     if ~isempty(obj.FaultCode.GroupData)
@@ -124,12 +126,7 @@ function separationLines = dotplot(obj,data,group,groupOrder,groupLabels,group2,
                 fcdata = obj.FaultCode.DataMax;
             end
        end
-    else
-         %Initiate the fault code data array
-        fcdata = [];
-    end
-    
-        
+   
    % If fault code data is not empty
    if ~isempty(fcdata)
     % Assign the fault code group data 

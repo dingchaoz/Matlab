@@ -301,8 +301,6 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
             if ~isempty(obj.dot.FaultCode)
               obj.dot.FaultCode.Group2Data = obj.dot.FaultCode.Family;
             else 
-               obj.dot.FaultCode.Group2Data =[];
-            end
             % Set the group order and labels to their default
             obj.dot.Labels2 = [];
             obj.dot.Group2Order = [];
@@ -314,49 +312,28 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
             % indicates the month that data was logged in
             %obj.dot.Group2Data = cellstr([datestr(d.datenum, 'yy-mm_') datestr(d.datenum, 'mmmm yyyy')]);
             
-                  %%% Below is way faster than the above, but it is quite complex and obscure
+            %%% Below is way faster than the above, but it is quite complex and obscure
             % Calculate the date vectors of all the serial date numbers
             vecs = datevec(d.datenum);
-            if ~isempty(obj.dot.FaultCode)
-               fcvecs = datevec(obj.dot.FaultCode.datenum);
-            else
-                fcvecs  =[];
-            end
+            fcvecs = datevec(obj.dot.FaultCode.datenum);
             % Calculate a unique number calculation based on the month and year, this will
             % be the group value for each individual data point
             obj.dot.Group2Data = cellstr(num2str(vecs(:,1)+vecs(:,2)/20,'%.2f'));
-            if ~isempty(fcvecs)
-              obj.dot.FaultCode.Group2Data = cellstr(num2str(fcvecs(:,1)+fcvecs(:,2)/20,'%.2f'));
-            else 
-              obj.dot.FaultCode.Group2Data = [];
-            end
+            obj.dot.FaultCode.Group2Data = cellstr(num2str(fcvecs(:,1)+fcvecs(:,2)/20,'%.2f'));
             % Get the unique month and year combinations
             obj.dot.Group2Order = flipud(unique(obj.dot.Group2Data));
-            if ~isempty(obj.dot.FaultCode.Group2Data)
-              obj.dot.FaultCode.Group2Order = flipud(unique(obj.dot.FaultCode.Group2Data));
-            else
-              obj.dot.FaultCode.Group2Order = [];
-            end
+            obj.dot.FaultCode.Group2Order = flipud(unique(obj.dot.FaultCode.Group2Data));
             % Flush those out to fake date vectors
             uniqueYearMonthCalc = flipud(unique(vecs(:,1)+vecs(:,2)/20));
-            if ~isempty(fcvecs)
-              fcuniqueYearMonthCalc = flipud(unique(fcvecs(:,1)+fcvecs(:,2)/20));
-            else
-              fcuniqueYearMonthCalc = [];
-            end
+            fcuniqueYearMonthCalc = flipud(unique(fcvecs(:,1)+fcvecs(:,2)/20));
             labelDateVecs = [floor(uniqueYearMonthCalc) round(mod(uniqueYearMonthCalc,1)*20) ones(length(uniqueYearMonthCalc),4)];
-            if ~isempty(fcuniqueYearMonthCalc)
-              fclabelDateVecs = [floor(fcuniqueYearMonthCalc) round(mod(fcuniqueYearMonthCalc,1)*20) ones(length(fcuniqueYearMonthCalc),4)];
-            else
-              fclabelDateVecs = [];
-            end
+            fclabelDateVecs = [floor(fcuniqueYearMonthCalc) round(mod(fcuniqueYearMonthCalc,1)*20) ones(length(fcuniqueYearMonthCalc),4)];
             % Pull the result in to make the text label strings
             obj.dot.Labels2 = strcat(cellstr(datestr(labelDateVecs, 'mmmm')),cellstr(datestr(labelDateVecs, ' yyyy')));
-            if ~isempty(fclabelDateVecs)
-              obj.dot.FaultCode.Labels2 = strcat(cellstr(datestr(fclabelDateVecs, 'mmmm')),cellstr(datestr(fclabelDateVecs, ' yyyy')));
-            else
-              obj.dot.FaultCode.Labels2 = [];
-            end
+            obj.dot.FaultCode.Labels2 = strcat(cellstr(datestr(fclabelDateVecs, 'mmmm')),cellstr(datestr(fclabelDateVecs, ' yyyy')));
+            
+            % As a side note, this fcn will give you unqie year/month combinations
+            % unique(vecs(:,1:2), 'rows')
     end
 end
 

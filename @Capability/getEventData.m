@@ -240,6 +240,9 @@ function data = getEventData(obj, SEID, varargin)
     % Create the tail of the SQL query
     selectfc_tail = ['AS t2 ON t1.[Cal Version] = t2.CalibrationVersion AND t1.TruckID = t2.TruckID LEFT JOIN dbo.tbltrucks AS t3 ON t1.[Truck Name] = t3.TruckName ' where ...        
      ' AND (ABS(t1.abs_time - t2.datenum) <= 0.5)'];
+    
+    % Initiate array to hold fault code data
+    data.fc = [];
  
     % Combine the head, body, tail together to form the SQL query %
 %      if isnan(obj.dot.USL) && isnan(obj.dot.LSL)
