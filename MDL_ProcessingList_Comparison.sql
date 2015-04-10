@@ -1,5 +1,5 @@
 /* This script compares the MDL with the processing list and outputs the list of diagnostics that are required 
-per the MDL but is not listed in the MDL*/
+per the MDL but is not listed in the processing list*/
 select * from
 
 (select * from
