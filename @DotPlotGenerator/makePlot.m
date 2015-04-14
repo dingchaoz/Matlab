@@ -324,8 +324,12 @@ function makePlot(obj, visible)
         FC_count = length(unique(obj.FaultCode.Date));
     end
     xText = [xText {sprintf('FaultCode Instances: %.0f',FC_count)}];
+
     % Set the actual strings to the xlabel
     xlabel(xText,'FontSize',13);
+%     xText2 = 'test';
+%     xlabel(xText2,'FontSize',13,'Color','r');
+    
     
     %% Nested Functions
     % Nested function which will calculate the number of failure data-points

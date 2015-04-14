@@ -84,9 +84,16 @@ function fillDotData(obj, groupCode, group2Code)
         
         
         % If there was no data for this parameter
-        if isempty(d)
+        if ~isfield(d,'DataMax')&& ~isfield(d,'DataMin')
             % Throw an error so that the GUI can react and execution of this code stops
             error('Capability:fillDotData:NoDataFound', 'No data found for the specified filtering conditions.');
+        end
+        
+        % Add the Fault Code matching data to the obg.dot object
+        if ~isempty(d.fc)
+          obj.dot.FaultCode = d.fc;
+        else
+          obj.dot.FaultCode = [];
         end
         
         % If no thresholds are specified, plot Min and Max data
@@ -123,9 +130,7 @@ function fillDotData(obj, groupCode, group2Code)
             assignGroupDataM(obj, d, groupCode, group2Code, true);
         end
         
-        % Add the Fault Code matching data to the obg.dot object
-        obj.dot.FaultCode = d.fc;
-        
+     
     else % ExtID ~= NaN
         % Get the SEID and ExtID
         SEID = obj.filt.SEID;
@@ -136,7 +141,7 @@ function fillDotData(obj, groupCode, group2Code)
         d = obj.getEventData(SEID,ExtID,'software',sw,'date',date,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
         
         % If there was no data for this parameter
-        if isempty(d)
+        if ~isfield(d,'DataValue')
             % Throw an error so that the GUI can react and execution of this code stops
             error('Capability:fillDotData:NoDataFound', 'No data found for the specified filtering conditions.');
         end
@@ -270,7 +275,7 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
             % Need to convert these to individual strings because software over 100000
             % causes %g to output group names in scientific notation confusing boxplot
             obj.dot.Group2Data = cellstr(num2str(d.CalibrationVersion,'%.0f'));
-            if ~isempty(obj.dot.FaultCode)
+            if ~isempty(obj.dot.FaultCode.GroupData)
               obj.dot.FaultCode.Group2Data = cellstr(num2str(obj.dot.FaultCode.CalVersion,'%.0f'));
             else
               obj.dot.FaultCode.Group2Data = [];
@@ -285,7 +290,7 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
         case 1 % Group data by truck name
             % Set the group data to be the truck name
             obj.dot.Group2Data = d.TruckName;
-            if ~isempty(obj.dot.FaultCode)
+            if ~isempty(obj.dot.FaultCode.GroupData)
               obj.dot.FaultCode.Group2Data = obj.dot.FaultCode.TruckName;
             else
               obj.dot.FaultCode.Group2Data = [];
@@ -298,7 +303,7 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
         case 2 % Group data by family
             % Set the group data to be the family
             obj.dot.Group2Data = d.Family;
-            if ~isempty(obj.dot.FaultCode)
+            if ~isempty(obj.dot.FaultCode.GroupData)
               obj.dot.FaultCode.Group2Data = obj.dot.FaultCode.Family;
             else 
                obj.dot.FaultCode.Group2Data =[];
@@ -317,7 +322,7 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
                   %%% Below is way faster than the above, but it is quite complex and obscure
             % Calculate the date vectors of all the serial date numbers
             vecs = datevec(d.datenum);
-            if ~isempty(obj.dot.FaultCode)
+            if ~isempty(obj.dot.FaultCode.GroupData)
                fcvecs = datevec(obj.dot.FaultCode.datenum);
             else
                 fcvecs  =[];
@@ -371,23 +376,44 @@ function assignGroupDataM(obj, d, groupCode, group2Code, double)
             % Need to convert these to individual strings because software over 100000
             % causes %g to output group names in scientific notation confusing boxplot
             obj.dot.GroupData = cellstr(num2str(d.CalibrationVersion,'%.0f'));
+            if ~isempty(obj.dot.FaultCode)
+              obj.dot.FaultCode.GroupData = cellstr(num2str(obj.dot.FaultCode.CalVersion,'%.0f'));
+            else
+              obj.dot.FaultCode.GroupData = [];
+            end
             % Set the group data to be the calibration version
             %obj.dot.GroupData = d.CalibrationVersion;
             % Set the group order and labels to their default
             obj.dot.Labels = [];
             obj.dot.GroupOrder = [];
+            obj.dot.FaultCode.GroupOrder = [];
+            obj.dot.FaultCode.Labels = [];
         case 1 % Group data by truck name
             % Set the group data to be the truck name
             obj.dot.GroupData = d.TruckName;
+            if ~isempty(obj.dot.FaultCode)
+               obj.dot.FaultCode.GroupData = obj.dot.FaultCode.TruckName;
+            else
+               obj.dot.FaultCode.GroupData = [];
+            end
             % Set the group order and labels to their default
             obj.dot.Labels = [];
             obj.dot.GroupOrder = [];
+            obj.dot.FaultCode.GroupOrder = [];
+            obj.dot.FaultCode.Labels = [];
         case 2 % Group data by family
             % Set the group data to be the family
             % Set the group order and labels to their default
             obj.dot.Labels = [];
             obj.dot.GroupOrder = [];
+            obj.dot.FaultCode.GroupOrder = [];
+            obj.dot.FaultCode.Labels = [];
             obj.dot.GroupData = d.Family;
+            if ~isempty(obj.dot.FaultCode)
+               obj.dot.FaultCode.GroupData = obj.dot.FaultCode.Family;
+            else
+               obj.dot.FaultCode.GroupData = [];
+            end
         case 3 % Group data by month
 %             % Set the group data to be a string generated from the timestamp that
 %             % indicates the month that data was logged in
@@ -400,15 +426,45 @@ function assignGroupDataM(obj, d, groupCode, group2Code, double)
             %%% Below is way faster than the above, but it is quite complex and obscure
             % Calculate the date vectors of all the serial date numbers
             vecs = datevec(d.datenum);
+            if ~isempty(obj.dot.FaultCode)
+               fcvecs = datevec(obj.dot.FaultCode.datenum);
+            else
+                fcvecs  =[];
+            end
             % Calculate a unique number calculation based on the month and year, this will
             % be the group value for each individual data point
             obj.dot.GroupData = cellstr(num2str(vecs(:,1)+vecs(:,2)/20,'%.2f'));
+            if ~isempty(fcvecs)
+              obj.dot.FaultCode.GroupData = cellstr(num2str(fcvecs(:,1)+fcvecs(:,2)/20,'%.2f'));
+            else 
+              obj.dot.FaultCode.GroupData = [];
+            end
             % Get the unique month and year combinations and flip their order
             obj.dot.GroupOrder = flipud(unique(obj.dot.GroupData));
+            if ~isempty(obj.dot.FaultCode.GroupData)
+              obj.dot.FaultCode.GroupOrder = flipud(unique(obj.dot.FaultCode.GroupData));
+            else
+              obj.dot.FaultCode.GroupOrder = [];
+            end
             % Flush those out to fake date vectors
             uniqueYearMonthCalc = flipud(unique(vecs(:,1)+vecs(:,2)/20));
+            if ~isempty(fcvecs)
+              fcuniqueYearMonthCalc = flipud(unique(fcvecs(:,1)+fcvecs(:,2)/20));
+            else
+              fcuniqueYearMonthCalc = [];
+            end
             labelDateVecs = [floor(uniqueYearMonthCalc) round(mod(uniqueYearMonthCalc,1)*20) ones(length(uniqueYearMonthCalc),4)];
+            if ~isempty(fcuniqueYearMonthCalc)
+              fclabelDateVecs = [floor(fcuniqueYearMonthCalc) round(mod(fcuniqueYearMonthCalc,1)*20) ones(length(fcuniqueYearMonthCalc),4)];
+            else
+              fclabelDateVecs = [];
+            end
             % Pull the result in to make the text label strings
+            if ~isempty(fclabelDateVecs)
+              obj.dot.FaultCode.Labels = strcat(cellstr(datestr(fclabelDateVecs, 'mmmm')),cellstr(datestr(fclabelDateVecs, ' yyyy')));
+            else
+              obj.dot.FaultCode.Labels = [];
+            end
             obj.dot.Labels = strcat(cellstr(datestr(labelDateVecs, 'mmmm')),cellstr(datestr(labelDateVecs, ' yyyy')));
     end
     
@@ -418,6 +474,9 @@ function assignGroupDataM(obj, d, groupCode, group2Code, double)
             obj.dot.Group2Data = [];
             obj.dot.Labels2 = [];
             obj.dot.Group2Order = [];
+            obj.dot.FaultCode.Group2Data = [];
+            obj.dot.FaultCode.Group2Order = [];
+            obj.dot.FaultCode.Labels2 = [];
         case 0 % Group data by software version
             % Need to convert these to individual strings because software over 100000
             % causes %g to output group names in scientific notation confusing boxplot
@@ -427,18 +486,39 @@ function assignGroupDataM(obj, d, groupCode, group2Code, double)
             % Set the group order and labels to their default
             obj.dot.Labels2 = [];
             obj.dot.Group2Order = [];
+            obj.dot.FaultCode.Group2Order = [];
+            obj.dot.FaultCode.Labels2 = [];
+            if ~isempty(obj.dot.FaultCode.GroupData)
+              obj.dot.FaultCode.Group2Data = cellstr(num2str(obj.dot.FaultCode.CalVersion,'%.0f'));
+            else
+              obj.dot.FaultCode.Group2Data = [];
+            end
         case 1 % Group data by truck name
             % Set the group data to be the truck name
             obj.dot.Group2Data = d.TruckName;
+            if ~isempty(obj.dot.FaultCode.GroupData)
+              obj.dot.FaultCode.Group2Data = obj.dot.FaultCode.TruckName;
+            else
+              obj.dot.FaultCode.Group2Data = [];
+            end
             % Set the group order and labels to their default
             obj.dot.Labels2 = [];
             obj.dot.Group2Order = [];
+            obj.dot.FaultCode.Group2Order = [];
+            obj.dot.FaultCode.Labels2 = [];
         case 2 % Group data by family
             % Set the group data to be the family
             % Set the group order and labels to their default
             obj.dot.Labels2 = [];
             obj.dot.Group2Order = [];
+            obj.dot.FaultCode.Group2Order = [];
+            obj.dot.FaultCode.Labels2 = [];
             obj.dot.Group2Data = d.Family;
+            if ~isempty(obj.dot.FaultCode.GroupData)
+              obj.dot.FaultCode.Group2Data = obj.dot.FaultCode.Family;
+            else 
+               obj.dot.FaultCode.Group2Data =[];
+            end
         case 3 % Group data by month
 %             % Set the group data to be a string generated from the timestamp that
 %             % indicates the month that data was logged in
@@ -451,15 +531,45 @@ function assignGroupDataM(obj, d, groupCode, group2Code, double)
             %%% Below is way faster than the above, but it is quite complex and obscure
             % Calculate the date vectors of all the serial date numbers
             vecs = datevec(d.datenum);
+            if ~isempty(obj.dot.FaultCode.GroupData)
+               fcvecs = datevec(obj.dot.FaultCode.datenum);
+            else
+                fcvecs  =[];
+            end
             % Calculate a unique number calculation based on the month and year, this will
             % be the group value for each individual data point
             obj.dot.Group2Data = cellstr(num2str(vecs(:,1)+vecs(:,2)/20,'%.2f'));
+            if ~isempty(fcvecs)
+              obj.dot.FaultCode.Group2Data = cellstr(num2str(fcvecs(:,1)+fcvecs(:,2)/20,'%.2f'));
+            else 
+              obj.dot.FaultCode.Group2Data = [];
+            end
             % Get the unique month and year combinations and flip their order
             obj.dot.Group2Order = flipud(unique(obj.dot.Group2Data));
+            if ~isempty(obj.dot.FaultCode.Group2Data)
+              obj.dot.FaultCode.Group2Order = flipud(unique(obj.dot.FaultCode.Group2Data));
+            else
+              obj.dot.FaultCode.Group2Order = [];
+            end
             % Flush those out to fake date vectors
             uniqueYearMonthCalc = flipud(unique(vecs(:,1)+vecs(:,2)/20));
+            if ~isempty(fcvecs)
+              fcuniqueYearMonthCalc = flipud(unique(fcvecs(:,1)+fcvecs(:,2)/20));
+            else
+              fcuniqueYearMonthCalc = [];
+            end
             labelDateVecs = [floor(uniqueYearMonthCalc) round(mod(uniqueYearMonthCalc,1)*20) ones(length(uniqueYearMonthCalc),4)];
+            if ~isempty(fcuniqueYearMonthCalc)
+              fclabelDateVecs = [floor(fcuniqueYearMonthCalc) round(mod(fcuniqueYearMonthCalc,1)*20) ones(length(fcuniqueYearMonthCalc),4)];
+            else
+              fclabelDateVecs = [];
+            end
             % Pull the result in to make the text label strings
+            if ~isempty(fclabelDateVecs)
+              obj.dot.FaultCode.Labels2 = strcat(cellstr(datestr(fclabelDateVecs, 'mmmm')),cellstr(datestr(fclabelDateVecs, ' yyyy')));
+            else
+              obj.dot.FaultCode.Labels2 = [];
+            end
             obj.dot.Labels2 = strcat(cellstr(datestr(labelDateVecs, 'mmmm')),cellstr(datestr(labelDateVecs, ' yyyy')));
     end
     
@@ -468,6 +578,8 @@ function assignGroupDataM(obj, d, groupCode, group2Code, double)
         % Double the size of the group data
         obj.dot.GroupData = [obj.dot.GroupData;obj.dot.GroupData];
         obj.dot.Group2Data = [obj.dot.Group2Data;obj.dot.Group2Data];
+        obj.dot.FaultCode.Group2Data = [obj.dot.FaultCode.Group2Data;obj.dot.FaultCode.Group2Data];
+        obj.dot.FaultCode.GroupData = [obj.dot.FaultCode.GroupData;obj.dot.FaultCode.GroupData];
     end
 end
 
