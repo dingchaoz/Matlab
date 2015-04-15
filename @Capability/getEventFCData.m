@@ -221,8 +221,14 @@ function data = getEventFCData(obj, SEID, varargin)
 %        data.fc = ([]);
    
      if ~isnan(obj.filt.USL)
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) 'AND DataValue > ' num2str(obj.filt.USL) ' )' selectfc_tail];
+%        sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+%        '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) 'AND DataValue > ' num2str(obj.filt.USL) ' )' selectfc_tail];
+   
+       % Option 2 to query all fault code though diagnostics made decision
+      % within limits
+      sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' )' selectfc_tail];
+   
        % Add the FC match results to data.fc structure
        data.fc = obj.tryfetch(sql_fc,100000);
 %        try
@@ -234,8 +240,13 @@ function data = getEventFCData(obj, SEID, varargin)
 %            end
 %        end
      elseif ~isnan(obj.filt.LSL)
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' AND DataValue < ' num2str(obj.filt.LSL) ' )' selectfc_tail];
+%        sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+%        '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' AND DataValue < ' num2str(obj.filt.LSL) ' )' selectfc_tail];
+   
+        % Option 2 to query all fault code though diagnostics made decision
+      % within limits
+      sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' )' selectfc_tail];
        % Add the FC match results to data.fc structure
       data.fc = obj.tryfetch(sql_fc,100000);
         

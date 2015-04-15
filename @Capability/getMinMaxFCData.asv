@@ -225,12 +225,12 @@ function [data] = getMinMaxFCData(obj, pdid, varargin)
 %        data.fc = ([]);
    
    if ~isnan(obj.filt.USL)
-%        sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
-%        '(SELECT * FROM dbo.tblMinMaxData WHERE PublicDataID = ' num2str(pdid) ' AND DataMax > ' num2str(obj.filt.USL) ' )' selectfc_tail];
+       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       '(SELECT * FROM dbo.tblMinMaxData WHERE PublicDataID = ' num2str(pdid) ' AND DataMax > ' num2str(obj.filt.USL) ' )' selectfc_tail];
    
         % Option 2 to query all fault code though diagnostics made decision
       % within limits
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
        '(SELECT * FROM dbo.tblMinMaxData WHERE PublicDataID = ' num2str(pdid) ' )' selectfc_tail];
        % Add the FC match results to data.fc structure
        data.fc = obj.tryfetch(sql_fc,100000);
@@ -248,7 +248,7 @@ function [data] = getMinMaxFCData(obj, pdid, varargin)
    
          % Option 2 to query all fault code though diagnostics made decision
       % within limits
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
        '(SELECT * FROM dbo.tblMinMaxData WHERE PublicDataID = ' num2str(pdid) ' )' selectfc_tail];
        % Add the FC match results to data.fc structure
       data.fc = obj.tryfetch(sql_fc,100000);
