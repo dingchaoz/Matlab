@@ -24,9 +24,37 @@ function uploadEvdd(obj,fileName)
     
     % Call xlsread to read in the evdd tab of the spreadsheet
     [~, ~, rawData] =  xlsread(fileName,'evdd');
+    %%%%
+    lastrow=cellfun(@isnan,rawData(end,:),'UniformOutput',false);
+    j=0;
+    
+    % If the last row is NaN, drop it and check the one above it as the last one until a non-NaN row 
+    while sum(cell2mat(lastrow))==length(lastrow)
+        j=j+1;
+        lastrow=cellfun(@isnan,rawData(end-j,:),'UniformOutput',false);
+    end
+    
+    % Sort the data on the system error name column
+    rawData = [rawData(1,:);sortrows(rawData(2:end-j,:),3)];
+    
+    %%%%
     % Read in the ignore software versions
     [~, ~, rawData1] = xlsread(fileName,'ignore');
+    %%%%%
     
+    lastrow=cellfun(@isnan,rawData1(end,:),'UniformOutput',false);
+    j=0;
+    
+    % If the last row is NaN, drop it and check the one above it as the last one until a non-NaN row 
+    while sum(cell2mat(lastrow))==length(lastrow)
+        j=j+1;
+        lastrow=cellfun(@isnan,rawData1(end-j,:),'UniformOutput',false);
+    end
+    
+    % Sort the data on the system error name column
+    rawData1 = [rawData1(1,:);sortrows(rawData1(2:end-j,:),3)];
+    
+    %%%%%
     % Set the ouptuts appropriatly
     evdd.xSEID = cell2mat(rawData(2:end,3));
     evdd.Parameter = rawData(2:end,4);

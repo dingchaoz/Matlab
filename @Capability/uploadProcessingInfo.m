@@ -24,6 +24,21 @@ function uploadProcessingInfo(obj,fileName)
     % Read in the the two tabs from the spreadsheet
     % Event Driven data
     [~,~,rawE] = xlsread(fileName,'Event');
+    %%%%%
+    
+    lastrow=cellfun(@isnan,rawE(end,:),'UniformOutput',false);
+    j=0;
+    
+    % If the last row is NaN, drop it and check the one above it as the last one until a non-NaN row 
+    while sum(cell2mat(lastrow))==length(lastrow)
+        j=j+1;
+        lastrow=cellfun(@isnan,rawE(end-j,:),'UniformOutput',false);
+    end
+    
+    % Sort the data on the system error name column
+    rawE = [rawE(2,:);sortrows(rawE(3:end-j,:),1)]; %[rawE(1,:);sortrows(rawE(2:end-j,:),3)];
+    
+    %%%%%
     evp.SEID = cell2mat(rawE(3:end,1));
     evp.ExtID = cell2mat(rawE(3:end,2));
     evp.Name = rawE(3:end,3);
@@ -36,6 +51,21 @@ function uploadProcessingInfo(obj,fileName)
     evp.famSpecific = cell2mat(rawE(3:end,10));
     % MinMax data
     [~,~,rawM] = xlsread(fileName,'MinMax');
+    %%%
+    
+        lastrow=cellfun(@isnan,rawM(end,:),'UniformOutput',false);
+    j=0;
+    
+    % If the last row is NaN, drop it and check the one above it as the last one until a non-NaN row 
+    while sum(cell2mat(lastrow))==length(lastrow)
+        j=j+1;
+        lastrow=cellfun(@isnan,rawM(end-j,:),'UniformOutput',false);
+    end
+    
+    % Sort the data on the system error name column
+    rawM = [rawM(2,:);sortrows(rawM(3:end-j,:),1)]; %[rawE(1,:);sortrows(rawE(2:end-j,:),3)];
+    
+    %%%
     mmp.SEID = cell2mat(rawM(3:end,1));
     mmp.ExtID = NaN(size(mmp.SEID));       % Generate a blank NaN column as it doesn't apply
     mmp.Name = rawM(3:end,2);
