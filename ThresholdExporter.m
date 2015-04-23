@@ -66,9 +66,9 @@ exportThresholds(r,l,fullfile(atlanticRoot,'DIG\675_2100'),'Atlantic','Atlantic'
 % Mamba Root
 mambaRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Confidential\Mamba';
 % Mamba Default (use the 460 family)
-exportThresholds(r,l,fullfile(mambaRoot,'FP\460_2100'),'Mamba','Default','BGB')
+exportThresholds(r,l,fullfile(mambaRoot,'DIG\460_2100'),'Mamba','Default','BGB')
 % Main Mamba (use the 460 family)
-exportThresholds(r,l,fullfile(mambaRoot,'FP\460_2100'),'Mamba','Mamba','BGB')
+exportThresholds(r,l,fullfile(mambaRoot,'DIG\460_2100'),'Mamba','Mamba','BGB')
 % Mamba 430 @ 2100
 %%%exportThresholds(r,l,fullfile(mambaRoot,'Beta_Upfit\430_2100'),'Mamba','430_2100','BGB')
 % Mamba 460 @ 2100
@@ -163,6 +163,19 @@ exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B260_LHP'),'Nighthawk','Nighth
 exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B325_MHP'),'Nighthawk','Nighthawk_MHP','BGU')
 % Nighthawk_HHP (use the B360 family)
 exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B360_HHP'),'Nighthawk','Nighthawk_HHP','BGU')
+
+%% Ayrton
+% Ayrton Root
+AyrtonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\MR_Worldwide_2\Ayrton';
+% Ayrton 
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Default','BGU')
+% Nighthawk_LHP 
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton','Ayrton_96KW_GAZ','BGU')
+% Nighthawk_MHP 
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_120 kW GAZ'),'Ayrton','Ayrton_120KW_GAZ','BGU')
+% Nighthawk_HHP 
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_130 kW FOTON'),'Ayrton','Ayrton_130KW_FOTON','BGU')
+
 
 %% Vanguard
 % Vanguard Root
