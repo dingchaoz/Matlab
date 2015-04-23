@@ -121,7 +121,7 @@ classdef Capability < handle
               'Ventura',      'Ventura',       'W4-S129433', 'CAPABILITYDB';
               'Pele',         'Pele',          'W4-S129433', 'CAPABILITYDB';
               'Atlantic',     'Atlantic',      'W4-S129433', 'CAPABILITYDB';
-              'Ayrton',       'Ayrton'         'W4-S129433', 'CAPABILITYDB';
+              %'Ayrton',       'Ayrton'         'W4-S129433', 'CAPABILITYDB';
               'Blazer',       'Blazer',        'W4-S129433', 'CAPABILITYDB';
               'Bronco',       'Bronco',        'W4-S129433', 'CAPABILITYDB';
               'Clydesdale',   'Clydesdale',    'W4-S129433', 'CAPABILITYDB';
