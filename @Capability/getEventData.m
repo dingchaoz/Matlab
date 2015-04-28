@@ -254,10 +254,14 @@ function data = getEventData(obj, SEID, varargin)
 %        '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) 'AND DataValue > ' num2str(obj.dot.USL) ' )' selectfc_tail];
       % Option 2 to query all fault code though diagnostics made decision
       % within limits
-      sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
+      if ~isempty(obj.dot.FC)
+         sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
        '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) ')' selectfc_tail];
        % Add the FC match results to data.fc structure
-       data.fc = obj.tryfetch(sql_fc,100000);
+         data.fc = obj.tryfetch(sql_fc,100000);
+      else
+          data.fc = [];
+      end
 %        try
 %     % Fill the data into the dot object
 %        handles.c.fillDotData(group,group2)
@@ -272,11 +276,14 @@ function data = getEventData(obj, SEID, varargin)
    
       % Option 2 to query all fault code though diagnostics made decision
       % within limits
-      sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) ')' selectfc_tail];
+      if ~isempty(obj.dot.FC)
+        sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
+          '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) ')' selectfc_tail];
        % Add the FC match results to data.fc structure
-      data.fc = obj.tryfetch(sql_fc,100000);
-        
+        data.fc = obj.tryfetch(sql_fc,100000);
+      else
+         data.fc = [];
+      end
      end
    end
     

@@ -114,6 +114,7 @@ newdata.numDate = datenum(newdata.Date);
 % Calculate the abs_time of the fault code occured
 newdata.abs_time = newdata.numDate + newdata.TimeFaultFirstOccurred;
 
+% remove column 5
 newdata(:,[5]) = [];
 
 % Create TruckID , set default to 0 which will be updated via SQL trigger
@@ -126,9 +127,84 @@ newdata.TruckID = zeros(size(newdata.abs_time));
      'ECM Run Time(s)','MilestheFCwasactive','HourstheFCwasactive','TotalMilesthatday'...
      'TotalHoursthatday','Odometer','Filename','VehicleSpeed','numDate','abs_time','TruckID'
      };
+ % initiate a new column Cal to hold double type of cal
+ newdata.Cal = zeros(size(newdata.abs_time));
+
+for i= 1:length(newdata{:,2})
+    % remove dot 
+    newdata{i,2} = strrep(newdata{i,2},'.','');
+    
+    % push double type cal into Cal column
+    newdata.Cal(i) = str2num(char(newdata{i,2}));
+    
+    % remove FC_ chars
+    newdata{i,4} = strrep(newdata{i,4},'FC_','');
+%     newdata{i,4} = char(newdata{i,4});
+    %newdata{i,2} = str2num(char(newdata{i,2}));
+    
+    
+    %To do change ECMRunTimes,numDate,abs_time to char type to match sql
+%      newdata.runt = num2str(newdata{:,5});
+%      newdata.numd = num2str(newdata{:,13});
+%      newdata.abst = num2str(newdata{:,14});
+     
+     
+end
+
+% make truckname type to char to match sql
+newdata.tr = char(newdata{:,1});
+
+% make date type to char to match sql
+newdata.dat = char(newdata{:,3});
+
+% make faultcode type to char to match sql
+newdata.fc = char(newdata{:,4});
+
+% make filename type to char to match sql
+newdata.fi = char(newdata{:,11});
+    
+% swap column Calversion and column Cal
+i = 2;
+j = 16;
+newdata = newdata(:,[1:i-1,j,i+1:j-1,i,j+1:end]);
+
+% swap column tr and column TruckName
+i = 1;
+j = 17;
+newdata = newdata(:,[1:i-1,j,i+1:j-1,i,j+1:end]);
+
+% swap column dat and column Date
+i = 3;
+j = 18;
+newdata = newdata(:,[1:i-1,j,i+1:j-1,i,j+1:end]);
+
+% swap column fc and column faultcode
+i = 4;
+j = 19;
+newdata = newdata(:,[1:i-1,j,i+1:j-1,i,j+1:end]);
+
+% swap column file and column filename
+i = 11;
+j = 20;
+newdata = newdata(:,[1:i-1,j,i+1:j-1,i,j+1:end]);
+
+% remove column Calversion
+newdata(:,[16,17,18,19]) = [];
+
+% change column 2 name from Cal to CalVER
+ newdata.Properties.VariableNames{'Cal'} = 'CalVersion';
+ newdata.Properties.VariableNames{'fc'} = 'ActiveFaultCode';
+ newdata.Properties.VariableNames{'tr'} = 'TruckName';
+  newdata.Properties.VariableNames{'dat'} = 'Date';
  
+ % change cal version type from double to int
+ newdata{:,2} = int16(newdata{:,2});
  
-            
+ % change truckID type from double to int
+ newdata{:,15} = int16(newdata{:,15});
+ 
+%  newdata.Properties.VariableNames{'runt'} = 'ECMRunTime_s_s';
+
 try
     % Open the database connection
     conn = database('DragonCC','','', ...
