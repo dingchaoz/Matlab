@@ -2204,7 +2204,7 @@ else
             end
         end
         % If no data was returned
-        if isempty(d)
+        if isempty(d) || isempty(d.fc)
             % Delete the message that data is being fetched from the database
             if ishandle(h), delete(h), end
             % Display a warning message to the user
@@ -2870,7 +2870,7 @@ if isnan(handles.c.filt.ExtID)
         end
     end
     % If no data was returned
-    if isempty(d)
+    if isempty(d.fc)
         % Delete the message that data is being fetched from the database
         if ishandle(h), delete(h), end
         % Display a warning message to the user

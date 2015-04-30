@@ -49,52 +49,7 @@ for sheet = 1 : m
     % vertically combine several cell arrays c = [c1;c2;c3...]
     
     newdata = [newdata;table];
-    % Need to get a sanity check to not import NaN values from empty
-    % spreadsheet
-    % if ~isempty(raw(,2
-    % else
-    %     break;
-    % end
-%     raw(cellfun(@(x) ~isempty(x) && isnumeric(x) && isnan(x),raw)) = {''};
-% 
-%     cellVectors = raw(:,[1,2,3,4,5,7,13,14,16,17]);
-%     raw = raw(:,[6,8,9,10,11,12,15,18]);
-% 
-%     %% Replace date strings by MATLAB serial date numbers (datenum)
-%     % R = ~cellfun(@isequalwithequalnans,dateNums,raw) & cellfun('isclass',raw,'char'); % Find spreadsheet dates
-%     % raw(R) = dateNums(R);
-% 
-%     %% Replace non-numeric cells with NaN
-%     R = cellfun(@(x) ~isnumeric(x) && ~islogical(x),raw); % Find non-numeric cells
-%     raw(R) = {NaN}; % Replace non-numeric cells
-% 
-%     %% Create output variable
-%     data = reshape([raw{:}],size(raw));
-
    
-    %% Allocate imported array to column variable names
-%     Program = vertcat(Program,cellVectors(:,1));
-%     TruckName = vertcat(TruckName,cellVectors(:,2));
-%     CalVersion = vertcat(CalVersion,cellVectors(:,3));
-%     Date1 = vertcat(Date1,cellVectors(:,4));
-%     ActiveFaultCode = vertcat(ActiveFaultCode,cellVectors(:,5));
-%     TimeFaultFirstOccurred = vertcat(TimeFaultFirstOccurred,data(:,1));
-%     % ActiveErrorIndex = vertcat(ActiveErrorIndex,cellVectors(:,6));
-%     ECMRunTimes = vertcat(ECMRunTimes,data(:,2));
-%     % MilestheFCwasactive = vertcat(MilestheFCwasactive,data(:,3));
-%     HourstheFCwasactive = vertcat(HourstheFCwasactive,data(:,4));
-    % TotalMilesthatday = vertcat(TotalMilesthatday,data(:,5));
-    % TotalHoursthatday = vertcat(TotalHoursthatday,data(:,6));
-    % InactiveFaults = vertcat(InactiveFaults,cellVectors(:,7));
-    % MILStatus = vertcat(MILStatus,cellVectors(:,8));
-    % Odometerkmwhenfaultisset = vertcat(Odometerkmwhenfaultisset,data(:,7));
-    % FilenamewhereFaultFirstOccurred = vertcat(FilenamewhereFaultFirstOccurred,cellVectors(:,9));
-    % InactiveErrorIndex = vertcat(InactiveErrorIndex,cellVectors(:,10));
-    % VehicleSpeedattimeofFaultmph = vertcat(VehicleSpeedattimeofFaultmph,data(:,8));
-
-
-    %% Clear temporary variables
-    %clearvars data raw cellVectors R;
 end
 
 
@@ -123,8 +78,8 @@ newdata.TruckID = zeros(size(newdata.abs_time));
 % Fast insert the records to db, one option is to not to import truckID
 % data since we don't know it 
 % need to figure out how to get obj.conn
- cols = {'Truck Name','Cal Version','Date','Active Fault Code',...
-     'ECM Run Time(s)','MilestheFCwasactive','HourstheFCwasactive','TotalMilesthatday'...
+ cols = {'Truckname','CalVersion','Date','ActiveFaultCode',...
+     'ECMRunTime','MilestheFCwasactive','HourstheFCwasactive','TotalMilesthatday'...
      'TotalHoursthatday','Odometer','Filename','VehicleSpeed','numDate','abs_time','TruckID'
      };
  % initiate a new column Cal to hold double type of cal
@@ -162,6 +117,10 @@ newdata.fc = char(newdata{:,4});
 
 % make filename type to char to match sql
 newdata.fi = char(newdata{:,11});
+
+ newdata.numd = num2str(newdata{:,13});
+     
+ newdata.abst = num2str(newdata{:,14});
     
 % swap column Calversion and column Cal
 i = 2;
@@ -188,14 +147,33 @@ i = 11;
 j = 20;
 newdata = newdata(:,[1:i-1,j,i+1:j-1,i,j+1:end]);
 
+i = 13;
+j = 21;
+newdata = newdata(:,[1:i-1,j,i+1:j-1,i,j+1:end]);
+
+i = 14;
+j = 22;
+newdata = newdata(:,[1:i-1,j,i+1:j-1,i,j+1:end]);
+
+
 % remove column Calversion
-newdata(:,[16,17,18,19]) = [];
+newdata(:,[16,17,18,19,20,21,22]) = [];
 
 % change column 2 name from Cal to CalVER
  newdata.Properties.VariableNames{'Cal'} = 'CalVersion';
  newdata.Properties.VariableNames{'fc'} = 'ActiveFaultCode';
- newdata.Properties.VariableNames{'tr'} = 'TruckName';
-  newdata.Properties.VariableNames{'dat'} = 'Date';
+ newdata.Properties.VariableNames{'tr'} = 'Truckname';
+ newdata.Properties.VariableNames{'dat'} = 'Date';
+ newdata.Properties.VariableNames{'fi'} = 'Filename';
+ newdata.Properties.VariableNames{'ECMRunTime_s_'} = 'ECMRunTime';
+ newdata.Properties.VariableNames{'VehicleSpeedAtTimeOfFault_mph_'} = 'VehicleSpeed';
+ newdata.Properties.VariableNames{'Odometer_km_WhenFaultIsSet'} = 'Odometer';
+ newdata.Properties.VariableNames{'TotalMilesThatDay'} = 'TotalMilesthatday';
+ newdata.Properties.VariableNames{'TotalHoursThatDay'} = 'TotalHoursthatday';
+ newdata.Properties.VariableNames{'MilesTheFCWasActive'} = 'MilestheFCwasactive';
+ newdata.Properties.VariableNames{'HoursTheFCWasActive'} = 'HourstheFCwasactive';
+ newdata.Properties.VariableNames{'numd'} = 'numDate';
+ newdata.Properties.VariableNames{'abst'} = 'abs_time';
  
  % change cal version type from double to int
  newdata{:,2} = int16(newdata{:,2});

@@ -210,10 +210,10 @@ function data = getEventFCData(obj, SEID, varargin)
     % Generate the select statement for FC matches in MinMaxFC view
     
     % Create the head of the SQL query
-    selectfc_head = 'SELECT DISTINCT t3.TruckName, t1.[Cal Version], t1.Date,t1.abs_time,t1.[Active Fault Code], t1.[ECM Run Time(s)], t1.TruckID, t2.*,t3.[Family],t3.[TruckType] FROM (SELECT * FROM dbo.FC';
+    selectfc_head = 'SELECT DISTINCT t3.TruckName, t1.[CalVersion], t1.Date,t1.abs_time,t1.[ActiveFaultCode], t1.[ECMRunTime], t1.TruckID, t2.*,t3.[Family],t3.[TruckType] FROM (SELECT * FROM dbo.FC';
     
     % Create the tail of the SQL query
-    selectfc_tail = ['AS t2 ON t1.[Cal Version] = t2.CalibrationVersion AND t1.TruckID = t2.TruckID LEFT JOIN dbo.tbltrucks AS t3 ON t1.[Truck Name] = t3.TruckName ' where ...        
+    selectfc_tail = ['AS t2 ON t1.[CalVersion] = t2.CalibrationVersion AND t1.TruckID = t2.TruckID LEFT JOIN dbo.tbltrucks AS t3 ON t1.[Truck_Name] = t3.TruckName ' where ...        
      ' AND (ABS(t1.abs_time - t2.datenum) <= 0.5)'];
  
     % Combine the head, body, tail together to form the SQL query %
@@ -221,16 +221,22 @@ function data = getEventFCData(obj, SEID, varargin)
 %        data.fc = ([]);
    
      if ~isnan(obj.filt.USL)
+         
+         
+         if ~isempty(obj.filt.FC)
 %        sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
 %        '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) 'AND DataValue > ' num2str(obj.filt.USL) ' )' selectfc_tail];
    
        % Option 2 to query all fault code though diagnostics made decision
       % within limits
-      sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' )' selectfc_tail];
+           sql_fc = [selectfc_head ' WHERE [ActiveFaultCode] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+          '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' )' selectfc_tail];
    
-       % Add the FC match results to data.fc structure
-       data.fc = obj.tryfetch(sql_fc,100000);
+          % Add the FC match results to data.fc structure
+           data.fc = obj.tryfetch(sql_fc,100000);
+         else
+             data.fc = [];
+         end
 %        try
 %     % Fill the data into the dot object
 %        handles.c.fillDotData(group,group2)
@@ -240,15 +246,20 @@ function data = getEventFCData(obj, SEID, varargin)
 %            end
 %        end
      elseif ~isnan(obj.filt.LSL)
-%        sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
-%        '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' AND DataValue < ' num2str(obj.filt.LSL) ' )' selectfc_tail];
+         
+          if ~isempty(obj.filt.FC)
+     %        sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+          %        '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' AND DataValue < ' num2str(obj.filt.LSL) ' )' selectfc_tail];
    
         % Option 2 to query all fault code though diagnostics made decision
-      % within limits
-      sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' )' selectfc_tail];
-       % Add the FC match results to data.fc structure
-      data.fc = obj.tryfetch(sql_fc,100000);
+             % within limits
+             sql_fc = [selectfc_head ' WHERE [ActiveFaultCode] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+             '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' )' selectfc_tail];
+               % Add the FC match results to data.fc structure
+             data.fc = obj.tryfetch(sql_fc,100000);
+          else
+              data.fc = [];
+          end
         
    end
     
