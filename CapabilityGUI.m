@@ -22,7 +22,7 @@ function varargout = CapabilityGUI(varargin)
 
 % Edit the above text to modify the response to help CapabilityGUI
 
-% Last Modified by GUIDE v2.5 14-Apr-2014 14:03:32
+% Last Modified by GUIDE v2.5 15-May-2015 15:20:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -1851,8 +1851,11 @@ end
 % If 'Min Data' is selected
 if get(handles.lstMinMax, 'Value') == 1
     handles.c.filt.MinOrMax = 'valuemin';
-else % 'MaxData' is selected % == 2
+elseif get(handles.lstMinMax, 'Value') == 2
+    % 'MaxData' is selected % == 2
     handles.c.filt.MinOrMax = 'valuemax';
+else
+    handles.c.filt.MinOrMax = 'eventdriven';
 end
 
 % -----------------------------------------------------------------------------
@@ -3107,3 +3110,26 @@ else
     end
 end
 
+
+
+% --- Executes on selection change in filtertoplot.
+function filtertoplot_Callback(hObject, eventdata, handles)
+% hObject    handle to filtertoplot (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns filtertoplot contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from filtertoplot
+
+
+% --- Executes during object creation, after setting all properties.
+function filtertoplot_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to filtertoplot (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
