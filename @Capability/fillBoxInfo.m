@@ -12,6 +12,8 @@ function fillBoxInfo(obj)
 %   Original Version - Chris Remington - October 2, 2012
 %   Revised - Chris Remington - February 4, 2014
 %     - Added support for FC and new vehcile filtering
+%   Revised - Dingchao Zhang - May 15, 2015
+%     - Modified the MonthFilter display
     
     
     
@@ -46,6 +48,18 @@ function fillBoxInfo(obj)
     % Vehicle filter
     obj.box.VehicleFilter = obj.filt.VehicleString;
     % Date filter
-    obj.box.MonthFilter = obj.filt.DateString;
+    
+    % get the to datetime 
+    to = datestr(obj.filt.date(:,2),' mmmm dd,yyyy,HH:MM:SS ');
+    
+    % if there is from datetime input
+    if ~isnan(obj.filt.date(:,1))
+      from = datestr(obj.filt.date(:,1),' mmmm dd,yyyy,HH:MM:SS ');  
+      obj.box.MonthFilter = strcat('From',from,' To',to);
+    % otherwise just use up to
+    else
+      obj.box.MonthFilter = strcat('Up to:',to); 
+    %obj.box.MonthFilter = obj.filt.DateString;
+    end
     
 end

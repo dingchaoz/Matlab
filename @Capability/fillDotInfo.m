@@ -14,6 +14,8 @@ function fillDotInfo(obj)
 %     - Added support for FC and new vehcile filtering
 %   Revised - Chris Remingotn - March 20, 2014
 %     - Merged Sri's functions for the dot plot into the main code
+%   Revised - Dingchao Zhang - May 15, 2015
+%     - Modified the MonthFilter display
     
     % Plot name
     obj.dot.SystemErrorName = obj.filt.Name;
@@ -46,6 +48,18 @@ function fillDotInfo(obj)
     % Vehicle filter
     obj.dot.VehicleFilter = obj.filt.VehicleString;
     % Date filter
-    obj.dot.MonthFilter = obj.filt.DateString;
+       % get the to datetime 
+    to = datestr(obj.filt.date(:,2),' mmmm dd,yyyy,HH:MM:SS ');
+    
+    % if there is from datetime input
+    if ~isnan(obj.filt.date(:,1))
+      from = datestr(obj.filt.date(:,1),' mmmm dd,yyyy,HH:MM:SS ');  
+      obj.dot.MonthFilter = strcat('From',from,' To',to);
+    % otherwise just use up to
+    else
+      obj.dot.MonthFilter = strcat('Up to:',to); 
+    %obj.box.MonthFilter = obj.filt.DateString;
+    end
+    %obj.dot.MonthFilter = obj.filt.DateString;
     
 end

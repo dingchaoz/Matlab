@@ -27,7 +27,7 @@ function [datenumber, datestring] = getDateInfo(obj, s)
             % Try to convert to a date number
             datenumber = datenum(s,'yymmdd');
             % Get a formatted date string
-            datestring = datestr(datenumber,'mmmm dd, yyyy');
+            datestring = datestr(datenumber,'mmmm dd, yyyy HH:MM:SS');
         catch ex
             % Set the datenumber to a NaN as there was an error
             datenumber = NaN;
