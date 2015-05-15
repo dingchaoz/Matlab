@@ -13,7 +13,9 @@ function separationLines = dotplot(obj,data,group,groupOrder,groupLabels,group2,
     % Define the input to the colormap property to color the groups
     cmap = [0 1 1;    % cyan
             0 0 0;    % black
-            1 0 0;    % red
+            %Reserved the color red for fault code symbol
+            %otherwise it will be easily covered
+            %1 0 0;    % red
             0 1 0;    % green
             0 0 1;    % blue
             1 0.5 0;  % orange
@@ -107,12 +109,135 @@ function separationLines = dotplot(obj,data,group,groupOrder,groupLabels,group2,
         end
     end
     
+  
+    %Assign the fault code data values
+    
+    if ~isempty(obj.FaultCode.GroupData)
+    %if it is an eventdriven type
+       if strcmp(obj.DataType,'Event Driven Data')
+            fcdata = obj.FaultCode.DataValue;
+        else 
+            % else if it is a minmax type
+            % if USL is nan
+            if strcmp(obj.DataType,'Min Data')
+                fcdata = obj.FaultCode.DataMin;
+            elseif strcmp(obj.DataType ,'Max Data')
+            % if LSL is nan
+                fcdata = obj.FaultCode.DataMax;
+            end
+       end
+    else
+         %Initiate the fault code data array
+        fcdata = [];
+    end
+    
+        
+   % If fault code data is not empty
+   if ~isempty(fcdata)
+       
+        % Initalize fault code group index numbers   
+        fcgroupIndex = zeros(size(obj.FaultCode.GroupData));
+
+         %if there are 2 groups
+         if ~isempty(group2)
+
+
+                %generate the combined capability grouping indexes
+                t = table(group,group2,groupIndex);
+
+                %generate the unique capability grouping indexes
+                u_t = unique(t);
+
+                % Loop through the capability grouping index, to find matches of
+                % fault code grouping and return the fault code index
+
+                % Loop through the length of fault code matches
+                for i = 1 :length(fcgroupIndex)
+
+                  % if no fault code index has been matched yet( default value 0)
+                  while fcgroupIndex(i) == 0 
+
+                    %Loop through the unique capability grouping indexes
+                    for j = 1 : length(u_t{:,1})
+ 
+
+                        % if the first and second grouping matches, return the
+                        % index
+                        if strcmp(obj.FaultCode.GroupData(i),u_t{j,1}) && strcmp(obj.FaultCode.Group2Data(i),u_t{j,2});
+                            fcgroupIndex(i) = u_t{j,3};
+                            break;
+                        end   
+                    end
+                  end
+
+                end
+         else
+             
+                % if there is only one group
+                %generate the combined capability grouping indexes
+                t = table(group,groupIndex);
+
+                %generate the unique capability grouping indexes
+                u_t = unique(t);
+
+                % Loop through the capability grouping index, to find matches of
+                % fault code grouping and return the fault code index
+
+                % Loop through the length of fault code matches
+                for i = 1 :length(fcgroupIndex)
+
+                  % if no fault code index has been matched yet( default value 0)
+                  while fcgroupIndex(i) == 0 
+
+                    %Loop through the unique capability grouping indexes
+                    for j = 1 : length(u_t{:,1})
+
+
+                        % if the first and second grouping matches, return the
+                        % index
+                        if strcmp(obj.FaultCode.GroupData(i),u_t{j,1})
+                            fcgroupIndex(i) = u_t{j,2};
+                            break;
+                        end   
+                    end
+                  end
+
+                end
+             
+         end
+
+     end   
+         
+    
     %% Plot the Data
     % Set the color map colors
     colormap(cmap)
-    % Plot all the data once with the correct color coding
-    scatter(data, groupIndex,[],colorVal)
     
+    % If there is fault code data, plot two layers
+    if ~isempty(fcdata)
+               
+        % Plot all the data once with the correct color coding
+        scatter(data, groupIndex,[],colorVal)
+        
+         % Hold on to add the next layer
+        hold on
+        
+        % Add fault code scatter plot
+        scatter(fcdata, fcgroupIndex,200,'r','X')
+        
+%         % Add legend to show the symbol of Fault Code matches
+%         legend('FaultCode Match Instance','Location','southoutside','Orientation','vertical');
+%         
+%         % Remove the box around legend
+%         legend('boxoff');
+%   
+    
+    % Other wise just plot capability data
+    else
+        % Plot all the data once with the correct color coding
+        scatter(data, groupIndex,[],colorVal)
+        
+    end
     %% Add Y-Axis Labels and Adjust Y-axis Limits
     % Set the y-axis limit
     ylim([0 groupNum-1])

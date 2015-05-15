@@ -124,7 +124,7 @@ function fillBoxData(obj, groupCode, group2Code)
         d = obj.getEventData(SEID,ExtID,'software',sw,'date',date,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
         
         % If there was no data for this parameter
-        if isempty(d)
+        if  ~isfield(d,'DataValue')
             % Throw an error so that the GUI can react and execution of this code stops
             error('Capability:fillBoxData:NoDataFound', 'No data found for the specified filtering conditions.');
         end

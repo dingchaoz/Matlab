@@ -63,6 +63,13 @@ Yukon.updatePrecalcResults;
 clear Yukon
 progTime.Yukon = toc(a);
 
+% Nighthawk
+a = tic;
+Nighthawk = Capability('Nighthawk');
+Nighthawk.updatePrecalcResults;
+clear Nighthawk
+progTime.Nighthawk = toc(a);
+
 % Blazer
 a = tic;
 Blazer = Capability('Blazer');
