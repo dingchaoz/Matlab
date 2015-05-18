@@ -3121,6 +3121,13 @@ function filtertoplot_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns filtertoplot contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from filtertoplot
 
+ contents = get(hObject,'Value');
+ 
+ if contents == 2
+    handles.c.filt.fltplot == 'Yes';
+ else
+    handles.c.filt.fltplot == 'No';
+ end
 
 % --- Executes during object creation, after setting all properties.
 function filtertoplot_CreateFcn(hObject, eventdata, handles)
