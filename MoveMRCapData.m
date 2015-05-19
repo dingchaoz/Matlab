@@ -34,9 +34,9 @@
 % Recurse one level through the program directory folders on MR because the data is everywhere
 base = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata';
 % Program names as in the database
-prog =     {'DragonCC',   'DragonMR', 'Seahawk', 'Yukon' ,'Nighthawk'};
+prog =     {'DragonCC',   'DragonMR', 'Seahawk', 'Yukon' ,'Nighthawk', 'Sierra'};
 % Program names as in the mrdata folder
-progFold = {'DragonFront','Dragon',   'Seahawk', 'Yukon' ,'Nighthawk'};
+progFold = {'DragonFront','Dragon',   'Seahawk', 'Yukon' ,'Nighthawk', 'Sierra'};
 % Empty variable to hold all the driectories
 programs = {};
 for i = 1:length(prog)

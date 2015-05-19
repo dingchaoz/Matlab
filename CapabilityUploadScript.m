@@ -86,6 +86,11 @@ Shadowfax = CapabilityUploader('Shadowfax');
 Shadowfax.dataUploader;
 clear Shadowfax
 
+% Sierra
+Sierra = CapabilityUploader('Sierra');
+Sierra.dataUploader;
+clear Sierra
+
 % % Move the V8 data
 % MoveV8CapData
 

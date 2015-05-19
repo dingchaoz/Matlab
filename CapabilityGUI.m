@@ -112,6 +112,7 @@ progMap = {
   'Shadowfax',                                 'Shadowfax';
   'Vanguard',                                  'Vanguard';
   'Ventura',                                   'Ventura';
+  'Sierra',                                    'Sierra';
   };
 
 % Populate the program list into the drop-down menu

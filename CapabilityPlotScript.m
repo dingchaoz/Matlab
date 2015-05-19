@@ -20,6 +20,7 @@ programs = {...
             'Shadowfax';
             'Vanguard';
             'Ventura';
+            'Sierra';
             };
 
 %% Output Location and Filtering
