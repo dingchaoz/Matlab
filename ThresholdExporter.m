@@ -167,14 +167,14 @@ exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B360_HHP'),'Nighthawk','Nighth
 %% Ayrton
 % Ayrton Root
 AyrtonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\MR_Worldwide_2\Ayrton';
-% Ayrton 
-exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Default','BGU')
+% Ayrton Default (use the 96kW FOTON family)
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Default','BGY')
 % Nighthawk_LHP 
-exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton','Ayrton_96KW_GAZ','BGU')
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton','Ayrton_96KW_GAZ','BGY')
 % Nighthawk_MHP 
-exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_120 kW GAZ'),'Ayrton','Ayrton_120KW_GAZ','BGU')
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_120 kW GAZ'),'Ayrton','Ayrton_120KW_GAZ','BGY')
 % Nighthawk_HHP 
-exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_130 kW FOTON'),'Ayrton','Ayrton_130KW_FOTON','BGU')
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_130 kW FOTON'),'Ayrton','Ayrton_130KW_FOTON','BGY')
 
 
 %% Vanguard
@@ -212,17 +212,17 @@ exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\DIG\300_2500'),'Bronc
 %% Clydesdale
 ClydesdaleRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Workhorse Clydesdale';
 % Clydesdale Default
-exportThresholds(r,l,fullfile(ClydesdaleRoot,'PP1\380_2100_SG'),'Clydesdale','Default','BEG')
+exportThresholds(r,l,fullfile(ClydesdaleRoot,'DIG\380_2100_AP'),'Clydesdale','Default','BEG')
 
 %% Shadowfax
 ShadowfaxRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Shadowfax';
 % Shadowfax Default
-exportThresholds(r,l,fullfile(ShadowfaxRoot,'PP1_Recycle\130_2500'),'Shadowfax','Default','BFV')
+exportThresholds(r,l,fullfile(ShadowfaxRoot,'PP1_Final\130_2500'),'Shadowfax','Default','BFV')
 
 %% Copy output to correct location (do this for compatibility reasons at the present time)
-% Copy those outputs to the @SQLProcessor folder for its useage
-copyfile(fullfile(l,'HDPacific\X1\X1_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsX1.mat');
-copyfile(fullfile(l,'HDPacific\X3\X3_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsX3.mat');
-copyfile(fullfile(l,'HDPacific\Black\Black_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsBlack.mat');
-% Copy the Atlatnic one to the correct spot
-copyfile(fullfile(l,'Atlantic\Atlantic\Atlantic_export.mat'),'D:\Matlab\Capability\codeAtl\@CalParameters\calParamsAtlantic.mat');
+% % Copy those outputs to the @SQLProcessor folder for its useage
+% copyfile(fullfile(l,'HDPacific\X1\X1_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsX1.mat');
+% copyfile(fullfile(l,'HDPacific\X3\X3_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsX3.mat');
+% copyfile(fullfile(l,'HDPacific\Black\Black_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsBlack.mat');
+% % Copy the Atlatnic one to the correct spot
+% copyfile(fullfile(l,'Atlantic\Atlantic\Atlantic_export.mat'),'D:\Matlab\Capability\codeAtl\@CalParameters\calParamsAtlantic.mat');
