@@ -116,7 +116,10 @@ progMap = {
 % Populate the program list into the drop-down menu
 set(handles.lstProgram,'String',progMap(:,1));
 set(handles.lstProgram,'UserData',progMap(:,2));
-
+% handles.fltplot = 'No';
+%handles.fltplot = 367.0013;
+handles.fltplot = 263.0012;
+% set(handles.fltplot,'Value',2);
 % Default program index
 defaultIndex = 10;
 
@@ -3122,11 +3125,14 @@ function filtertoplot_Callback(hObject, eventdata, handles)
 %        contents{get(hObject,'Value')} returns selected item from filtertoplot
 
  contents = get(hObject,'Value');
- 
+ % To do, need to add fltplot field to c.filt structure
+% [handles.c.filt(:).fltplot] = deal(0);
  if contents == 2
-    handles.c.filt.fltplot == 'Yes';
+handles.c.filt.fltplot = 'Yes';
+%     handles.fltplot =='Yes';
  else
-    handles.c.filt.fltplot == 'No';
+handles.c.filt.fltplot = 'No';
+%     handles.fltplot =='No';
  end
 
 % --- Executes during object creation, after setting all properties.
