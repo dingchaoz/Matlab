@@ -22,7 +22,7 @@ function varargout = CapabilityGUI(varargin)
 
 % Edit the above text to modify the response to help CapabilityGUI
 
-% Last Modified by GUIDE v2.5 15-May-2015 15:20:38
+% Last Modified by GUIDE v2.5 29-May-2015 14:33:01
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -3142,6 +3142,128 @@ function filtertoplot_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 
 % Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+function exDfrom_Callback(hObject, eventdata, handles)
+% hObject    handle to exDfrom (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of exDfrom as text
+%        str2double(get(hObject,'String')) returns contents of exDfrom as a double
+
+% Update the string date field and the from date filtering criteria
+input = get(hObject, 'String');
+% If the input was an empty string
+[~, datestring] = handles.c.getDateInfo(input);
+% Set the datestring to the proper box
+%set(handles.txtFromDateString, 'String', datestring)
+
+%pass the exclude start date string to handles.c.filt
+handles.c.filt.exFromDateString = datestring;
+% If the date string was empty because of an error
+if isempty(datestring)
+    % Clear out the value placed into the box
+    set(hObject,'String','')
+end
+
+
+
+% --- Executes during object creation, after setting all properties.
+function exDfrom_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to exDfrom (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function exDto_Callback(hObject, eventdata, handles)
+% hObject    handle to exDto (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of exDto as text
+%        str2double(get(hObject,'String')) returns contents of exDto as a double
+
+% Update the string date field and the from date filtering criteria
+input = get(hObject, 'String');
+% If the input was an empty string
+[~, datestring] = handles.c.getDateInfo(input);
+% Set the datestring to the proper box
+%set(handles.txtFromDateString, 'String', datestring)
+
+%pass the exclude start date string to handles.c.filt
+handles.c.filt.exToDateString = datestring;
+% If the date string was empty because of an error
+if isempty(datestring)
+    % Clear out the value placed into the box
+    set(hObject,'String','')
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function exDto_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to exDto (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function exDfromstr_Callback(hObject, eventdata, handles)
+% hObject    handle to exDfromstr (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of exDfromstr as text
+%        str2double(get(hObject,'String')) returns contents of exDfromstr as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function exDfromstr_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to exDfromstr (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function exDtostr_Callback(hObject, eventdata, handles)
+% hObject    handle to exDtostr (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of exDtostr as text
+%        str2double(get(hObject,'String')) returns contents of exDtostr as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function exDtostr_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to exDtostr (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
