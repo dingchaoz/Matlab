@@ -119,6 +119,8 @@ set(handles.lstProgram,'UserData',progMap(:,2));
 % handles.fltplot = 'No';
 %handles.fltplot = 367.0013;
 handles.fltplot = 263.0012;
+handles.exdstart = 273;
+handles.exdend = 274;
 % set(handles.fltplot,'Value',2);
 % Default program index
 defaultIndex = 10;
@@ -3161,7 +3163,7 @@ input = get(hObject, 'String');
 % If the input was an empty string
 [~, datestring] = handles.c.getDateInfo(input);
 % Set the datestring to the proper box
-%set(handles.txtFromDateString, 'String', datestring)
+set(handles.exDfromstr, 'String', datestring)
 
 %pass the exclude start date string to handles.c.filt
 handles.c.filt.exFromDateString = datestring;
@@ -3200,7 +3202,7 @@ input = get(hObject, 'String');
 % If the input was an empty string
 [~, datestring] = handles.c.getDateInfo(input);
 % Set the datestring to the proper box
-%set(handles.txtFromDateString, 'String', datestring)
+set(handles.exDtostr, 'String', datestring)
 
 %pass the exclude start date string to handles.c.filt
 handles.c.filt.exToDateString = datestring;
@@ -3233,6 +3235,8 @@ function exDfromstr_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of exDfromstr as text
 %        str2double(get(hObject,'String')) returns contents of exDfromstr as a double
 
+get(hObject,'String') 
+
 
 % --- Executes during object creation, after setting all properties.
 function exDfromstr_CreateFcn(hObject, eventdata, handles)
@@ -3255,6 +3259,7 @@ function exDtostr_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of exDtostr as text
 %        str2double(get(hObject,'String')) returns contents of exDtostr as a double
+get(hObject,'String') 
 
 
 % --- Executes during object creation, after setting all properties.
