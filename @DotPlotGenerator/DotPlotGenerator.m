@@ -8,6 +8,8 @@ classdef DotPlotGenerator < handle
 %       - Broke out all functions to be defined in files external to this classdef file
 %   Revised - Dingchao Zhang - March 20th, 2015
 %       - Added Fault Code matching information
+%   Revised - Dingchao Zhang - June 1st, 2015
+%       - Added properties to store exclude dates
         
     
     properties
@@ -25,6 +27,8 @@ classdef DotPlotGenerator < handle
         TruckFilter
         FamilyFilter
         MonthFilter
+        Exdatesfrom
+        Exdatesto
         SoftwareFilter
         VehicleFilter
         % Information on the LSL and USL, if applicable

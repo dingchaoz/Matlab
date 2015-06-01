@@ -29,7 +29,9 @@ function makePlot(obj, visible)
 %   Revised - Chris Remington - April 10, 2014
 %       - Adapted from boxplot to a dot plot, added ability to do 2 grouping
 %   Revised - Dingchao Zhang - March 20, 2015
-%       - Added variable to count fault code match instances and to display it    
+%       - Added variable to count fault code match instances and to display it  
+%   Revised - Dingchao Zhang - June 1, 2015
+%       - Added line to display exclude dates 
     %% Sort Data
     % If the group order isn't manually specified
     if isempty(obj.GroupOrder)
@@ -289,6 +291,9 @@ function makePlot(obj, visible)
     titleText = {sprintf('FC %.0f - SEID %.0f - %s',obj.FC,obj.SEID,obj.SystemErrorName)};
     titleText = [titleText {sprintf('Family: %s   Truck Type: %s   Vehicle: %s',obj.FamilyFilter,obj.TruckFilter,obj.VehicleFilter)}];
     titleText = [titleText {sprintf('Date Filter: %s   Data Type: %s',obj.MonthFilter,obj.DataType)}];
+    if isprop(obj,'Exdatesfrom') & isprop(obj,'Exdatesto')
+        titleText = [titleText {sprintf('Exclude date from: %s   to: %s',obj.Exdatesfrom,obj.Exdatesto)}];
+    end
     titleText = [titleText {sprintf('%s   Program: %s',getSWFiltStr,obj.Program),''}]; % Software Filter
     title(titleText,'FontSize',13) % Actually set the title
     

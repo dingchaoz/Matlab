@@ -139,15 +139,15 @@ function data = getMinMaxData(obj, pdid, varargin)
 %     - Moved to the use of tryfetch from just fetch to commonize error handling
 %   Revised - Yiyuan Chen - 2014/12/17
 %     - Modified the SQL query to fetch data from archived database as well
-<<<<<<< HEAD
+
 %   Revised - Dingchao Zhang - March 20, 2015
 %     - Added the SQL query to fetch fault code matching data from table dbo.FC
 %   Revised - Dingchao Zhang - May 29, 2015
 %     - Added lines to query data by excluding a period of dates
-=======
+
 %   Revised - Yiyuan Chen - 2015/04/05
 %     - Modified the SQL query to fetch data from Acadia's archived database as well
->>>>>>> 4f407a5bdbb9354a86c002a71837d99e0fd1368d
+
     
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
@@ -158,7 +158,7 @@ function data = getMinMaxData(obj, pdid, varargin)
     p.addParamValue('software', [], @isnumeric)
     %if there is only include dates input by user, generate one date array
     % if exclude start date or exclude to date is missing
-    if isempty(obj.filt.exFromDateString)|isempty(obj.filt.exToDateString)
+    if ~isfield(obj.filt,'exFromDateString')|~isfield(obj.filt,'exToDateString')
       % then add only one date array  
       p.addParamValue('date', [], @isnumeric)
     % if exclude start date and exclude to date are both existing

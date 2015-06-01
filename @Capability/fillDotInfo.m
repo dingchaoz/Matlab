@@ -55,9 +55,17 @@ function fillDotInfo(obj)
     if ~isnan(obj.filt.date(:,1))
       from = datestr(obj.filt.date(:,1),' mmmm dd,yyyy,HH:MM:SS ');  
       obj.dot.MonthFilter = strcat('From',from,' To',to);
+      if isfield(obj.filt,'exFromDateString') & isfield(obj.filt,'exToDateString')
+        obj.dot.Exdatesfrom = obj.filt.exFromDateString;
+        obj.dot.Exdatesto = obj.filt.exToDateString;
+      end
     % otherwise just use up to
     else
       obj.dot.MonthFilter = strcat('Up to:',to); 
+      if isfield(obj.filt,'exFromDateString') & isfield(obj.filt,'exToDateString')
+        obj.dot.exdatesfrom = obj.filt.exFromDateString;
+        obj.dot.exdatesto = obj.filt.exToDateString;
+      end
     %obj.box.MonthFilter = obj.filt.DateString;
     end
     %obj.dot.MonthFilter = obj.filt.DateString;

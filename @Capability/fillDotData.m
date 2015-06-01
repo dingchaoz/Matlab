@@ -84,7 +84,7 @@ function fillDotData(obj, groupCode, group2Code)
         %d = obj.getMinMaxData(pdid,'software',sw,'date',date,'trip',trip,'emb',emb,'grouping',groupCode,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
         %if there is only include dates input by user, generate one date array
         % if exclude start date or exclude to date is missing
-        if isempty(obj.filt.exFromDateString)|isempty(obj.filt.exToDateString)
+        if ~isfield(obj.filt,'exFromDateString')|~isfield(obj.filt,'exToDateString')
           d = obj.getMinMaxData(pdid,'software',sw,'date',date,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
         elseif ~isempty(obj.filt.exFromDateString)&& ~isempty(obj.filt.exToDateString)
           date_a = [date(1),datenum(obj.filt.exFromDateString)];
@@ -98,7 +98,7 @@ function fillDotData(obj, groupCode, group2Code)
         end
         
         % Add the Fault Code matching data to the obg.dot object
-        if ~isempty(d.fc)
+        if isfield(d,'fc')
           obj.dot.FaultCode = d.fc;
         else
           obj.dot.FaultCode = [];
