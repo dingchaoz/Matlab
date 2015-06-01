@@ -2426,6 +2426,8 @@ elseif get(handles.rdoByFamily, 'Value')
     group = 2;
 elseif get(handles.rdoByMonth, 'Value')
     group = 3;
+elseif get(handles.rdoByTripFlag, 'Value')
+    group = 4;    
 else % get(handles.rdoBySoftware, 'Value')
     group = 0;
 end
@@ -2439,6 +2441,8 @@ elseif get(handles.rdoByMonth2, 'Value')
     group2 = 3;
 elseif get(handles.rdoBySoftware2, 'Value')
     group2 = 0;
+elseif get(handles.rdoByTripFlag2, 'Value')
+    group2 = 4;
 else % get(handles.rdoByNone2, 'Value')
     group2 = -1;
 end

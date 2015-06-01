@@ -12,12 +12,14 @@ function fillDotData(obj, groupCode, group2Code)
 %               1:  Group by truck name
 %               2:  Group by engine family
 %               3:  Group by month
+%               4:  Group by trip flag
 %   group2Code: Integer representingthe second group to plot using
 %               -1: No second grouping
 %               0:  Group by software version
 %               1:  Group by truck name
 %               2:  Group by engine family
 %               3:  Group by month
+%               4:  Group by trip flag
 %   
 %   Outputs - None
 %   
@@ -189,6 +191,12 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
             
             % As a side note, this fcn will give you unqie year/month combinations
             % unique(vecs(:,1:2), 'rows')
+        case 4 % Group data by trip flag
+            % Set the group data to be the trip flag
+            obj.dot.GroupData = cellfun(@num2str, d.TripFlag, 'UniformOutput', 0);
+            % Set the group order and labels to their default
+            obj.dot.Labels = [];
+            obj.dot.GroupOrder = [];   
     end
     % Set the second grouping based on the group2Code passed in
     switch group2Code
@@ -239,6 +247,12 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
             
             % As a side note, this fcn will give you unqie year/month combinations
             % unique(vecs(:,1:2), 'rows')
+        case 4 % Group data by trip flag
+            % Set the group data to be the trip flag
+            obj.dot.Group2Data = cellfun(@num2str, d.TripFlag, 'UniformOutput', 0);
+            % Set the group order and labels to their default
+            obj.dot.Labels2 = [];
+            obj.dot.Group2Order = [];
     end
 end
 
@@ -292,6 +306,12 @@ function assignGroupDataM(obj, d, groupCode, group2Code, double)
             labelDateVecs = [floor(uniqueYearMonthCalc) round(mod(uniqueYearMonthCalc,1)*20) ones(length(uniqueYearMonthCalc),4)];
             % Pull the result in to make the text label strings
             obj.dot.Labels = strcat(cellstr(datestr(labelDateVecs, 'mmmm')),cellstr(datestr(labelDateVecs, ' yyyy')));
+        case 4 % Group data by trip flag
+            % Set the group data to be the trip flag
+            % Set the group order and labels to their default
+            obj.dot.Labels = [];
+            obj.dot.GroupOrder = [];
+            obj.dot.GroupData = cellfun(@num2str, d.TripFlag, 'UniformOutput', 0);
     end
     
     % Set the second grouping based on the group2Code passed in
@@ -343,6 +363,12 @@ function assignGroupDataM(obj, d, groupCode, group2Code, double)
             labelDateVecs = [floor(uniqueYearMonthCalc) round(mod(uniqueYearMonthCalc,1)*20) ones(length(uniqueYearMonthCalc),4)];
             % Pull the result in to make the text label strings
             obj.dot.Labels2 = strcat(cellstr(datestr(labelDateVecs, 'mmmm')),cellstr(datestr(labelDateVecs, ' yyyy')));
+        case 4 % Group data by trip flag
+            % Set the group data to be the trip flag
+            % Set the group order and labels to their default
+            obj.dot.Labels2 = [];
+            obj.dot.Group2Order = [];
+            obj.dot.Group2Data = cellfun(@num2str, d.TripFlag, 'UniformOutput', 0);
     end
     
     % If Min and Max data are being plotted together
@@ -388,5 +414,7 @@ function field = getFieldName(code)
             field = 'Family';
         case 3 % Serial date number
             field = 'datenum';
+        case 4 % Serial trip flag
+            field = 'TripFlag';
     end
 end
