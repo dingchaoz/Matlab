@@ -87,7 +87,7 @@ for i = 1:size(programs,1)
         if x > 0
             % Make a copyToFolder if it doesn't exist already
             if ~exist(copyToFolder,'dir'), mkdir(copyToFolder), end
-            % Make a copyToFolder if it doesn't exist already
+            % Make a moveToFolder if it doesn't exist already
             if ~exist(moveToFolder,'dir'), mkdir(moveToFolder), end
             % Add this to the summation
             totalMoved = totalMoved + x;

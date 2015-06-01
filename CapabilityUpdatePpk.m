@@ -21,6 +21,13 @@ Atlantic.updatePrecalcResults;
 clear Atlantic
 progTime.Atlantic = toc(a);
 
+% Ayrton
+a = tic;
+Ayrton = Capability('Ayrton');
+Ayrton.updatePrecalcResults;
+clear Ayrton
+progTime.Ayrton = toc(a);
+
 % Mamba
 a = tic;
 Mamba = Capability('Mamba');
