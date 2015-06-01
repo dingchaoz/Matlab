@@ -1,4 +1,4 @@
-function [matched, header] = matchEventData(obj, SEID, varargin)
+function [matched, header] = matchEventFCData(obj, SEID, varargin)
 %Matches multiple ExtID parameters from one diagnostic with each other
 %   Since Event Driven data is recorded with only one parameter per line and stored as
 %   such, this script will attempt to read in the event driven data (sorted a special way)
@@ -91,31 +91,8 @@ function [matched, header] = matchEventData(obj, SEID, varargin)
 %   matched:   Cell array of data matched to each other, columns 6 and later contain the
 %              actual data values
 %   
-%   Original Version - Chris Remington - March 15, 2012
-%   Revised - Chris Remington - March 28, 2012
-%     - Added the header output so that the parameter names are also returned with the
-%       cell array so they don't have to be looked-up separate
-%   Revised - Chris Remington - July 26, 2012
-%     - Fixed a bug wherein data wouldn't get exported properly if there was no data
-%       present for an ExtID of 0
-%   Modified - Chris Remington - September 18, 2012
-%     - Changed so that when here is only an ExtID of 0 present, the looping code is
-%       skipped and the raw data is just dumped into a cell array to speed it up,
-%       expecially when using this function to export raw Event Driven data
-%   Modified - Chris Remington - October 9, 2012
-%     - Added the ability to filter the matched dataset just like the
-%       @Capability\getEventData function allows with the input parameters
-%   Revised - Chris Remington - October 26, 2012
-%     - Added try/catch logic on the fecth command to try to reset the database
-%       connection first and attempt to fetch data again before throwing an error
-%   Revised - Chris Remington - February 3, 2014
-%     - Added additional filtering abilityies matching revised getEventData method
-%   Revised - Chris Remington - April 7, 2014
-%     - Moved to the use of tryfetch from just fetch to commonize error handling
-%   Revised - Yiyuan Chen - 2014/12/17
-%     - Modified the SQL query to fetch data from archived database as well
-%   Revised - Yiyuan Chen - 2015/04/05
-%     - Modified the SQL query to fetch data from Acadia's archived database as well
+%   Original Version - Dingchao Zhang - March 23, 2015
+
 
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
@@ -161,24 +138,6 @@ function [matched, header] = matchEventData(obj, SEID, varargin)
             'FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
             ' ORDER BY [TruckName], [datenum], [ExtID] ASC'];
-    % Formulate the entire SQL query for Acadia with its archived database
-    elseif strcmp(obj.program, 'Acadia')
-        sql = ['SELECT [datenum],[ECMRunTime],[ExtID],[DataValue],[TruckName],[Family],[CalibrationVersion] ' ...
-            'FROM [AcadiaArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
-            'SELECT [datenum],[ECMRunTime],[ExtID],[DataValue],[TruckName],[Family],[CalibrationVersion] ' ...
-            'FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
-            ' ORDER BY [TruckName], [datenum], [ExtID] ASC'];
-    % Formulate the entire SQL query for Seahawk with its archived database
-    elseif strcmp(obj.program, 'Seahawk')
-        sql = ['SELECT [datenum],[ECMRunTime],[ExtID],[DataValue],[TruckName],[Family],[CalibrationVersion] ' ...
-            'FROM [SeahawkArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
-            'SELECT [datenum],[ECMRunTime],[ExtID],[DataValue],[TruckName],[Family],[CalibrationVersion] ' ...
-            'FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
-            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
-            ' ORDER BY [TruckName], [datenum], [ExtID] ASC'];
     % Formulate the entire SQL query for other prgrams
     else
         sql = ['SELECT [datenum],[ECMRunTime],[ExtID],[DataValue],[TruckName],[Family],[CalibrationVersion] ' ...
@@ -192,39 +151,39 @@ function [matched, header] = matchEventData(obj, SEID, varargin)
     
      % Generate the select statement for FC matches in MinMaxFC view
      
-     rawData.fc = obj.dot.FaultCode;
+%      rawData.fc = obj.dot.FaultCode;
     
-%     % Create the head of the SQL query
-%     selectfc_head = 'SELECT DISTINCT t3.TruckName, t1.[Cal Version], t1.Date,t1.abs_time,t1.[Active Fault Code], t1.[ECM Run Time(s)], t1.TruckID, t2.*,t3.[Family],t3.[TruckType] FROM (SELECT * FROM dbo.FC';
-%     
-%     % Create the tail of the SQL query
-%     selectfc_tail = ['AS t2 ON t1.[Cal Version] = t2.CalibrationVersion AND t1.TruckID = t2.TruckID LEFT JOIN dbo.tbltrucks AS t3 ON t1.[Truck Name] = t3.TruckName ' where ...        
-%      ' AND (ABS(t1.abs_time - t2.datenum) <= 0.5)'];
-%  
-%     % Combine the head, body, tail together to form the SQL query %
-% %      if isnan(obj.dot.USL) && isnan(obj.dot.LSL)
-% %        rawData.fc = ([]);
-%    
-%      if ~isnan(obj.dot.USL)
-%        sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
-%        '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) 'AND DataValue > ' num2str(obj.dot.USL) ' )' selectfc_tail];
-%        % Add the FC match results to data.fc structure
-%        rawData.fc = obj.tryfetch(sql_fc,100000);
-% %        try
-% %     % Fill the data into the dot object
-% %        handles.c.fillDotData(group,group2)
-% %        catch ex
-% %            if ~isempty(ex.identifier)
-% %            data.fc = ([]);
-% %            end
-% %        end
-%      elseif ~isnan(obj.dot.LSL)
-%        sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
-%        '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) ' AND DataValue < ' num2str(obj.dot.LSL) ' )' selectfc_tail];
-%        % Add the FC match results to data.fc structure
-%       rawData.fc = obj.tryfetch(sql_fc,100000);
-%         
-%    end
+    % Create the head of the SQL query
+    selectfc_head = 'SELECT DISTINCT t3.TruckName, t1.[CalVersion], t1.Date,t1.abs_time,t1.[ActiveFaultCode], t1.[ECMRunTime], t1.TruckID, t2.*,t3.[Family],t3.[TruckType] FROM (SELECT * FROM dbo.FC';
+    
+    % Create the tail of the SQL query
+    selectfc_tail = ['AS t2 ON t1.[CalVersion] = t2.CalibrationVersion AND t1.TruckID = t2.TruckID LEFT JOIN dbo.tbltrucks AS t3 ON t1.[Truck_Name] = t3.TruckName ' where ...        
+     ' AND (ABS(t1.abs_time - t2.datenum) <= 0.5)'];
+ 
+    % Combine the head, body, tail together to form the SQL query %
+%      if isnan(obj.dot.USL) && isnan(obj.dot.LSL)
+%        rawData.fc = ([]);
+   
+     if ~isnan(obj.filt.USL)
+       sql_fc = [selectfc_head ' WHERE [ActiveFaultCode] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) 'AND DataValue > ' num2str(obj.filt.USL) ' )' selectfc_tail];
+       % Add the FC match results to data.fc structure
+       rawData.fc = obj.tryfetch(sql_fc,100000);
+%        try
+%     % Fill the data into the dot object
+%        handles.c.fillDotData(group,group2)
+%        catch ex
+%            if ~isempty(ex.identifier)
+%            data.fc = ([]);
+%            end
+%        end
+     elseif ~isnan(obj.filt.LSL)
+       sql_fc = [selectfc_head ' WHERE [ActiveFaultCode] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' AND DataValue < ' num2str(obj.filt.LSL) ' )' selectfc_tail];
+       % Add the FC match results to data.fc structure
+      rawData.fc = obj.tryfetch(sql_fc,100000);
+        
+   end
     
     % If there was no data in the database
     if isempty(rawData)
@@ -244,157 +203,174 @@ function [matched, header] = matchEventData(obj, SEID, varargin)
     %% Process Data
     
     % Initalize the output (make it as long as rawData, trim at the end)
-    matched = cell(length(rawData.datenum),numParams+5);
+%     matched = cell(length(rawData.fc.datenum),numParams+7);
+    matched = cell(length(rawData.fc.datenum),7);
     % datenum | ECMRunTime | TruckName | Family | Software | Param0 | Param1 | Param2 | Param3 | Param4
-    writeIdx = 1;
+%     writeIdx = 1;
     
     % Create the header row
-    header = cell(1,numParams+5);
-    header(1:5) = {'datenum', 'ECM_Run_Time', 'TruckName', 'Family', 'Software'};
+    header = cell(1,numParams+7);
+    header(1:7) = {'TruckName', 'Software','Family', 'TruckType','DateTime','ActiveFaultCode', 'DataValue'};
     % Fill in the parameter names
-    for i = 1:numParams
-        % Fill in the name of this parameter
-        header{i+5} = obj.getEvddInfo(SEID, i-1, 0);
-    end
+%     for i = 1:numParams
+%         % Fill in the name of this parameter
+%         header{i+5} = obj.getEvddInfo(SEID, i-1, 0);
+%     end
     
     % If there is only data from 1 SEID present, do this the easy way
-    if numParams == 1
-        matched(:,1) = num2cell(rawData.datenum);
-        matched(:,2) = num2cell(rawData.ECMRunTime);
-        matched(:,3) = rawData.TruckName;
-        matched(:,4) = rawData.Family;
-        matched(:,5) = num2cell(rawData.CalibrationVersion);
-        matched(:,6) = num2cell(rawData.DataValue);
+%     if numParams == 1
+        
+         % Convert to a cell array ready for the rawData GUI window
+         matched(:,1) = rawData.fc.TruckName;
+         matched(:,2) = num2cell(rawData.fc.CalVersion);
+         matched(:,3) = rawData.fc.Family;
+         matched(:,4) = rawData.fc.TruckType;
+%          matched(:,5) = cellstr(datestr(rawData.fc.datenum,31));
+         matched(:,5) = num2cell(rawData.fc.datenum);
+         matched(:,6) = rawData.fc.ActiveFaultCode;
+         matched(:,7) = num2cell(rawData.fc.DataValue);
+       
         % Return out of the function as matched and header have been defined
-        return
-    end
+%         return
+%     end
     
-    % Otherwise, time-grid the parameters together
-    % Initalize the readIdx at 1
-    readIdx = 1;
-    % Initalize the structure to hold onto the current value to fill the columns above
-    d = struct('datenum', [], 'ECMRunTime', [], 'TruckName', [], 'Family', [], 'Software' , []);
-    % Loop through the listing of data, try to find matches for each parameter
-    while readIdx <= length(rawData.datenum)
-        
-        % Fill in the current value for these parameters based on the current line
-        d.datenum = rawData.datenum(readIdx);
-        d.ECMRunTime = rawData.ECMRunTime(readIdx);
-        d.TruckName = rawData.TruckName{readIdx};
-        d.Family = rawData.Family{readIdx};
-        d.Software = rawData.CalibrationVersion(readIdx);
-        
-        % Search out the number of matching timestamps that are within 1/2 second of
-        % eachother. This would imply all of that data is from one broadcast "set"
-        % Look at the next "numParams" of lines to see how many match
-        for j = 0:(numParams-1) % Counts up to the value of the largest ExtID
-            
-            try
-                % If the next timestamp is more than 0.5 seconds in the future
-                % or the name of the truck changed
-                if abs(rawData.datenum(readIdx+j+1)-d.datenum) > 1/86400 || ...
-                        ~strcmp(d.TruckName, rawData.TruckName{readIdx+j+1})
-                    % break the for loop
-                    break
-                    % This leaves j at the number of additional matching lines beyone readIdx
-                end
-            catch ex
-                % If the error was not because we reached the end of the matrix
-                if ~strcmp(ex.identifier, 'MATLAB:badsubscript')
-                    % Rethrow the original exception
-                    rethrow(ex)
-                end
-                % Otherwise ignor the error, as it will leave j at the correct value
-                % Break out of the loop as we're at the end
-                break
-            end
-        end
-        
-        % Print the data out to one line of the output cell array
-        % Pass in only the 2 - 5 lines that need matching
-        try
-            % Try to match the parameters together
-            matched(writeIdx,:) = createLine(d, numParams, ...
-                rawData.ExtID(readIdx:readIdx+j), rawData.DataValue(readIdx:readIdx+j));
-        catch ex
-            % If there was an error, move on to the next line
-            if strcmp(ex.identifier, 'EventProcessor:matchEventData:createLine:DuplicateData')
-                readIdx = readIdx + j + 1;
-                % Don't increment the writeIdx so that this line get re-written
-                % Continue to the next itaration
-                continue
-            elseif strcmp(ex.identifier, 'EventProcessor:matchEventData:createLine:MatchingFailure')
-                % In reality, this exception is thrown when a truly unknown thing is
-                % happening. For now, just ignor it like above and continue
-                readIdx = readIdx + j + 1;
-                continue
-            else
-                % Otherwise, rethrow the original exception as it is really unknown
-                rethrow(ex)
-            end
-        end
-        % Increment readIdx the appropriate number of lines
-        readIdx = readIdx + j + 1;
-        % Add one to the writeIdx
-        writeIdx = writeIdx + 1;
-        
-    end
+%     % Otherwise, time-grid the parameters together
+%     % Initalize the readIdx at 1
+%     readIdx = 1;
+%     % Initalize the structure to hold onto the current value to fill the columns above
+%     d = struct('TruckName', [],'Software',[],'Family',[], 'TruckType',[],'DateTime',[],'ActiveFaultCode',[], 'DataValue',[]);
+%     % Loop through the listing of data, try to find matches for each parameter
+%     while readIdx <= length(rawData.fc.datenum)
+%         
+%         % Fill in the current value for these parameters based on the current line
+%         d.DateTime = rawData.fc.datenum(readIdx);
+%         d.ActiveFaultCode = rawData.fc.ActiveFaultCode{readIdx};
+%         d.DataValue = rawData.fc.DataValue(readIdx);
+%         d.TruckType = rawData.fc.TruckType{readIdx};
+%         d.TruckName = rawData.fc.TruckName{readIdx};
+%         d.Family = rawData.fc.Family{readIdx};
+%         d.Software = rawData.fc.CalVersion(readIdx);
+%         
+%         % Search out the number of matching timestamps that are within 1/2 second of
+%         % eachother. This would imply all of that data is from one broadcast "set"
+%         % Look at the next "numParams" of lines to see how many match
+%         for j = 0:(numParams-1) % Counts up to the value of the largest ExtID
+%             
+%             try
+%                 % If the next timestamp is more than 0.5 seconds in the future
+%                 % or the name of the truck changed
+%                 if abs(rawData.fc.datenum(readIdx+j+1)-d.DateTime) > 1/86400 || ...
+%                         ~strcmp(d.TruckName, rawData.fc.TruckName{readIdx+j+1})
+%                     % break the for loop
+%                     break
+%                     % This leaves j at the number of additional matching lines beyone readIdx
+%                 end
+%             catch ex
+%                 % If the error was not because we reached the end of the matrix
+%                 if ~strcmp(ex.identifier, 'MATLAB:badsubscript')
+%                     % Rethrow the original exception
+%                     rethrow(ex)
+%                 end
+%                 % Otherwise ignor the error, as it will leave j at the correct value
+%                 % Break out of the loop as we're at the end
+%                 break
+%             end
+%         end
+%         
+%         % Print the data out to one line of the output cell array
+%         % Pass in only the 2 - 5 lines that need matching
+%         try
+%             % Try to match the parameters together
+%             matched(writeIdx,:) = createLine(d, numParams, ...
+%                 rawData.ExtID(readIdx:readIdx+j), rawData.DataValue(readIdx:readIdx+j));
+%         catch ex
+%             % If there was an error, move on to the next line
+%             if strcmp(ex.identifier, 'EventProcessor:matchEventData:createLine:DuplicateData')
+%                 readIdx = readIdx + j + 1;
+%                 % Don't increment the writeIdx so that this line get re-written
+%                 % Continue to the next itaration
+%                 continue
+%             elseif strcmp(ex.identifier, 'EventProcessor:matchEventData:createLine:MatchingFailure')
+%                 % In reality, this exception is thrown when a truly unknown thing is
+%                 % happening. For now, just ignor it like above and continue
+%                 readIdx = readIdx + j + 1;
+%                 continue
+%             else
+%                 % Otherwise, rethrow the original exception as it is really unknown
+%                 rethrow(ex)
+%             end
+%         end
+%         % Increment readIdx the appropriate number of lines
+%         readIdx = readIdx + j + 1;
+%         % Add one to the writeIdx
+%         writeIdx = writeIdx + 1;
+%         
+%     end
+%     
+%     % Trim the empty cells that were left behind on the bottom of "matched"
+%     matched = matched(1:writeIdx-1,:);
     
-    % Trim the empty cells that were left behind on the bottom of "matched"
-    matched = matched(1:writeIdx-1,:);
-    
+%     end
 end
 
-function line = createLine(d, numParams, ExtID, DataValue)
-%   This takes in the separate parameter values for a "set" of parameters that were
-%   broadcast and writes them into a single line
-%   
-%   ExtID is a small numeric array with the ExtID value, e.g., [0 1 2 3 4] or [2 4] for
-%   partial data sets
-%   DataValue is a small numberic array with the data values, e.g., [20 1.23 5543 0 0] or
-%   [5543 0] for partial sets
-    
-    % Initalize output and fill in the metadata
-    line = cell(1,numParams+5);
-    line{1} = d.datenum;
-    line{2} = d.ECMRunTime;
-    line{3} = d.TruckName;
-    line{4} = d.Family;
-    line{5} = d.Software;
-    
-    % For each parameter that should be present (each ExtID that should have data)
-    for i = 0:(numParams-1)
-        % Get the index of the ExtID
-        idx = ExtID==i;
-        % If it is in the list of data passed in
-        if sum(idx) == 1
-            % Add it to the appropriate location
-            line{6+i} = DataValue(idx);
-        elseif sum(idx) == 0
-            % Else set that location to a NaN
-            line{6+i} = NaN;
-        else % there was more than one match
-            % Check to see if there is duplicate data present in the database
-            if length(unique(DataValue)) < length(DataValue)
-                % Throw an appropriate error for duplicate data
-                error('EventProcessor:matchEventData:createLine:DuplicateData', ...
-                      'There was duplicate data entries in the database, failed to properly match input');
-            else
-                % Throw an error that this was an unknown failure type
-                % Getting here means there is really some type of unhandled exception
-                % happening
-                error('EventProcessor:matchEventData:createLine:MatchingFailure', ...
-                      'There was more than one unique value with ExtID %.0f passed in. Failed to recover from the case of duplicated data points.', i);
-            end
-        end
-    end
-    
-    % Output would be either
-    % {datenum, ECMRunTime, TruckName, Engine, Software, 20, 1.23, 5543, 0, 0} or
-    % {datenum, ECMRunTime, TruckName, Engine, Software, NaN, NaN, 5543, NaN, 0}
-    % depending on which of the example inputs was passed into the function
-    
-end
+% function line = createLine(d, numParams, ExtID, DataValue)
+% %   This takes in the separate parameter values for a "set" of parameters that were
+% %   broadcast and writes them into a single line
+% %   
+% %   ExtID is a small numeric array with the ExtID value, e.g., [0 1 2 3 4] or [2 4] for
+% %   partial data sets
+% %   DataValue is a small numberic array with the data values, e.g., [20 1.23 5543 0 0] or
+% %   [5543 0] for partial sets
+%     
+%     % Initalize output and fill in the metadata
+% %     line = cell(1,numParams+5);
+% %     line{1} = d.datenum;
+% %     line{2} = d.ECMRunTime;
+% %     line{3} = d.TruckName;
+% %     line{4} = d.Family;
+% %     line{5} = d.Software;
+%      line = cell(1,numParams+7);
+%      line(:,1) = cellstr(d.TruckName);
+%      line(:,2) = num2cell(d.Software);
+%      line(:,3) = cellstr(d.Family);
+%      line(:,4) = cellstr(d.TruckType);
+%      line(:,5) = num2cell(d.DateTime);
+%      line(:,6) = cellstr(d.ActiveFaultCode);
+%      line(:,7) = num2cell(d.DataValue);
+%    
+%     % For each parameter that should be present (each ExtID that should have data)
+%     for i = 0:(numParams-1)
+%         % Get the index of the ExtID
+%         idx = ExtID==i;
+%         % If it is in the list of data passed in
+%         if sum(idx) == 1
+%             % Add it to the appropriate location
+%             line{6+i} = DataValue(idx);
+%         elseif sum(idx) == 0
+%             % Else set that location to a NaN
+%             line{6+i} = NaN;
+%         else % there was more than one match
+%             % Check to see if there is duplicate data present in the database
+%             if length(unique(DataValue)) < length(DataValue)
+%                 % Throw an appropriate error for duplicate data
+%                 error('EventProcessor:matchEventData:createLine:DuplicateData', ...
+%                       'There was duplicate data entries in the database, failed to properly match input');
+%             else
+%                 % Throw an error that this was an unknown failure type
+%                 % Getting here means there is really some type of unhandled exception
+%                 % happening
+%                 error('EventProcessor:matchEventData:createLine:MatchingFailure', ...
+%                       'There was more than one unique value with ExtID %.0f passed in. Failed to recover from the case of duplicated data points.', i);
+%             end
+%         end
+%     end
+%     
+%     % Output would be either
+%     % {datenum, ECMRunTime, TruckName, Engine, Software, 20, 1.23, 5543, 0, 0} or
+%     % {datenum, ECMRunTime, TruckName, Engine, Software, NaN, NaN, 5543, NaN, 0}
+%     % depending on which of the example inputs was passed into the function
+%     
+% end
 
 % Copied from getEventData, slightly modified to remove the ExtID filter condition
 function where = makeWhere(xseid, args)

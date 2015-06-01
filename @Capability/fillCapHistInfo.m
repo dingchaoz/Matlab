@@ -12,6 +12,8 @@ function fillCapHistInfo(obj)
 %   Original Version - Chris Remington - October 2, 2012
 %   Revised - Chris Remington - February 4, 2014
 %     - Added support for FC and new vehcile filtering
+%   Revised - Dingchao Zhang - May 15, 2015
+%     - Modified the MonthFilter display
     
     % Plot name
     obj.caphist.SystemErrorName = obj.filt.Name;
@@ -41,9 +43,20 @@ function fillCapHistInfo(obj)
     obj.caphist.TruckFilter = obj.filt.TruckString;
     % Vehicle filter
     obj.caphist.VehicleFilter = obj.filt.VehicleString;
-    % Date filter
-    obj.caphist.MonthFilter = obj.filt.DateString;
+    % Date filter    
+    % get the to datetime 
+    to = datestr(obj.filt.date(:,2),' mmmm dd,yyyy,HH:MM:SS ');
+    
+    % if there is from datetime input
+    if ~isnan(obj.filt.date(:,1))
+      from = datestr(obj.filt.date(:,1),' mmmm dd,yyyy,HH:MM:SS ');  
+      obj.caphist.MonthFilter = strcat('From',from,' To',to);
+    % otherwise just use up to
+    else
+      obj.caphist.MonthFilter = strcat('Up to:',to); 
+    %obj.box.MonthFilter = obj.filt.DateString;
     % Software filtering
+    end
     obj.caphist.SoftwareFilter = obj.filt.software;
     
 end

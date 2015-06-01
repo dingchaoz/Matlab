@@ -22,7 +22,7 @@ function varargout = CapabilityGUI(varargin)
 
 % Edit the above text to modify the response to help CapabilityGUI
 
-% Last Modified by GUIDE v2.5 14-Apr-2014 14:03:32
+% Last Modified by GUIDE v2.5 29-May-2015 14:33:01
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -117,7 +117,12 @@ progMap = {
 % Populate the program list into the drop-down menu
 set(handles.lstProgram,'String',progMap(:,1));
 set(handles.lstProgram,'UserData',progMap(:,2));
-
+% handles.fltplot = 'No';
+%handles.fltplot = 367.0013;
+handles.fltplot = 263.0012;
+handles.exdstart = 273;
+handles.exdend = 274;
+% set(handles.fltplot,'Value',2);
 % Default program index
 defaultIndex = 10;
 
@@ -1852,8 +1857,11 @@ end
 % If 'Min Data' is selected
 if get(handles.lstMinMax, 'Value') == 1
     handles.c.filt.MinOrMax = 'valuemin';
-else % 'MaxData' is selected % == 2
+elseif get(handles.lstMinMax, 'Value') == 2
+    % 'MaxData' is selected % == 2
     handles.c.filt.MinOrMax = 'valuemax';
+else
+    handles.c.filt.MinOrMax = 'eventdriven';
 end
 
 % -----------------------------------------------------------------------------
@@ -2205,7 +2213,7 @@ else
             end
         end
         % If no data was returned
-        if isempty(d)
+        if isempty(d) || isempty(d.fc)
             % Delete the message that data is being fetched from the database
             if ishandle(h), delete(h), end
             % Display a warning message to the user
@@ -2748,3 +2756,521 @@ set(handles.lstVehType,'String',{'Error'})
 % Family listing
 set(handles.lstFamily,'Value',1)
 set(handles.lstFamily,'String',{'Error'})
+
+function btnFCraw_Callback(hObject, eventdata, handles)
+% hObject    handle to btnFCraw (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% hObject    handle to btnRawData (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% If there is no system error selected (as the plot name is empty)
+if isempty(get(handles.txtSEPlot, 'String'))
+    % Display an error message
+    msgbox('No system error is selected.', 'Error', 'error')
+    % Exit the function
+    return
+end
+
+% Time how long it takes to make the raw data window
+tic
+
+% Update the filtering values with the current settings
+updateFilterValues(handles)
+
+% Call the getRawData function to fetch the selected dataset and format it
+%openRawData(handles)
+[data, header, abs_time] = getFCData(handles);
+
+% Format the ECM_Run_Time as a string so that it displays properly
+% For each row of data
+% for i = 1:size(data,1)
+%     % Convert ECM Run Time to a string so it displays properly
+%     data{i,3} = sprintf('%.1f',data{i,3});
+% end
+
+% If there was data returned
+if ~isempty(data)
+    % Change the message to a warning that the window is being created
+    h = msgbox('Opening raw data window. Please Wait.','Working...','replace');
+    % Remove the OK button
+    child = get(h,'Children');
+    delete(child(end))
+    pause(0.02)
+    % Try to make the rawData window using the formatted data
+    rawData(data, header, handles.c.filt.SEID, handles.c.filt.Name)%, abs_time)
+    % Close the msgbox if it still exists
+    if ishandle(h)
+        delete(h)
+    end
+end
+
+% Print the time to make the raw data window
+toc
+
+% -- Clone of openRawData, attempt to separate out the function responsibilities
+function [data, header, abs_time] = getFCData(handles)
+% Using the filtering specified in the GUI and will pull capability data from the database
+% and format in into a cell array for usage in various different ways
+
+% Display a warning that data is being fetched
+h = msgbox('Fetching data from database. Please Wait.','Working...');
+% Remove the OK button
+child = get(h,'Children');
+delete(child(end))
+pause(0.02)
+
+% Pull out the filtering values from the filt structure
+sw = handles.c.filt.software;
+date = handles.c.filt.date;
+trip = handles.c.filt.trip;
+emb = handles.c.filt.emb;
+valA = handles.c.filt.RawLowerVal;
+valB = handles.c.filt.RawUpperVal;
+rawCond = handles.c.filt.RawCondition;
+rawMM = handles.c.filt.MinOrMax;
+% New filtering methods
+engfam = handles.c.filt.engfam;
+vehtype = handles.c.filt.vehtype;
+vehicle = handles.c.filt.vehicle;
+
+% Two main paths, Event Driven or Min/Max
+
+% If this is a Min/Max system error
+if isnan(handles.c.filt.ExtID)
+    %% Formulate the 'valuemin'/'valuemax' filter field
+    % If there are valid numbers in both fields
+    if ~isnan(valA) && ~isnan(valB)
+        % Execute based on the condition specified
+        switch rawCond
+            case 'and' % If it is an 'and' condition
+                % Switch the A and B to do a between filter
+                valuesFilt = [valB valA];
+            case 'or' % If it is an 'or' condition
+                % Add a NaN to let the fetch function know to get the tails
+                valuesFilt = [valA NaN valB];
+        end
+    else
+        % One is a NaN, set them in this order as the NaN will presist
+        valuesFilt = [valB valA];
+    end
+    
+    %% Get Data From Database
+    try
+        % Find the public data id of the parameter
+        pdid = handles.c.getPublicDataID(handles.c.filt.CriticalParam);
+        % Fetch the data from the database (filtering on either DataMin or DataMax as selected by the user)
+        d = handles.c.getMinMaxFCData(pdid,'software',sw,'date',date,'trip',trip,'emb',emb,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle,rawMM,valuesFilt);
+    catch ex
+        % Look for if the connection to the database couldn't be established
+        if strcmp('database:database:connectionFailure',ex.identifier)
+            % Delete the message that data is being fetched from the database
+            if ishandle(h), delete(h), end
+            % Display a warning message to the user
+            msgbox({'Could not establish a connection to the database.', ...
+                    'Please make sure you are connected to the Cummins Inc. network.'}, ...
+                    'Error', 'warn', 'modal');
+            % Set the return data to empty sets and return from the function
+            data = {};header = {};abs_time = [];return
+        else
+            % Rethrow the original exception
+            rethrow(ex)
+        end
+    end
+    % If no data was returned
+    if isempty(d.fc)
+        % Delete the message that data is being fetched from the database
+        if ishandle(h), delete(h), end
+        % Display a warning message to the user
+        msgbox({'No matching data found for specified system ID, Fault Code and filtering!' ...
+                'Make sure you have correctly selected either the ''Min Data'' or', ...
+                '''Max Data'' selection to filter the values with.'}, 'Error', 'warn', 'modal')
+        % Set the return data to empty sets and return from the function
+        data = {};header = {};abs_time = [];return
+    end
+    
+    %% Format The Data
+    % Change the message to a warning that the data is being formatted
+    h = msgbox('Formatting data from Database (creating date strings). Please Wait.','Working...','replace');
+    % Remove the OK button
+    child = get(h,'Children');
+    delete(child(end))
+    pause(0.02)
+	
+    % Pull out the abs_time values for the function output argument
+    abs_time = d.fc.datenum;
+    % Convert to a cell array ready for the rawData GUI window
+    data = cell(length(d.fc.datenum),9);           % Initalization
+    data(:,1) = d.fc.TruckName;
+    data(:,2) = num2cell(d.fc.CalVersion);
+    data(:,3) = d.fc.Family;
+    data(:,4) = d.fc.TruckType;
+    data(:,5) = cellstr(datestr(d.fc.datenum,31));
+    data(:,6) = d.fc.ActiveFaultCode;
+    data(:,7) = num2cell(d.fc.PublicDataID);
+    data(:,8) = num2cell(d.fc.DataMin);
+    data(:,9) = num2cell(d.fc.DataMax);         
+    % Make the header row to label the data
+    header = {'TruckName', 'Software','Family','TruckType','Date/Time','ActiveFaultCode', 'PublicDataID', ...
+                'DataMin','DataMax'};
+    
+else
+    %% Event Driven System Error
+    % Pull local copies of these
+    SEID = handles.c.filt.SEID;
+    ExtID = handles.c.filt.ExtID;
+    % Check the evdd if there is more than one ExtID for this SEID
+    % Get the list of SEIDs from the xSEID
+    SEIDList = handles.c.evdd.xSEID-floor(handles.c.evdd.xSEID/2^16)*2^16;
+    % If there is more than one ExtID
+    if sum(SEIDList==SEID) > 1
+        %% Do it the harder way and grid parameters from all ExtIDs together first
+        try
+            % Match all event driven data for all filtering conditions except the value filters
+           [data, header] = handles.c.matchEventFCData(SEID,'software',sw,'date',date,'trip',trip,'emb',emb,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
+           %d = handles.c.getEventData(SEID,'software',sw,'date',date,'trip',trip,'emb',emb,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
+        catch ex
+            % Look for if the connection to the database couldn't be established
+            if strcmp('database:database:connectionFailure',ex.identifier)
+                % Delete the message that data is being fetched from the database
+                if ishandle(h), delete(h), end
+                % Display a warning message to the user
+                msgbox({'Could not establish a connection to the database.', ...
+                        'Please make sure you are connected to the Cummins Inc. network.'}, ...
+                        'Error', 'warn', 'modal');
+                % Set the return data to empty sets and return from the function
+                data = {};header = {};abs_time = [];return
+            else
+                % Rethrow the original exception
+                rethrow(ex)
+            end
+        end
+        % Error handling if no data is returned
+        if isempty(data)
+            % Delete the message that data is being fetched from the database
+            if ishandle(h), delete(h), end
+            % Display a warning message to the user
+            msgbox('No matching data found for specified system ID, Fault Code and filtering!','Error','warn','modal')
+            % Set the return data to empty sets and return from the function
+            data = {};header = {};abs_time = [];return
+        end
+        
+%         %%% The reason for using matchEventData and the manual filtering below is that if
+%         %%% you try to filter on the DataValue using SQL before you match the data, you 
+%         %%% will eliminate values from other ExtID parameters and then no matches will be found
+%         % Manualy filter the data using Matlab because you can't do it with matchEventData
+%         
+%         %% Pull out the values to do the filtering on
+%         filtData = cell2mat(data(:,ExtID+6));
+%         % If a value was entered into both boxes
+%         if ~isnan(valA) && ~isnan(valB)
+%             % Execute based on the condition specified
+%             switch rawCond
+%                 case 'and' % If it is an 'and' condition
+%                     % Filter for values between lower and upper
+%                     idx = filtData>=valB & filtData<=valA;
+%                 case 'or' % If it is an 'or' condition
+%                     % Add a NaN to let the fetch function know to get the tails
+%                     idx = filtData>=valB | filtData<=valA;
+%             end
+%         elseif isnan(valA) && ~isnan(valB)
+%             % Find the values >= valB specified
+%             idx = filtData>=valB;
+%         elseif isnan(valB) && ~isnan(valA)
+%             % Find the values <= valA specified
+%             idx = filtData<=valA;
+%         else % both are NaN and no filtering should be done
+%             idx = [];
+%         end
+%         
+%         % Stip out only the desired values
+%         if ~isempty(idx)
+%             data = data(idx,:);
+%         end
+%         
+%         % If all of the data was manually filtered out
+%         if isempty(data)
+%             % Delete the message that data is being fetched from the database
+%             if ishandle(h), delete(h), end
+%             % Display a warning message to the user
+%             msgbox('No data found for specified system error and filtering!', 'Error', 'warn', 'modal')
+%             % Set the return data to empty sets
+%             data = {};header = {};abs_time = [];
+%             % Return from the function and don't try to open the rawData window
+%             return
+%         end
+        
+        %% Format Data
+        % Change the message to a warning that the data is being formatted
+        h = msgbox('Formatting data from the database (creating date strings). Please Wait.','Working...','replace');
+        % Remove the OK button
+        child = get(h,'Children');
+        delete(child(end))
+        pause(0.02)
+        
+%         % Pull out the abs_time values for the function output argument
+        abs_time = cell2mat(data(:,5));
+        
+%         data(:,5) = cellstr(datestr(data(:,5),31));
+        data(:,5) = cellstr(datestr(abs_time,31));
+%         % Reformat the output of matchEventData to suit the needs of the rawData window by
+%         % adding 1 column to the begining
+%         data = [cell(size(data,1),1) data];
+%         % Fill in the new column at the begining and replace the datenum column
+%         data(:,1) = num2cell(mod(cell2mat(data(:,2)),1)*24);
+%         %data(:,2) = cellstr(datestr(cell2mat(data(:,3)),'yymmdd HH:MM:SS'));
+%         data(:,2) = cellstr(datestr(cell2mat(data(:,2)),31));
+%         % Make the header row to label the data
+%         header = [{'tod', 'Date/Time (UTC)', 'ECM_Run_Time', 'Truck Name', ...
+%                   'Family', 'Software'} header{6:end}];
+        
+    else
+        %% There is only one ExtID, use getEventData for the job
+        % Quick consistency check, is the ExtID 0? (it should be)
+        if ExtID ~= 0, error('Logic Error in Function'), end
+        
+        % Formulate the 'values' filter field
+        % If there are valid numbers in both fields
+        if ~isnan(valA) && ~isnan(valB)
+            % Execute based on the condition specified
+            switch rawCond
+                case 'and' % If it is an 'and' condition
+                    % Switch the A and B to do a between filter
+                    valuesFilt = [valB valA];
+                case 'or' % If it is an 'or' condition
+                    % Add a NaN to let the fetch function know to get the tails
+                    valuesFilt = [valA NaN valB];
+            end
+        else
+            % One is a NaN, set them in this order as the NaN will presist
+            valuesFilt = [valB valA];
+        end
+        
+        %% Fetch Data From Database
+        try
+            % Go and get the data
+            d = handles.c.getEventFCData(SEID,ExtID,'software',sw,'date',date,'trip',trip,'emb',emb,'values',valuesFilt,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
+        catch ex
+            % Look for if the connection to the database couldn't be established
+            if strcmp('database:database:connectionFailure',ex.identifier)
+                % Delete the message that data is being fetched from the database
+                if ishandle(h), delete(h), end
+                % Display a warning message to the user
+                msgbox({'Could not establish a connection to the database.', ...
+                        'Please make sure you are connected to the Cummins Inc. network.'}, ...
+                        'Error', 'warn', 'modal');
+                % Set the return data to empty sets and return from the function
+                data = {};header = {};abs_time = [];return
+            else
+                % Rethrow the original exception
+                rethrow(ex)
+            end
+        end
+        % If no data was returned
+        if isempty(d.fc)
+            % Delete the message that data is being fetched from the database
+            if ishandle(h), delete(h), end
+            % Display a warning message to the user
+            msgbox('No matching data found for specified system ID, Fault Code and filtering!', 'Error', 'warn', 'modal')
+            % Set the return data to empty sets and return from the function
+            data = {};header = {};abs_time = [];return
+        end
+        
+        %% Format Data
+        % Change the message to a warning that the data is being formatted
+        h = msgbox('Formatting data from the database (creating date strings). Please Wait.','Working...','replace');
+        % Remove the OK button
+        child = get(h,'Children');
+        delete(child(end))
+        pause(0.02)
+            % Pull out the abs_time values for the function output argument
+        abs_time = d.fc.datenum;
+        % Convert to a cell array ready for the rawData GUI window
+        data = cell(length(d.fc.datenum),7);           % Initalization
+        data(:,1) = d.fc.TruckName;
+        data(:,2) = num2cell(d.fc.CalVersion);
+        data(:,3) = d.fc.Family;
+        data(:,4) = d.fc.TruckType;
+        data(:,5) = cellstr(datestr(d.fc.datenum,31));
+        data(:,6) = d.fc.ActiveFaultCode;
+        data(:,7) = num2cell(d.fc.DataValue); 
+%         % Pull out the abs_time values for the function output argument
+%         abs_time = d.datenum;
+%         % Convert to a cell array ready for the rawData GUI window
+%         data = cell(length(d.datenum),7);
+%         data(:,1) = num2cell(mod(d.datenum,1)*24);
+%         %data(:,2) = cellstr(datestr(d.datenum,'yymmdd HH:MM:SS'));
+%         data(:,2) = cellstr(datestr(d.datenum,31));
+%         
+%         d = rmfield(d, 'datenum'); % Remove datenum field to conserve memory as we're done with it
+%         
+%         %data(:,3) = cellstr(datestr(d.datenum));
+%         data(:,3) = num2cell(d.ECMRunTime);
+%         data(:,4) = d.TruckName;
+%         data(:,5) = d.Family;
+%         data(:,6) = num2cell(d.CalibrationVersion);
+%         data(:,7) = num2cell(d.DataValue);
+        % Make the header row to label the data
+        header = {'TruckName', 'Software','Family','TruckType','Date/Time','ActiveFaultCode','DataValue'};
+    end
+end
+
+
+
+% --- Executes on selection change in filtertoplot.
+function filtertoplot_Callback(hObject, eventdata, handles)
+% hObject    handle to filtertoplot (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns filtertoplot contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from filtertoplot
+
+ contents = get(hObject,'Value');
+ % To do, need to add fltplot field to c.filt structure
+% [handles.c.filt(:).fltplot] = deal(0);
+ if contents == 2
+handles.c.filt.fltplot = 'Yes';
+%     handles.fltplot =='Yes';
+ else
+handles.c.filt.fltplot = 'No';
+%     handles.fltplot =='No';
+ end
+
+% --- Executes during object creation, after setting all properties.
+function filtertoplot_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to filtertoplot (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+function exDfrom_Callback(hObject, eventdata, handles)
+% hObject    handle to exDfrom (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of exDfrom as text
+%        str2double(get(hObject,'String')) returns contents of exDfrom as a double
+
+% Update the string date field and the from date filtering criteria
+input = get(hObject, 'String');
+% If the input was an empty string
+[~, datestring] = handles.c.getDateInfo(input);
+% Set the datestring to the proper box
+set(handles.exDfromstr, 'String', datestring)
+
+%pass the exclude start date string to handles.c.filt
+handles.c.filt.exFromDateString = datestring;
+% If the date string was empty because of an error
+if isempty(datestring)
+    % Clear out the value placed into the box
+    set(hObject,'String','')
+end
+
+
+
+% --- Executes during object creation, after setting all properties.
+function exDfrom_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to exDfrom (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function exDto_Callback(hObject, eventdata, handles)
+% hObject    handle to exDto (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of exDto as text
+%        str2double(get(hObject,'String')) returns contents of exDto as a double
+
+% Update the string date field and the from date filtering criteria
+input = get(hObject, 'String');
+% If the input was an empty string
+[~, datestring] = handles.c.getDateInfo(input);
+% Set the datestring to the proper box
+set(handles.exDtostr, 'String', datestring)
+
+%pass the exclude start date string to handles.c.filt
+handles.c.filt.exToDateString = datestring;
+% If the date string was empty because of an error
+if isempty(datestring)
+    % Clear out the value placed into the box
+    set(hObject,'String','')
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function exDto_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to exDto (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function exDfromstr_Callback(hObject, eventdata, handles)
+% hObject    handle to exDfromstr (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of exDfromstr as text
+%        str2double(get(hObject,'String')) returns contents of exDfromstr as a double
+
+get(hObject,'String') 
+
+
+% --- Executes during object creation, after setting all properties.
+function exDfromstr_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to exDfromstr (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function exDtostr_Callback(hObject, eventdata, handles)
+% hObject    handle to exDtostr (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of exDtostr as text
+%        str2double(get(hObject,'String')) returns contents of exDtostr as a double
+get(hObject,'String') 
+
+
+% --- Executes during object creation, after setting all properties.
+function exDtostr_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to exDtostr (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
