@@ -17,6 +17,11 @@ Atlantic = CapabilityUploader('Atlantic');
 Atlantic.dataUploader;
 clear Atlantic
 
+% Work on Ayrton
+Ayrton = CapabilityUploader('Ayrton');
+Ayrton.dataUploader;
+clear Ayrton
+
 % Work on Mamba
 Mamba = CapabilityUploader('Mamba');
 Mamba.dataUploader;
@@ -52,6 +57,11 @@ clear Seahawk
 Yukon = CapabilityUploader('Yukon');
 Yukon.dataUploader;
 clear Yukon
+
+% Work on Nighthawk
+Nighthawk = CapabilityUploader('Nighthawk');
+Nighthawk.dataUploader;
+clear Nighthawk
 
 % Move the MR Industrial Data
 MoveMRIndCapData

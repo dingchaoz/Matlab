@@ -21,6 +21,13 @@ Atlantic.updatePrecalcResults;
 clear Atlantic
 progTime.Atlantic = toc(a);
 
+% Ayrton
+a = tic;
+Ayrton = Capability('Ayrton');
+Ayrton.updatePrecalcResults;
+clear Ayrton
+progTime.Ayrton = toc(a);
+
 % Mamba
 a = tic;
 Mamba = Capability('Mamba');
@@ -62,6 +69,13 @@ Yukon = Capability('Yukon');
 Yukon.updatePrecalcResults;
 clear Yukon
 progTime.Yukon = toc(a);
+
+% Nighthawk
+a = tic;
+Nighthawk = Capability('Nighthawk');
+Nighthawk.updatePrecalcResults;
+clear Nighthawk
+progTime.Nighthawk = toc(a);
 
 % Blazer
 a = tic;
@@ -108,15 +122,4 @@ progTime.Ventura = toc(a);
 % Show the seconds for each program
 progTime
 
-%% Times to Run April 13, 2014
-%      Pacific: 4728.43055957155
-%     Atlantic: 216.118795513811
-%        Mamba: 67.5229200960277
-%         Pele: 54.598779620497
-%     DragonCC: 1129.08849237221
-%     DragonMR: 1911.61067423046
-%      Seahawk: 2669.82019185501
-%        Yukon: 2486.95632677456
-
-% Show the total time for all programs
 total_time=sum(cell2mat(struct2cell(progTime)))

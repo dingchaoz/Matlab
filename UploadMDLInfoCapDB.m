@@ -24,8 +24,10 @@ function UploadMDLInfoCapDB(fileName)
     % If no file name or an empty name was passed in, open a prompt to select a file
     if ~exist('fileName','var') || isempty(fileName)
         %         [fname,pathname] = uigetfile('N:\DL_Diag\OBD\Master Diagnostic List (MDL)\Apex MDL 3 step\*.xlsm','Select MDL');
+        %pathname = 'X:\';
         pathname = '\\CIDCSDFS01\EBU_Data01$\NACTGx\common\DL_Diag\OBD\Master Diagnostic List (MDL)\Apex MDL 3 step';
-        d = dir('\\CIDCSDFS01\EBU_Data01$\NACTGx\common\DL_Diag\OBD\Master Diagnostic List (MDL)\Apex MDL 3 step\*.xlsm');
+        d = dir('\\CIDCSDFS01\EBU_Data01$\NACTGx\common\DL_Diag\OBD\Master Diagnostic List (MDL)\Apex MDL 3 step\3*.xlsm');
+        %d = dir('X:\3*.xlsm');
         dates = [d.datenum];
         [~, newfile] = max(dates);
         if strcmp('~$', d(newfile).name(1:2))
@@ -98,10 +100,10 @@ function UploadMDLInfoCapDB(fileName)
     
     %% Define MDL mapping to use for each engine program of MDL data
     
-Programs = {'Dragnet X1 2016','Dragnet B 2016','Dragnet PU 2016','Dragnet CC 2016','Dragnet L 2016','Vanguard'...
-    ,'Ventura','Pele/Zico','Acadia X1'};
-Database = {'Pacific','DragonMR','Seahawk','DragonCC','Yukon','Vanguard',...
-    'Ventura','Pele','Acadia'};
+Programs = {'Dragnet X1 2016','Dragnet B 2016','Dragnet PU 2016','Dragnet CC 2016','Dragnet L 2016','Nighthawk',...
+    'Vanguard','Ventura','Pele/Zico','Acadia X1','Ayrton'};
+Database = {'Pacific','DragonMR','Seahawk','DragonCC','Yukon','Nighthawk',...
+    'Vanguard','Ventura','Pele','Acadia','Ayrton'};
 [~,s] = size(Programs);
 for count = 1:s
     a = cellfun(@(x) strcmp(Programs{count},x), raw(1,:));
@@ -115,6 +117,7 @@ for count = 1:s
 end % for count = 1:s
 for i = 1:length(col)
     if ~isnan(col(i))
+        %disp 'Works'
         uploadProgram(raw, col(i), Database{i})
     end % if ~isnan(col(i))
 end % for i = 1:length(col)

@@ -132,6 +132,12 @@ function data = getEventData(obj, SEID, varargin)
 %     - Added the 'fields' parameter to allow only specified columns to be selected
 %   Revised - Chris Remington - April 7, 2014
 %     - Moved to the use of tryfetch from just fetch to commonize error handling
+%   Revised - Yiyuan Chen - 2014/12/17
+%     - Modified the SQL query to fetch data from archived database as well
+%   Revised - Yiyuan Chen - 2015/04/05
+%     - Modified the SQL query to fetch data from Acadia's archived database as well
+%   Revised - Yiyuan Chen - 2015/04/06
+%     - Modified the SQL query to fetch data from Seahawk's archived database as well, which stores SEID 8289 with 32160014
     
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
@@ -166,7 +172,8 @@ function data = getEventData(obj, SEID, varargin)
         case 3 % Select data and Matlab serial date number
             select = 'SELECT [DataValue], [datenum]';
         case 4 % Select only the data (for histograms)
-               % have to put a second selected item for Matlab2013, otherwise it will fetch only part of the data set)
+%             select = 'SELECT [DataValue]';
+               % have to put a second selected item for Matlab2013, otherwise it will fetch only part of the data set
             select = 'SELECT [DataValue], [datenum]';
         otherwise % NaN or anything else, select all the columns
             select = 'SELECT [datenum],[ECMRunTime],[DataValue],[TruckName],[Family],[CalibrationVersion]';
@@ -217,11 +224,23 @@ function data = getEventData(obj, SEID, varargin)
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
             select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
+    % Formulate the entire SQL query for Acadia with its archived database
+    elseif strcmp(obj.program, 'Acadia')
+        sql = [select ' FROM [AcadiaArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
+            select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
+    % Formulate the entire SQL query for Seahawk with its archived database
+    elseif strcmp(obj.program, 'Seahawk')
+        sql = [select ' FROM [SeahawkArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
+            select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
     % Formulate the entire SQL query for other prgrams
     else
         sql = [select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ...
-            ' ORDER BY [TruckName] DESC'];
+            ' ORDER BY [TruckName], [datenum] ASC'];
     end
     
     % Move to the use of the common tryfetch to get the data

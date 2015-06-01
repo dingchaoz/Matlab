@@ -76,7 +76,18 @@ function AddCSVFile(obj, fullFileName, truckID)
 %   Revised - Chris Remington - April 4, 2014
 %       - Added logic to check if the calibration version was recorded in reverse as
 %         is sometimes the case for the V8 programs
-    
+%   Revised - Yiyuan Chen - 2015/03/06
+%       - Added the feature of processing DPF_Incomplete_Regen when uploading its capability data  
+%   Revised -Dingchao Zhang - March 18th, 2015
+%       -Added update tblTrucks saying that there should have been MinMax data
+%       - and wasn't in the condition of no key switch from 1 to 0
+%   Revised - Yiyuan Chen - 2015/03/19
+%       - Added the feature of processing DPF_TOO_FREQUENT_REGEN_ERR when uploading its capability data
+%   Revised - Yiyuan Chen - 2015/03/25
+%       - Added the feature of processing DOSER_USEDUP_DFM_ERR when uploading its capability data
+%   Revised - Yiyuan Chen - 2015/04/05
+%       - Added the feature of processing some more special diagnostics when uploading its capability data
+
     %% Prerequisite Code
     % Get the name of the truckID to ensure that its a valid truck
     % This will throw an error if an invalid truckID is specified
@@ -389,8 +400,70 @@ function AddCSVFile(obj, fullFileName, truckID)
             % colNames = {datenum, ECMRunTime, SEID, ExtID, DataValue, CalibrationVersion, TruckID, EMBFlag, TripFlag}
             eventDecoded(writeIdxEvent,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, ExtID, decodedData, cal, truckID, 0, 0};
             
-            % Increment the writeIdxEvent
-            writeIdxEvent = writeIdxEvent + 1;
+            % Execute extra processings for some special diagnostics
+            if writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==3036 && cell2mat(eventDecoded(writeIdxEvent-1,3))==3036 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.000005
+                % Generate an extra parameter for DPF_INCOMPLETE_REGEN_ERR & add 1 more line to the eventDecoded cell array
+                % Calculate the difference between the 2 capability parameters
+                % Add the difference value to the eventDecoded cell array, with a fake extID
+                % Increment the writeIdxEvent by 2
+                if ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==0
+                    diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                elseif ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1
+                    diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                else % Increment the writeIdxEvent
+                    writeIdxEvent = writeIdxEvent + 1;
+                end
+            elseif writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==3590 && cell2mat(eventDecoded(writeIdxEvent-1,3))==3590 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.000005
+                % Similarly process for DPF_TOO_FREQUENT_REGEN_ERR
+                if ExtID==2 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1
+                    diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                elseif ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==2
+                    diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                else % Increment the writeIdxEvent
+                    writeIdxEvent = writeIdxEvent + 1;
+                end
+            elseif writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==4748 && cell2mat(eventDecoded(writeIdxEvent-1,3))==4748 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.000005
+                % Similarly process for DOSER_USEDUP_DFM_ERR but calculate the product
+                if (ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1) || (ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==0)
+                    prodData = decodedData * cell2mat(eventDecoded(writeIdxEvent-1,5));
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, prodData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                else % Increment the writeIdxEvent
+                    writeIdxEvent = writeIdxEvent + 1;
+                end
+            elseif writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==1752 && cell2mat(eventDecoded(writeIdxEvent-1,3))==1752 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.000005
+                % Similarly process for DPF_NOT_PRESENT_ERR
+                if ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1
+                    diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                elseif ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==0
+                    diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                elseif ExtID==2 && cell2mat(eventDecoded(writeIdxEvent-1,4))==3
+                    diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 8, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                elseif ExtID==3 && cell2mat(eventDecoded(writeIdxEvent-1,4))==2
+                    diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 8, diffData, cal, truckID, 0, 0};
+                    writeIdxEvent = writeIdxEvent + 2;
+                else % Increment the writeIdxEvent
+                    writeIdxEvent = writeIdxEvent + 1;
+                end
+            else % for other normal diagnostics
+                % Increment the writeIdxEvent
+                writeIdxEvent = writeIdxEvent + 1;
+            end
             
         elseif ~strcmp(MinMax_Data{i}, 'NaN')
             % MinMax line, ignore
@@ -457,6 +530,9 @@ function AddCSVFile(obj, fullFileName, truckID)
         % Note that there was no MinMax data in this file (not not that MinMax data was expected)
         disp(['No MinMax data in file ' fullFileName]);
         obj.event.write(['No MinMax data in file ' fullFileName]);
+        % Update tblTrucks saying that there should have been MinMax data and wasn't
+            update(obj.conn, '[dbo].[tblTrucks]', {'MinMaxData'}, {'No'}, ...
+                sprintf('WHERE [TruckID] = %0.f',truckID));
     end
     
     %% Write the Formatted Output to the database

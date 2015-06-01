@@ -6,12 +6,14 @@ programs = {...
             'Pacific';
             'Acadia';
             'Atlantic';
+            'Ayrton';
             'Mamba';
             'Pele';
             'DragonCC';
             'DragonMR';
             'Seahawk';
             'Yukon';
+            'Nighthawk';
             'Blazer';
             'Bronco';
             'Clydesdale';

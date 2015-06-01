@@ -26,15 +26,15 @@ manualCals = '\\CIDCSDFS01\EBU_Data01$\NACTGx\common\DL_Diag\Data Analysis\Stora
 % Pacific Root
 pacificRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_X';
 % Pacific Default (use the Dragnet X1 as Default because it contains IAT stuff)
-exportThresholds(r,l,fullfile(pacificRoot,'MY15_Beta\X1'),'HDPacific','Default','BDR')
+exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\X1'),'HDPacific','Default','BDR')
 % Pacific Dragnet X1
-exportThresholds(r,l,fullfile(pacificRoot,'MY15_Beta\X1'),'HDPacific','DNET_X1','BDR')
+exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\X1'),'HDPacific','DNET_X1','BDR')
 % Pacific Dragnet X2 (this will be the same as X3)
-exportThresholds(r,l,fullfile(pacificRoot,'MY15_Beta\X3'),'HDPacific','DNET_X2','BDR')
+exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\X3'),'HDPacific','DNET_X2','BDR')
 % Pacific Dragnet X3
-exportThresholds(r,l,fullfile(pacificRoot,'MY15_Beta\X3'),'HDPacific','DNET_X3','BDR')
+exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\X3'),'HDPacific','DNET_X3','BDR')
 % Pacific Dragnet Black / X12(use LE3 as I think all OBD should be common across Black / X12)
-exportThresholds(r,l,fullfile(pacificRoot,'MY15_Beta\12L LE3'),'HDPacific','DNET_Black','BDR')
+exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\12L LE3'),'HDPacific','DNET_Black','BDR')
 % Pacific CPS X1
 exportThresholds(r,l,fullfile(manualCals,'PacificCPS_X1'),'HDPacific','X1','BDR')
 % Pacific CPS X2
@@ -48,27 +48,27 @@ exportThresholds(r,l,fullfile(manualCals,'PacificCPS_Black'),'HDPacific','Black'
 % Acadia Root
 acadiaRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Acadia';
 % Acadia Default
-exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X1'),'Acadia','Default','BGT')
+exportThresholds(r,l,fullfile(acadiaRoot,'Beta\X1'),'Acadia','Default','BGT')
 % Acadia X1
-exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X1'),'Acadia','Acadia_X1','BGT')
+exportThresholds(r,l,fullfile(acadiaRoot,'Beta\X1'),'Acadia','Acadia_X1','BGT')
 % Acadia X3
-exportThresholds(r,l,fullfile(acadiaRoot,'Alpha\X3'),'Acadia','Acadia_X3','BGT')
+exportThresholds(r,l,fullfile(acadiaRoot,'Beta\X3'),'Acadia','Acadia_X3','BGT')
 
 %% Atlantic
 % Atlantic Root
 atlanticRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Atlantic Red';
 % Atlatnic Default (here just use the highest rating
-exportThresholds(r,l,fullfile(atlanticRoot,'FP_Upfit\675_2100'),'Atlantic','Default','BEF')
+exportThresholds(r,l,fullfile(atlanticRoot,'DIG\675_2100'),'Atlantic','Default','BEF')
 % Highest power rating, may need to additional ones later on
-exportThresholds(r,l,fullfile(atlanticRoot,'FP_Upfit\675_2100'),'Atlantic','Atlantic','BEF')
+exportThresholds(r,l,fullfile(atlanticRoot,'DIG\675_2100'),'Atlantic','Atlantic','BEF')
 
 %% Mamba
 % Mamba Root
 mambaRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Confidential\Mamba';
 % Mamba Default (use the 460 family)
-exportThresholds(r,l,fullfile(mambaRoot,'FP\460_2100'),'Mamba','Default','BGB')
+exportThresholds(r,l,fullfile(mambaRoot,'DIG\460_2100'),'Mamba','Default','BGB')
 % Main Mamba (use the 460 family)
-exportThresholds(r,l,fullfile(mambaRoot,'FP\460_2100'),'Mamba','Mamba','BGB')
+exportThresholds(r,l,fullfile(mambaRoot,'DIG\460_2100'),'Mamba','Mamba','BGB')
 % Mamba 430 @ 2100
 %%%exportThresholds(r,l,fullfile(mambaRoot,'Beta_Upfit\430_2100'),'Mamba','430_2100','BGB')
 % Mamba 460 @ 2100
@@ -141,7 +141,7 @@ yukonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calb
 exportThresholds(r,l,fullfile(yukonRoot,'MY16\L450'),'Yukon','Default','BDO')
 % Yukon Dragnet_L (use the L450 family)
 exportThresholds(r,l,fullfile(yukonRoot,'MY15\L450'),'Yukon','Dragnet_L','BDO')
-% Yukon Dragnet_L (use the L450 family)
+% Yukon Dragnet_L_16 (use the L450 family)
 exportThresholds(r,l,fullfile(yukonRoot,'MY16\L450'),'Yukon','Dragnet_L_16','BDO')
 % Plain Yukon  (should update this to use a current product calibration)
 exportThresholds(r,l,fullfile(yukonRoot,'MY15\L450'),'Yukon','Yukon','BDO')
@@ -152,46 +152,77 @@ exportThresholds(r,l,fullfile(yukonRoot,'MY15\L450'),'Yukon','Yukon','BDO')
 % % DragonMR L450
 % exportThresholds(r,l,fullfile(yukonRoot,'Alpha\L450'),'Yukon','L450','BDO')
 
+%% Nighthawk
+% Nighthawk Root
+nighthawkRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Nighthawk_B';
+% Nighthawk Default (use the B260 family)
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B260_LHP'),'Nighthawk','Default','BGU')
+% Nighthawk_LHP (use the B260 family)
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B260_LHP'),'Nighthawk','Nighthawk_LHP','BGU')
+% Nighthawk_MHP (use the B325 family)
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B325_MHP'),'Nighthawk','Nighthawk_MHP','BGU')
+% Nighthawk_HHP (use the B360 family)
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B360_HHP'),'Nighthawk','Nighthawk_HHP','BGU')
+
+%% Ayrton
+% Ayrton Root
+AyrtonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\MR_Worldwide_2\Ayrton';
+% Ayrton Default (use the 96kW FOTON family)
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Default','BGY')
+% Nighthawk_LHP 
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton','Ayrton_96KW_GAZ','BGY')
+% Nighthawk_MHP 
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_120 kW GAZ'),'Ayrton','Ayrton_120KW_GAZ','BGY')
+% Nighthawk_HHP 
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_130 kW FOTON'),'Ayrton','Ayrton_130KW_FOTON','BGY')
+
+
 %% Vanguard
 % Vanguard Root
-vanguardRoot = '\\CIDCSDFS01\EBU_Data01$\NACEPx\LDD Test Data\Calibrations3230\Vanguard\In Progress';
+% vanguardRoot = '\\CIDCSDFS01\EBU_Data01$\NACEPx\LDD Test Data\Calibrations3230\Vanguard\In Progress';
+vanguardRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Vanguard';
 % Vanguard Default (use In Progress)
-exportThresholds(r,l,fullfile(manualCals,'Vanguard'),'Vanguard','Default','BCX')
+% exportThresholds(r,l,fullfile(manualCals,'Vanguard'),'Vanguard','Default','BCX')
+exportThresholds(r,l,fullfile(vanguardRoot,'MY16\Mainline'),'Vanguard','Default','BCX')
 
 %% Ventura
 % Ventura Root
 venturaRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Ventura';
+% Ventura2 Root
+ventura2Root = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Ventura_II';
 % Ventura Default (use the Alpha Mainline family)
-exportThresholds(r,l,fullfile(venturaRoot,'Alpha\Mainline'),'Ventura','Default','BFY')
+exportThresholds(r,l,fullfile(venturaRoot,'MY15\Mainline'),'Ventura','Default','BFY')
+% Ventura2 (use the Ventura2_MY16 Mainline family)
+exportThresholds(r,l,fullfile(ventura2Root,'MY16\Mainline'),'Ventura','Ventura2','BFY')
 
 %% Blazer
 BlazerRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Blazer';
 % Blazer Default
-exportThresholds(r,l,fullfile(BlazerRoot,'LP\140_2200_FEL'),'Blazer','Default','BFU')
+exportThresholds(r,l,fullfile(BlazerRoot,'DIG\173_2500'),'Blazer','Default','BFU')
 
 %% Bronco
 BroncoRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer';
 % Bronco Default
-exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\LP\173_2300'),'Bronco','Default','BEE')
-%  Bronco Lite
-exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\LP\173_2300_FEL'),'Bronco','Bronco_Lite','BEE')
+exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\DIG\300_2500'),'Bronco','Default','BEE')
+% Bronco Lite
+exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\FP\173_2300'),'Bronco','Bronco_Lite','BEE')
 % Bronco
-exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\PP1_GPU\225_2000'),'Bronco','Bronco','BEE')
+exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\DIG\300_2500'),'Bronco','Bronco','BEE')
 
 %% Clydesdale
 ClydesdaleRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Workhorse Clydesdale';
 % Clydesdale Default
-exportThresholds(r,l,fullfile(ClydesdaleRoot,'PP1\380_2100_SG'),'Clydesdale','Default','BEG')
+exportThresholds(r,l,fullfile(ClydesdaleRoot,'DIG\380_2100_AP'),'Clydesdale','Default','BEG')
 
 %% Shadowfax
 ShadowfaxRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Shadowfax';
 % Shadowfax Default
-exportThresholds(r,l,fullfile(ShadowfaxRoot,'FP\130_2500'),'Shadowfax','Default','BFV')
+exportThresholds(r,l,fullfile(ShadowfaxRoot,'PP1_Final\130_2500'),'Shadowfax','Default','BFV')
 
 %% Copy output to correct location (do this for compatibility reasons at the present time)
-% Copy those outputs to the @SQLProcessor folder for its useage
-copyfile(fullfile(l,'HDPacific\X1\X1_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsX1.mat');
-copyfile(fullfile(l,'HDPacific\X3\X3_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsX3.mat');
-copyfile(fullfile(l,'HDPacific\Black\Black_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsBlack.mat');
-% Copy the Atlatnic one to the correct spot
-copyfile(fullfile(l,'Atlantic\Atlantic\Atlantic_export.mat'),'D:\Matlab\Capability\codeAtl\@CalParameters\calParamsAtlantic.mat');
+% % Copy those outputs to the @SQLProcessor folder for its useage
+% copyfile(fullfile(l,'HDPacific\X1\X1_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsX1.mat');
+% copyfile(fullfile(l,'HDPacific\X3\X3_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsX3.mat');
+% copyfile(fullfile(l,'HDPacific\Black\Black_export.mat'),'D:\Matlab\Capability\code\@CalParameters\calParamsBlack.mat');
+% % Copy the Atlatnic one to the correct spot
+% copyfile(fullfile(l,'Atlantic\Atlantic\Atlantic_export.mat'),'D:\Matlab\Capability\codeAtl\@CalParameters\calParamsAtlantic.mat');

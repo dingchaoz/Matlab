@@ -95,6 +95,9 @@ function decodedData = decodeEvent(obj, xSEID, data, cal)
                     'Unknown data type ''%s'' encountered in decodeEvent for xSEID %.0f and cal %.0f',...
                     dataType,xSEID,cal);
         end
+        if ismember(xSEID, 10056) % Apply the scales to some LDD Fuel System parameters
+            decodedData = decodedData*0.1;
+        end
     else % Do it for a big-endian ECM
         switch dataType
             case 'float'

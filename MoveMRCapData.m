@@ -34,9 +34,9 @@
 % Recurse one level through the program directory folders on MR because the data is everywhere
 base = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata';
 % Program names as in the database
-prog =     {'DragonCC',   'DragonMR', 'Seahawk', 'Yukon'};
+prog =     {'DragonCC',   'DragonMR', 'Seahawk', 'Yukon' ,'Nighthawk'};
 % Program names as in the mrdata folder
-progFold = {'DragonFront','Dragon',   'Seahawk', 'Yukon'};
+progFold = {'DragonFront','Dragon',   'Seahawk', 'Yukon' ,'Nighthawk'};
 % Empty variable to hold all the driectories
 programs = {};
 for i = 1:length(prog)
@@ -87,14 +87,18 @@ for i = 1:size(programs,1)
         if x > 0
             % Make a copyToFolder if it doesn't exist already
             if ~exist(copyToFolder,'dir'), mkdir(copyToFolder), end
-            % Make a copyToFolder if it doesn't exist already
+            % Make a moveToFolder if it doesn't exist already
             if ~exist(moveToFolder,'dir'), mkdir(moveToFolder), end
             % Add this to the summation
             totalMoved = totalMoved + x;
             % Copy to processed folder first
             copyfile([currentFolder '\*.csv*'],copyToFolder);
             % Move the MinMax files to ETD_Data
-            movefile([currentFolder '\*.csv*'],moveToFolder);
+            try
+                movefile([currentFolder '\*.csv*'],moveToFolder);
+            catch
+                continue
+            end
             % Display a message
             fprintf('Moved % 3.0f files from %s to %s\r',x,currentFolder,moveToFolder);
         else
