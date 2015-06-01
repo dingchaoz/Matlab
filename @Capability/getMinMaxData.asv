@@ -141,8 +141,7 @@ function [data] = getMinMaxData(obj, pdid, varargin)
 %     - Modified the SQL query to fetch data from archived database as well
 %   Revised - Dingchao Zhang - March 20, 2015
 %     - Added the SQL query to fetch fault code matching data from table dbo.FC
-%   Revised - Dingchao Zhang - May 29, 2015
-%     - Added lines to query data by excluding a period of dates
+%  
     
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
@@ -368,7 +367,7 @@ function where = makeWhere(pdid, args)
     
     %% Add filtering by the date
     % If the input is not an empty set (the default to indicate no software filter)
-    if isfield(args,'date')
+    if isfielf(args,'date')
         if ~isempty(args.date)
             % If the array has a length of two
             if length(args.date) == 2
@@ -386,16 +385,8 @@ function where = makeWhere(pdid, args)
                 error('Capability:getMinMaxData:InvalidInput', 'Invalid input for property ''date''')
             end
         end
-   elseif isfield(args,'date_a')& isfield(args,'date_b')
-      if ~isempty(args.date_a) &  ~isempty(args.date_b)
-            % If the array has a length of two
-            if length(args.date_a) == 2 & length(args.date_b) == 2
-                    where = sprintf('%s And ([datenum] Between %f And %f',where,args.date_a(1),args.date_a(2));
-                    where = sprintf('%s Or [datenum] Between %f And %f)',where,args.date_b(1),args.date_b(2));
-            else
-                error('Capability:getMinMaxData:InvalidInput', 'Invalid input for property ''date''')
-            end
-        end
+    elseif isfielf(args,'date_a')
+        if ~isempty(args.date)
     end
     %% Add filtering by the software version
     % If the input is not an empty set (the default to indicate no software filter)
