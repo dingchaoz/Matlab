@@ -63,8 +63,8 @@ function fillDotInfo(obj)
     else
       obj.dot.MonthFilter = strcat('Up to:',to); 
       if isfield(obj.filt,'exFromDateString') & isfield(obj.filt,'exToDateString')
-        obj.dot.exdatesfrom = obj.filt.exFromDateString;
-        obj.dot.exdatesto = obj.filt.exToDateString;
+        obj.dot.Exdatesfrom = obj.filt.exFromDateString;
+        obj.dot.Exdatesto = obj.filt.exToDateString;
       end
     %obj.box.MonthFilter = obj.filt.DateString;
     end

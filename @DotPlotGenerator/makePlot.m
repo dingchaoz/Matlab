@@ -290,9 +290,15 @@ function makePlot(obj, visible)
     % Generate the title
     titleText = {sprintf('FC %.0f - SEID %.0f - %s',obj.FC,obj.SEID,obj.SystemErrorName)};
     titleText = [titleText {sprintf('Family: %s   Truck Type: %s   Vehicle: %s',obj.FamilyFilter,obj.TruckFilter,obj.VehicleFilter)}];
-    titleText = [titleText {sprintf('Date Filter: %s   Data Type: %s',obj.MonthFilter,obj.DataType)}];
+    titleText = [titleText {sprintf('Dates include: %s   Data Type: %s',obj.MonthFilter,obj.DataType)}];
     if isprop(obj,'Exdatesfrom') & isprop(obj,'Exdatesto')
-        titleText = [titleText {sprintf('Exclude date from: %s   to: %s',obj.Exdatesfrom,obj.Exdatesto)}];
+       %if ~isempty(obj.Exdatesfrom)& ~isempty(obj.Exdatesto)
+         titleText = [titleText {sprintf('Exclude date from: %s   to: %s',obj.Exdatesfrom,obj.Exdatesto)}];
+%        %elseif ~isempty(obj.Exdatesto)
+%          titleText = [titleText {sprintf('Exclude date up to : %s   ',obj.Exdatesfrom)}];
+%        elseif ~isempty(obj.Exdatesfrom)
+%          titleText = [titleText {sprintf('Exclude date to: %s   ',obj.Exdatesfrom)}];
+%        end
     end
     titleText = [titleText {sprintf('%s   Program: %s',getSWFiltStr,obj.Program),''}]; % Software Filter
     title(titleText,'FontSize',13) % Actually set the title

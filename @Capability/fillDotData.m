@@ -84,9 +84,17 @@ function fillDotData(obj, groupCode, group2Code)
         %d = obj.getMinMaxData(pdid,'software',sw,'date',date,'trip',trip,'emb',emb,'grouping',groupCode,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
         %if there is only include dates input by user, generate one date array
         % if exclude start date or exclude to date is missing
-        if ~isfield(obj.filt,'exFromDateString')|~isfield(obj.filt,'exToDateString')
+        if ~isfield(obj.filt,'exFromDateString')&&~isfield(obj.filt,'exToDateString')
+        %if isempty(obj.filt.exFromDateString)&& ~isempty(obj.filt.exToDateString)
           d = obj.getMinMaxData(pdid,'software',sw,'date',date,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
-        elseif ~isempty(obj.filt.exFromDateString)&& ~isempty(obj.filt.exToDateString)
+        %elseif ~isempty(obj.filt.exFromDateString)&& ~isempty(obj.filt.exToDateString)
+        else
+          if ~isfield(obj.filt,'exFromDateString')
+              obj.filt.exFromDateString = '';
+          end
+          if ~isfield(obj.filt,'exToDateString')
+              obj.filt.exToDateString = '';
+          end  
           date_a = [date(1),datenum(obj.filt.exFromDateString)];
           date_b = [datenum(obj.filt.exToDateString),date(2)];
           d = obj.getMinMaxData(pdid,'software',sw,'date_a',date_a,'date_b',date_b,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
