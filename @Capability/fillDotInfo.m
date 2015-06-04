@@ -18,7 +18,9 @@ function fillDotInfo(obj)
 %     - Modified the MonthFilter display
 %   Revised - Dingchao Zhang - May 29, 2015
 %     - Added lines to pass by excluding a period of dates
-    
+%   Revised - Dingchao Zhang - June 4, 2015
+%       - Added properties Fltplot to store the user input to apply fitler or not
+
     % Plot name
     obj.dot.SystemErrorName = obj.filt.Name;
     % System Error ID
@@ -71,5 +73,8 @@ function fillDotInfo(obj)
     %obj.box.MonthFilter = obj.filt.DateString;
     end
     %obj.dot.MonthFilter = obj.filt.DateString;
+    
+    % Pass filter or not command from filt to obj.dot
+    obj.dot.Fltplot = obj.filt.fltplot;
     
 end

@@ -53,6 +53,11 @@ function fillDotData(obj, groupCode, group2Code)
     vehtype = obj.filt.vehtype;
     vehicle = obj.filt.vehicle;
     
+    % Filtering threshold pass
+    treshold_L = obj.filt.RawLowerVal;
+    treshold_H = obj.filt.RawUpperVal;
+    
+    
     % If group2Code wasn't passed in
     if ~exist('group2Code','var')
         % Set it to -1 so it doesn't do anything
@@ -89,7 +94,7 @@ function fillDotData(obj, groupCode, group2Code)
         % if exclude start date or exclude to date is missing
         if ~isfield(obj.filt,'exFromDateString')&&~isfield(obj.filt,'exToDateString')
         %if isempty(obj.filt.exFromDateString)&& ~isempty(obj.filt.exToDateString)
-          d = obj.getMinMaxData(pdid,'software',sw,'date',date,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
+          d = obj.getMinMaxData(pdid,'software',sw,'date',date,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle,'thresholdlow',treshold_L,'thresholdhi',treshold_H);
         %elseif ~isempty(obj.filt.exFromDateString)&& ~isempty(obj.filt.exToDateString)
         else
           if ~isfield(obj.filt,'exFromDateString')

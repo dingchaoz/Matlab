@@ -181,6 +181,9 @@ function data = getMinMaxData(obj, pdid, varargin)
     p.addParamValue('vehtype', {''}, @iscellstr)
     p.addParamValue('vehicle', {''}, @iscellstr)
     p.addParamValue('rating', {''}, @iscellstr)
+    % Add thresholds low and upper
+    p.addParamValue('thresholdlow', [], @isnumeric)
+    p.addParamValue('thresholdhi', [], @isnumeric)
     
     % Parse the actual inputs passed in
     p.parse(varargin{:});

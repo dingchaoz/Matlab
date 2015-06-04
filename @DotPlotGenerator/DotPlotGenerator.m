@@ -10,6 +10,8 @@ classdef DotPlotGenerator < handle
 %       - Added Fault Code matching information
 %   Revised - Dingchao Zhang - June 1st, 2015
 %       - Added properties to store exclude dates
+%   Revised - Dingchao Zhang - June 4, 2015
+%       - Added properties Fltplot to store the user input to apply fitler or not
         
     
     properties
@@ -45,6 +47,8 @@ classdef DotPlotGenerator < handle
         GroupOrder
         Labels2
         Group2Order
+        % Added a filed to store the user input to apply fitler or not
+        Fltplot
        
     end
     
