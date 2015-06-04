@@ -16,6 +16,8 @@ function fillDotInfo(obj)
 %     - Merged Sri's functions for the dot plot into the main code
 %   Revised - Dingchao Zhang - May 15, 2015
 %     - Modified the MonthFilter display
+%   Revised - Dingchao Zhang - May 29, 2015
+%     - Added lines to pass by excluding a period of dates
     
     % Plot name
     obj.dot.SystemErrorName = obj.filt.Name;

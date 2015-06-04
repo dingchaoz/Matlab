@@ -147,6 +147,8 @@ function data = getMinMaxData(obj, pdid, varargin)
 
 %   Revised - Yiyuan Chen - 2015/04/05
 %     - Modified the SQL query to fetch data from Acadia's archived database as well
+%   Revised - Dingchao Zhang - June 2, 2015
+%     - Improved excluding dates query lines to handle incomplete inputs 
 
     
     %% Process the inputs
