@@ -110,6 +110,9 @@ function data = getEventFCData(obj, SEID, varargin)
 %   data:      Structure of data straight from the database toolbox
 %   
 %   Original Version - Dingchao Zhang - March 23, 2015
+%   Revised - Dingchao Zhang - June 4, 2015
+%     - Added lines to excluding certain dates when querying fault code
+%     data
 
     
     %% Process the inputs
@@ -120,7 +123,19 @@ function data = getEventFCData(obj, SEID, varargin)
     p.addParamValue('family', 'all', @ischar)%antiquated
     p.addParamValue('truck', 'all', @ischar)%antiquated
     p.addParamValue('software', [], @isnumeric)
-    p.addParamValue('date', [], @isnumeric)
+    %if there is only include dates input by user, generate one date array
+    % if exclude start date or exclude to date is missing
+    %if ~isfield(obj.filt,'exFromDateString')|~isfield(obj.filt,'exToDateString')
+    if strcmp(varargin(4),'date')
+      % then add only one date array  
+      p.addParamValue('date', [], @isnumeric)
+    % if exclude start date and exclude to date are both existing
+    %elseif ~isempty(obj.filt.exFromDateString)& ~isempty(obj.filt.exToDateString)
+    elseif strcmp(varargin(4),'date_a')
+       % add two date array, date_a and date_b
+       p.addParamValue('date_a', [], @isnumeric)
+       p.addParamValue('date_b', [], @isnumeric)
+    end
     p.addParamValue('emb', 0, @isnumeric)
     p.addParamValue('trip', 0, @isnumeric)
     p.addParamValue('grouping', NaN, @isnumeric)%antiquated
@@ -336,25 +351,51 @@ function where = makeWhere(xseid, args)
             error('Capability:getEventData:InvalidTruck','''truck'' input must be either ''all'', ''field'', or ''eng''');
     end
     
-    %% Add filtering by the date
+     %% Add filtering by the date
     % If the input is not an empty set (the default to indicate no software filter)
-    if ~isempty(args.date)
-        % If the array has a length of two
-        if length(args.date) == 2
-            % If the first value of the two passed in was a NaN ([NaN 734929])
-            if isnan(args.date(1)) && ~isnan(args.date(2)) % Keep evenything up to the second date
-                where = sprintf('%s And [datenum] < %f',where,args.date(2));
-            % If the second value of the two passed in was a NaN ([734929 NaN])
-            elseif isnan(args.date(2)) && ~isnan(args.date(1)) % Keep everything after the fisrt date
-                where = sprintf('%s And [datenum] > %f',where,args.date(1));
-            elseif ~isnan(args.date(2)) && ~isnan(args.date(1)) % Nither was a NaN, use both value to filter between the range
-                where = sprintf('%s And [datenum] Between %f And %f',where,args.date(1),args.date(2));
-            % else both were a NaN, don't do any filtering
+    if isfield(args,'date')
+        if ~isempty(args.date)
+            % If the array has a length of two
+            if length(args.date) == 2
+                % If the first value of the two passed in was a NaN ([NaN 734929])
+                if isnan(args.date(1)) && ~isnan(args.date(2)) % Keep evenything up to the second date
+                    where = sprintf('%s And [datenum] < %f',where,args.date(2));
+                % If the second value of the two passed in was a NaN ([734929 NaN])
+                elseif isnan(args.date(2)) && ~isnan(args.date(1)) % Keep everything after the fisrt date
+                    where = sprintf('%s And [datenum] > %f',where,args.date(1));
+                elseif ~isnan(args.date(2)) && ~isnan(args.date(1)) % Nither was a NaN, use both value to filter between the range
+                    where = sprintf('%s And [datenum] Between %f And %f',where,args.date(1),args.date(2));
+                % else both were a NaN, don't do any filtering
+                end
+            else
+                error('Capability:getEventData:InvalidInput', 'Invalid input for property ''date''')
             end
-        else
-            error('Capability:getEventData:InvalidInput', 'Invalid input for property ''date''')
         end
+   elseif isfield(args,'date_a')& isfield(args,'date_b')
+      if ~isempty(args.date_a) &  ~isempty(args.date_b)
+            % If the array has a length of two
+            %if length(args.date_a) == 2 & length(args.date_b) == 2
+                if ~isnan(args.date_a(1)) && length(args.date_a) == 2
+                    where = sprintf('%s And ([datenum] Between %f And %f',where,args.date_a(1),args.date_a(2));      
+                elseif length(args.date_a) == 1
+                    %where = sprintf('%s And ([datenum] >= %f',where,args.date_a(1));
+                    where = where;
+                elseif isnan(args.date_a(1)) && length(args.date_a) == 2
+                    where = sprintf('%s And ([datenum] <= %f',where,args.date_a(2));
+                end
+                if length(args.date_b) == 2 && length(args.date_a) == 2
+                    where = sprintf('%s Or [datenum] Between %f And %f)',where,args.date_b(1),args.date_b(2));
+                elseif length(args.date_a) == 1
+                    where = sprintf('%s And [datenum] Between %f And %f',where,args.date_b(1),args.date_b(2));
+                else
+                    where = strcat(where,')');
+                end   
+      else
+             error('Capability:getEventData:InvalidInput', 'Invalid input for property ''date''')
+            %end
+      end
     end
+    
     
     %% Add filtering by the software version
     % If the input is not an empty set (the default to indicate no software filter)

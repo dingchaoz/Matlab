@@ -138,7 +138,10 @@ function data = getEventData(obj, SEID, varargin)
 %     - Modified the SQL query to fetch data from Acadia's archived database as well
 %   Revised - Yiyuan Chen - 2015/04/06
 %     - Modified the SQL query to fetch data from Seahawk's archived database as well, which stores SEID 8289 with 32160014
-    
+%   Revised - Dingchao Zhang - June 4, 2015
+%     - Added lines to query data by excluding a period of dates for
+%     EventDrive
+     
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
     p = inputParser;
@@ -348,7 +351,7 @@ function where = makeWhere(xseid, args)
                 % else both were a NaN, don't do any filtering
                 end
             else
-                error('Capability:getMinMaxData:InvalidInput', 'Invalid input for property ''date''')
+                error('Capability:getEventData:InvalidInput', 'Invalid input for property ''date''')
             end
         end
    elseif isfield(args,'date_a')& isfield(args,'date_b')
@@ -371,7 +374,7 @@ function where = makeWhere(xseid, args)
                     where = strcat(where,')');
                 end   
       else
-             error('Capability:getMinMaxData:InvalidInput', 'Invalid input for property ''date''')
+             error('Capability:getEventData:InvalidInput', 'Invalid input for property ''date''')
             %end
       end
     end

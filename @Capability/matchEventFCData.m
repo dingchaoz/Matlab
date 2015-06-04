@@ -92,6 +92,9 @@ function [matched, header] = matchEventFCData(obj, SEID, varargin)
 %              actual data values
 %   
 %   Original Version - Dingchao Zhang - March 23, 2015
+%   Revised - Dingchao Zhang - June 4, 2015
+%     - Added lines to excluding certain dates when querying fault code
+%     data
 
 
     %% Process the inputs
@@ -448,25 +451,51 @@ function where = makeWhere(xseid, args)
             error('Capability:matchEventData:InvalidTruck','''truck'' input must be either ''all'', ''field'', or ''eng''');
     end
     
-    %% Add filtering by the date
+     %% Add filtering by the date
     % If the input is not an empty set (the default to indicate no software filter)
-    if ~isempty(args.date)
-        % If the array has a length of two
-        if length(args.date) == 2
-            % If the first value of the two passed in was a NaN ([NaN 734929])
-            if isnan(args.date(1)) && ~isnan(args.date(2)) % Keep evenything up to the second date
-                where = sprintf('%s And [datenum] < %f',where,args.date(2));
-            % If the second value of the two passed in was a NaN ([734929 NaN])
-            elseif isnan(args.date(2)) && ~isnan(args.date(1)) % Keep everything after the fisrt date
-                where = sprintf('%s And [datenum] > %f',where,args.date(1));
-            elseif ~isnan(args.date(2)) && ~isnan(args.date(1)) % Nither was a NaN, use both value to filter between the range
-                where = sprintf('%s And [datenum] Between %f And %f',where,args.date(1),args.date(2));
-            % else both were a NaN, don't do any filtering
+    if isfield(args,'date')
+        if ~isempty(args.date)
+            % If the array has a length of two
+            if length(args.date) == 2
+                % If the first value of the two passed in was a NaN ([NaN 734929])
+                if isnan(args.date(1)) && ~isnan(args.date(2)) % Keep evenything up to the second date
+                    where = sprintf('%s And [datenum] < %f',where,args.date(2));
+                % If the second value of the two passed in was a NaN ([734929 NaN])
+                elseif isnan(args.date(2)) && ~isnan(args.date(1)) % Keep everything after the fisrt date
+                    where = sprintf('%s And [datenum] > %f',where,args.date(1));
+                elseif ~isnan(args.date(2)) && ~isnan(args.date(1)) % Nither was a NaN, use both value to filter between the range
+                    where = sprintf('%s And [datenum] Between %f And %f',where,args.date(1),args.date(2));
+                % else both were a NaN, don't do any filtering
+                end
+            else
+                error('Capability:getEventData:InvalidInput', 'Invalid input for property ''date''')
             end
-        else
-            error('Capability:matchEventData:InvalidInput', 'Invalid input for property ''date''')
         end
+   elseif isfield(args,'date_a')& isfield(args,'date_b')
+      if ~isempty(args.date_a) &  ~isempty(args.date_b)
+            % If the array has a length of two
+            %if length(args.date_a) == 2 & length(args.date_b) == 2
+                if ~isnan(args.date_a(1)) && length(args.date_a) == 2
+                    where = sprintf('%s And ([datenum] Between %f And %f',where,args.date_a(1),args.date_a(2));      
+                elseif length(args.date_a) == 1
+                    %where = sprintf('%s And ([datenum] >= %f',where,args.date_a(1));
+                    where = where;
+                elseif isnan(args.date_a(1)) && length(args.date_a) == 2
+                    where = sprintf('%s And ([datenum] <= %f',where,args.date_a(2));
+                end
+                if length(args.date_b) == 2 && length(args.date_a) == 2
+                    where = sprintf('%s Or [datenum] Between %f And %f)',where,args.date_b(1),args.date_b(2));
+                elseif length(args.date_a) == 1
+                    where = sprintf('%s And [datenum] Between %f And %f',where,args.date_b(1),args.date_b(2));
+                else
+                    where = strcat(where,')');
+                end   
+      else
+             error('Capability:MatchEventFCData:InvalidInput', 'Invalid input for property ''date''')
+            %end
+      end
     end
+    
     
     %% Add filtering by the software version
     % If the input is not an empty set (the default to indicate no software filter)
