@@ -37,7 +37,10 @@ function fillDotData(obj, groupCode, group2Code)
 % Add the Fault Code group data to the obg.dot.FaultCode.GroupData, 
 % GroupOrder,Group2Data, Group2Order objects if required by grouping
 %   Revised - Dingchao Zhang - May 29, 2015
-%     - Added lines to query data by excluding a period of dates
+%     - Added lines to query data by excluding a period of dates for MinMax
+%   Revised - Dingchao Zhang - June 4, 2015
+%     - Added lines to query data by excluding a period of dates for
+%     EventDrive
  
     
     % Pull out the filtering values from the filt structure
@@ -153,8 +156,24 @@ function fillDotData(obj, groupCode, group2Code)
         ExtID = obj.filt.ExtID;
         
         % Try to fetch the data with the specified filtering conditions
-        %d = obj.getEventData(SEID,ExtID,'software',sw,'date',date,'trip',trip,'emb',emb,'grouping',groupCode,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
-        d = obj.getEventData(SEID,ExtID,'software',sw,'date',date,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
+        % if exclude start date or exclude to date is missing
+        if ~isfield(obj.filt,'exFromDateString')&&~isfield(obj.filt,'exToDateString')
+        %if isempty(obj.filt.exFromDateString)&& ~isempty(obj.filt.exToDateString)
+          %d = obj.getEventData(pdid,'software',sw,'date',date,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
+          d = obj.getEventData(SEID,ExtID,'software',sw,'date',date,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
+          %elseif ~isempty(obj.filt.exFromDateString)&& ~isempty(obj.filt.exToDateString)
+        else
+          if ~isfield(obj.filt,'exFromDateString')
+              obj.filt.exFromDateString = '';
+          end
+          if ~isfield(obj.filt,'exToDateString')
+              obj.filt.exToDateString = '';
+          end  
+          date_a = [date(1),datenum(obj.filt.exFromDateString)];
+          date_b = [datenum(obj.filt.exToDateString),date(2)];
+          d = obj.getEventData(SEID,ExtID,'software',sw,'date_a',date_a,'date_b',date_b,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
+        end
+        
         
         % If there was no data for this parameter
         if ~isfield(d,'DataValue')
@@ -167,7 +186,14 @@ function fillDotData(obj, groupCode, group2Code)
         % Set the label for the data set that is being plotted
         obj.dot.DataType = 'Event Driven Data';       
         % Add the Fault Code matching data to the obg.dot object
-        if ~isempty(d.fc)
+%         if ~isempty(d.fc)
+%           obj.dot.FaultCode = d.fc;
+%         else
+%           obj.dot.FaultCode = [];
+%         end
+        
+         % Add the Fault Code matching data to the obg.dot object
+        if isfield(d,'fc')
           obj.dot.FaultCode = d.fc;
         else
           obj.dot.FaultCode = [];
