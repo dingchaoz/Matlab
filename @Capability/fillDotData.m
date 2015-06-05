@@ -194,6 +194,7 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
         case 4 % Group data by trip flag
             % Set the group data to be the trip flag
             obj.dot.GroupData = cellfun(@num2str, d.TripFlag, 'UniformOutput', 0);
+            obj.dot.GroupData = cellfun(@strcat, strcat('TripFlag=',obj.dot.Group2Data), 'UniformOutput', 0);
             % Set the group order and labels to their default
             obj.dot.Labels = [];
             obj.dot.GroupOrder = [];   
@@ -250,6 +251,7 @@ function assignGroupDataE(obj, d, groupCode, group2Code)
         case 4 % Group data by trip flag
             % Set the group data to be the trip flag
             obj.dot.Group2Data = cellfun(@num2str, d.TripFlag, 'UniformOutput', 0);
+            obj.dot.Group2Data = cellfun(@strcat, strcat('TripFlag=',obj.dot.Group2Data), 'UniformOutput', 0);
             % Set the group order and labels to their default
             obj.dot.Labels2 = [];
             obj.dot.Group2Order = [];
@@ -312,6 +314,7 @@ function assignGroupDataM(obj, d, groupCode, group2Code, double)
             obj.dot.Labels = [];
             obj.dot.GroupOrder = [];
             obj.dot.GroupData = cellfun(@num2str, d.TripFlag, 'UniformOutput', 0);
+            obj.dot.GroupData = cellfun(@strcat, strcat('TripFlag=',obj.dot.Group2Data), 'UniformOutput', 0);
     end
     
     % Set the second grouping based on the group2Code passed in
@@ -369,6 +372,7 @@ function assignGroupDataM(obj, d, groupCode, group2Code, double)
             obj.dot.Labels2 = [];
             obj.dot.Group2Order = [];
             obj.dot.Group2Data = cellfun(@num2str, d.TripFlag, 'UniformOutput', 0);
+            obj.dot.Group2Data = cellfun(@strcat, strcat('TripFlag=',obj.dot.Group2Data), 'UniformOutput', 0);
     end
     
     % If Min and Max data are being plotted together
