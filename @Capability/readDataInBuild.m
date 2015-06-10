@@ -97,7 +97,7 @@ function data = readDataInBuild(obj, fileName, cal)
     
     % For each line of formatted data (with pipes added)
     for i = 1:length(rawData)
-        % Read in each column using the group separator cahracter as the delimites
+        % Read in each column using the group separator character as the delimites
         oneRow = textscan(rawData{i}, '%s %s %s %s %n %n %n %s %s %s %n %s %s %s %n %n %s %s %s %n %n %s %n %n %n %n %s %s %n %s %s %s %n %s', 'delimiter', char(29));
         
         % Since textscan is only doing one line at a time and returns
@@ -108,8 +108,20 @@ function data = readDataInBuild(obj, fileName, cal)
         for j = 1:34
             % If there's a cell in a cell
             if iscell(oneRow{j}) && ~isempty(oneRow{j})
-                % Get rid of that cell
-                data(i,j) = oneRow{j};
+                try % Get rid of that cell
+                    data(i,j) = oneRow{j};
+                catch ME
+                    if strcmp(obj.program, 'Ayrton')
+                        % There is a 2*1 cell in the 1st cell of oneRow, due to 
+                        % the shifted cell in Column 35 in some Ayrton datainbuild files
+                        oneRow{34} = {oneRow{1}{2}};
+                        oneRow{1} = {oneRow{1}{1}};
+                        data(i,j) = oneRow{j};
+                    else
+                        % For other programs, skip & display the error msg
+                        error(ME.message)
+                    end
+                end
             % Elseif there's an empty cell in a cell
             elseif iscell(oneRow{j}) && isempty(oneRow{j})
                 % Set to empty char array
