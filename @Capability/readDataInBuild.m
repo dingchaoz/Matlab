@@ -25,6 +25,9 @@ function data = readDataInBuild(obj, fileName, cal)
 %         with a pipe character | to use instead as a delimiter. This was needed as there
 %         are some fileds whose values contain commas, confusing textscan when it attempts
 %         to read in the line and messing up the columns
+%   Revised - Yiyuan Chen - 2015/06/09
+%       - Modified to rectify bad cells recognized by Matlab due to shifted columns in 
+%         Ayrton's datainbuild file 
     
     % Open the file for reading
     fid = fopen(fileName); % addDataInBuild already checks for a valid file

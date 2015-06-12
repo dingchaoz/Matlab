@@ -138,7 +138,9 @@ function data = getEventData(obj, SEID, varargin)
 %     - Modified the SQL query to fetch data from Acadia's archived database as well
 %   Revised - Yiyuan Chen - 2015/04/06
 %     - Modified the SQL query to fetch data from Seahawk's archived database as well, which stores SEID 8289 with 32160014
-    
+%   Revised - Yiyuan Chen - 2015/05/31
+%     - Modified the SQL query to fetch data from Seahawk's archived database as well
+
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
     p = inputParser;
