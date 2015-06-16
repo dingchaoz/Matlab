@@ -180,11 +180,11 @@ exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_130 kW FOTON'),'Ayr
 % Sierra Root
 sierraRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Sierra_L';
 % Sierra Default (use the L330 family)
-exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\L330UBus'),'Sierra','Default','BGU')
+exportThresholds(r,l,fullfile(sierraRoot,'MY17\L330UBus'),'Sierra','Default','BGU')
 % Sierra_L350
-exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\L350'),'Sierra','Sierra_L350','BGU')
+exportThresholds(r,l,fullfile(sierraRoot,'MY17\L350'),'Sierra','Sierra_L350','BGU')
 % Sierra_L450
-exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\L450'),'Sierra','Sierra_L450','BGU')
+exportThresholds(r,l,fullfile(sierraRoot,'MY17\L450'),'Sierra','Sierra_L450','BGU')
 
 %% Vanguard
 % Vanguard Root
