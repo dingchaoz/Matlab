@@ -181,7 +181,7 @@ function data = getMinMaxData(obj, pdid, varargin)
     p.addParamValue('vehtype', {''}, @iscellstr)
     p.addParamValue('vehicle', {''}, @iscellstr)
     p.addParamValue('rating', {''}, @iscellstr)
-    % Add thresholds low and upper
+    %Add thresholds low and upper
     p.addParamValue('thresholdlow', [], @isnumeric)
     p.addParamValue('thresholdhi', [], @isnumeric)
     
@@ -232,7 +232,7 @@ function data = getMinMaxData(obj, pdid, varargin)
     end
     
     %% Generate the WHERE clause
-    where = makeWhere(pdid, p.Results);
+    where = makeWhere(pdid, p.Results, obj);
     
     %% Fetch the data
     % Formulate the entire SQL query for Pacific with its two archived databases
@@ -268,12 +268,13 @@ function data = getMinMaxData(obj, pdid, varargin)
             ' ORDER BY [TruckName], [datenum] ASC'];
     end
     
+    
     % Move to the use of the common tryfetch to get the data
     data = obj.tryfetch(sql,100000);
     
 end
 
-function where = makeWhere(pdid, args)
+function where = makeWhere(pdid, args, obj)
     % This function processses the input options and generates the proper WHERE clause
     
     % Start the where clause with the Public Data ID
@@ -546,4 +547,45 @@ function where = makeWhere(pdid, args)
         % No filtering is needed for 'All' vehicles
     end
     
+    % Add threshold filtering criteria to where statement
+    % if user selects to apply filter to Yes
+    if isfield(obj.filt,'fltplot')& strcmp(obj.filt.fltplot,'Yes')
+        % if there are both LSL and ULS
+        if ~isnan(obj.filt.LSL) & ~isnan(obj.filt.USL)
+          % if user put both high and low thresholds
+          if ~isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataMin] <= %f %s [DataMax] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
+          % else if there is only upper threshold input
+          elseif  isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataMax] >= %f',where,obj.filt.RawUpperVal);
+           % else if there is only lower threshold input
+          elseif  ~isnan(obj.filt.RawLowerVal) & isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataMin] <= %f',where,obj.filt.RawLowerVal);
+          end
+        % if there is only LSL
+        elseif ~isnan(obj.filt.LSL) & isnan(obj.filt.USL)
+            % if user put both high and low thresholds
+          if ~isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataMin] <= %f %s [DataMin] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
+          % else if there is only upper threshold input
+          elseif  isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataMin] >= %f',where,obj.filt.RawUpperVal);
+           % else if there is only lower threshold input
+          elseif  ~isnan(obj.filt.RawLowerVal) & isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataMin] <= %f',where,obj.filt.RawLowerVal);
+          end 
+        % if there is only LSL
+        elseif isnan(obj.filt.LSL) & ~isnan(obj.filt.USL)
+            % if user put both high and low thresholds
+          if ~isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataMax] <= %f %s [DataMax] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
+          % else if there is only upper threshold input
+          elseif  isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataMax] >= %f',where,obj.filt.RawUpperVal);
+           % else if there is only lower threshold input
+          elseif  ~isnan(obj.filt.RawLowerVal) & isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataMax] <= %f',where,obj.filt.RawLowerVal);
+          end 
+        end
+    end
 end

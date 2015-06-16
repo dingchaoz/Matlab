@@ -74,7 +74,9 @@ function fillDotInfo(obj)
     end
     %obj.dot.MonthFilter = obj.filt.DateString;
     
+    if isfield(obj.filt,'exFromDateString')
     % Pass filter or not command from filt to obj.dot
-    obj.dot.Fltplot = obj.filt.fltplot;
+      obj.dot.Fltplot = obj.filt.fltplot;
+    end
     
 end
