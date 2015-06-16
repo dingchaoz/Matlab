@@ -5,7 +5,8 @@ function SyncSuppData(varargin)
 %   error_table file if it is in the same directory
 %   
 %   Original Version - Chris Remington - January 20, 2014
-%   Revised - N/A - N/A
+%   Revised - Yiyuan Chen - 2015/06/09
+%       - Modified to skip an error and move to the next upload
     
     % Define the staring data folder
     %rootDir = 'D:\Matlab\NewIUPR_DB\data';
@@ -24,7 +25,7 @@ function SyncSuppData(varargin)
     end
     
     % For each engine program
-    for i = 1:length(programs)
+    for i = 2:length(programs)
         
         try
             % Open the connections to the right databases
@@ -45,90 +46,98 @@ function SyncSuppData(varargin)
         
         % Loop through each software version
         for j = 3:length(swVers)
-            %% errtable.xml
-            % Full path to where the error_table file should be
-            errorTableFile = fullfile(swDir,swVers{j},'error_table');
-            % Check if there is an error_table present to compare with the errtable.xml
-            if exist(errorTableFile,'file')
-                try
-                    % Get the number of rows
-                    errorTableRows = GetErrorTableRows(errorTableFile);
-                catch ex
-                    disp('!!!!!!!!! Failed to properly read in the error_table file.')
-                    disp(ex.getReport);
-                end
-            else
-                % Set the rows to NaN
-                errorTableRows = NaN;
-            end
-            
-            % Is there already data present for this software version
-            data = fetch(capdb.conn, sprintf('SELECT COUNT([Error_Table_ID]) As DataPts FROM [dbo].[tblErrTable] WHERE [SoftwareVersion] = %s',swVers{j}));
-            
-            % If the result was zero data points present
-            if data.DataPts == 0
-                % Calculate the file name
-                fileName = fullfile(swDir,swVers{j},'errtable.xml');
-                % If the errtable.xml file is present
-                if exist(fileName,'file')
-                    % Display a message the data is going to be uploaded
-                    fprintf('Software version %s - Adding errtable.xml to %s database.\r',swVers{j},programs{i});
-                    % Upload the errtable.xml file
-                    capdb.addErrTable(fileName,str2double(swVers{j}))
+            try
+                %% errtable.xml
+                % Full path to where the error_table file should be
+                errorTableFile = fullfile(swDir,swVers{j},'error_table');
+                % Check if there is an error_table present to compare with the errtable.xml
+                if exist(errorTableFile,'file')
+                    try
+                        % Get the number of rows
+                        errorTableRows = GetErrorTableRows(errorTableFile);
+                    catch ex
+                        disp('!!!!!!!!! Failed to properly read in the error_table file.')
+                        disp(ex.getReport);
+                    end
                 else
-                    % Display a warning that the file wasn't found
-                    fprintf('errtable.xml file %s wasn''t found, skipping this software upload.\r',fileName)
-                    % Skip the rest of the checks
-                    %continue
+                    % Set the rows to NaN
+                    errorTableRows = NaN;
                 end
                 
-                % Count the number of records added
+                % Is there already data present for this software version
                 data = fetch(capdb.conn, sprintf('SELECT COUNT([Error_Table_ID]) As DataPts FROM [dbo].[tblErrTable] WHERE [SoftwareVersion] = %s',swVers{j}));
                 
-            else
-                % Display a message
-                fprintf('Software version %s - errtable.xml already in %s database - %.0f records are present.\r',swVers{j},programs{i},data.DataPts);
-            end
-            
-            if isnan(errorTableRows)
-                % Say that it was missing
-                disp('error_table wasn''t found for this software.');
-            elseif errorTableRows~=data.DataPts
-                % Note that they don't match
-                disp('========>!!! errtable.xml and error_table do NOT match length.')
-            else
-                % They match length
-                %disp('errtable.xml and error_table match length.')
-            end
-            
-            %% datainbuild.csv
-            
-            % Is there already data present for this software version
-            data2 = fetch(capdb.conn, sprintf('SELECT COUNT([Data]) As DataPts FROM [dbo].[tblDataInBuild] WHERE [Calibration] = %s',swVers{j}));
-            
-            % If the result was zero data points present
-            if data2.DataPts == 0
-                % Calculate the file name
-                fileName2 = fullfile(swDir,swVers{j},'datainbuild.csv');
-                % If the errtable.xml file is present
-                if exist(fileName2,'file')
-                    % Display a message the data is going to be uploaded
-                    fprintf('Software version %s - Adding datainbuld.csv to %s database.\r',swVers{j},programs{i});
-                    % Upload the errtable.xml file
-                    capdb.addDataInBuild(fileName2,str2double(swVers{j}))
+                % If the result was zero data points present
+                if data.DataPts == 0
+                    % Calculate the file name
+                    fileName = fullfile(swDir,swVers{j},'errtable.xml');
+                    % If the errtable.xml file is present
+                    if exist(fileName,'file')
+                        % Display a message the data is going to be uploaded
+                        fprintf('Software version %s - Adding errtable.xml to %s database.\r',swVers{j},programs{i});
+                        % Upload the errtable.xml file
+                        capdb.addErrTable(fileName,str2double(swVers{j}))
+                    else
+                        % Display a warning that the file wasn't found
+                        fprintf('errtable.xml file %s wasn''t found, skipping this software upload.\r',fileName)
+                        % Skip the rest of the checks
+                        %continue
+                    end
+                    
+                    % Count the number of records added
+                    data = fetch(capdb.conn, sprintf('SELECT COUNT([Error_Table_ID]) As DataPts FROM [dbo].[tblErrTable] WHERE [SoftwareVersion] = %s',swVers{j}));
+                    
                 else
-                    % Display a warning that the file wasn't found
-                    fprintf('datainbuild.csv file %s wasn''t found, skipping this software upload.\r',fileName2)
-                    % Skip the rest of the checks
-                    %continue
+                    % Display a message
+                    fprintf('Software version %s - errtable.xml already in %s database - %.0f records are present.\r',swVers{j},programs{i},data.DataPts);
                 end
                 
-                % Count the number of records added
-                %data2 = fetch(capdb.conn, sprintf('SELECT COUNT([Data]) As DataPts FROM [dbo].[tblDataInBuild] WHERE [Calibration] = %s',swVers{j}));
+                if isnan(errorTableRows)
+                    % Say that it was missing
+                    disp('error_table wasn''t found for this software.');
+                elseif errorTableRows~=data.DataPts
+                    % Note that they don't match
+                    disp('========>!!! errtable.xml and error_table do NOT match length.')
+                else
+                    % They match length
+                    %disp('errtable.xml and error_table match length.')
+                end
                 
-            else
-                % Display a message
-                fprintf('Software version %s - datainbuild.csv already in %s database - %.0f records are present.\r',swVers{j},programs{i},data2.DataPts);
+                %% datainbuild.csv
+                
+                % Is there already data present for this software version
+                data2 = fetch(capdb.conn, sprintf('SELECT COUNT([Data]) As DataPts FROM [dbo].[tblDataInBuild] WHERE [Calibration] = %s',swVers{j}));
+                
+                % If the result was zero data points present
+                if data2.DataPts == 0
+                    % Calculate the file name
+                    fileName2 = fullfile(swDir,swVers{j},'datainbuild.csv');
+                    % If the errtable.xml file is present
+                    if exist(fileName2,'file')
+                        % Display a message the data is going to be uploaded
+                        fprintf('Software version %s - Adding datainbuld.csv to %s database.\r',swVers{j},programs{i});
+                        % Upload the errtable.xml file
+                        capdb.addDataInBuild(fileName2,str2double(swVers{j}))
+                    else
+                        % Display a warning that the file wasn't found
+                        fprintf('datainbuild.csv file %s wasn''t found, skipping this software upload.\r',fileName2)
+                        % Skip the rest of the checks
+                        %continue
+                    end
+                    
+                    % Count the number of records added
+                    %data2 = fetch(capdb.conn, sprintf('SELECT COUNT([Data]) As DataPts FROM [dbo].[tblDataInBuild] WHERE [Calibration] = %s',swVers{j}));
+                    
+                else
+                    % Display a message
+                    fprintf('Software version %s - datainbuild.csv already in %s database - %.0f records are present.\r',swVers{j},programs{i},data2.DataPts);
+                end
+                
+            catch ME
+                disp(' ')
+                disp(ME.message)
+                disp(' ')
+                continue
             end
             
         end % software version

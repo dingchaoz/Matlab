@@ -97,6 +97,7 @@ progMap = {
 % 'Display Name',                              'Database Name'
   'Acadia',                                    'Acadia';
   'Atlantic',                                  'Atlantic';
+  'Ayrton',                                    'Ayrton';
   'Blazer',                                    'Blazer';
   'Bronco',                                    'Bronco';
   'Clydesdale',                                'Clydesdale';
