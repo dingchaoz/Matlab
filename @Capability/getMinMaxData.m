@@ -149,6 +149,8 @@ function data = getMinMaxData(obj, pdid, varargin)
 %     - Modified the SQL query to fetch data from Acadia's archived database as well
 %   Revised - Dingchao Zhang - June 2, 2015
 %     - Improved excluding dates query lines to handle incomplete inputs 
+%   Revised - Dingchao Zhang - June 19, 2015
+%     - Added lines to handle filtering minmax plot using user input thresholds 
 
     
     %% Process the inputs
@@ -551,20 +553,10 @@ function where = makeWhere(pdid, args, obj)
     % if user selects to apply filter to Yes
     if isfield(obj.filt,'fltplot')& strcmp(obj.filt.fltplot,'Yes')
         % if there are both LSL and ULS
-        if ~isnan(obj.filt.LSL) & ~isnan(obj.filt.USL)
+        % if ~isnan(obj.filt.LSL) & ~isnan(obj.filt.USL)
+        % if filter by minvalue 
+        if strcmp(obj.filt.MinOrMax,'valuemin')
           % if user put both high and low thresholds
-          if ~isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
-            where = sprintf('%s And [DataMin] <= %f %s [DataMax] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
-          % else if there is only upper threshold input
-          elseif  isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
-            where = sprintf('%s And [DataMax] >= %f',where,obj.filt.RawUpperVal);
-           % else if there is only lower threshold input
-          elseif  ~isnan(obj.filt.RawLowerVal) & isnan(obj.filt.RawUpperVal)
-            where = sprintf('%s And [DataMin] <= %f',where,obj.filt.RawLowerVal);
-          end
-        % if there is only LSL
-        elseif ~isnan(obj.filt.LSL) & isnan(obj.filt.USL)
-            % if user put both high and low thresholds
           if ~isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
             where = sprintf('%s And [DataMin] <= %f %s [DataMin] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
           % else if there is only upper threshold input
@@ -573,9 +565,11 @@ function where = makeWhere(pdid, args, obj)
            % else if there is only lower threshold input
           elseif  ~isnan(obj.filt.RawLowerVal) & isnan(obj.filt.RawUpperVal)
             where = sprintf('%s And [DataMin] <= %f',where,obj.filt.RawLowerVal);
-          end 
+          end
         % if there is only LSL
-        elseif isnan(obj.filt.LSL) & ~isnan(obj.filt.USL)
+        % if ~isnan(obj.filt.LSL) & ~isnan(obj.filt.USL)
+        % if filter by max value
+        elseif strcmp(obj.filt.MinOrMax,'valuemax')
             % if user put both high and low thresholds
           if ~isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
             where = sprintf('%s And [DataMax] <= %f %s [DataMax] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
@@ -586,6 +580,18 @@ function where = makeWhere(pdid, args, obj)
           elseif  ~isnan(obj.filt.RawLowerVal) & isnan(obj.filt.RawUpperVal)
             where = sprintf('%s And [DataMax] <= %f',where,obj.filt.RawLowerVal);
           end 
+        % if there is only LSL
+%         elseif isnan(obj.filt.LSL) & ~isnan(obj.filt.USL)
+%             % if user put both high and low thresholds
+%           if ~isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
+%             where = sprintf('%s And [DataMax] <= %f %s [DataMax] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
+%           % else if there is only upper threshold input
+%           elseif  isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
+%             where = sprintf('%s And [DataMax] >= %f',where,obj.filt.RawUpperVal);
+%            % else if there is only lower threshold input
+%           elseif  ~isnan(obj.filt.RawLowerVal) & isnan(obj.filt.RawUpperVal)
+%             where = sprintf('%s And [DataMax] <= %f',where,obj.filt.RawLowerVal);
+%           end 
         end
     end
 end
