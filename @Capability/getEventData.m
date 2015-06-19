@@ -530,13 +530,19 @@ function where = makeWhere(xseid, args, obj)
       % Add threshold filtering criteria to where statement
     % if user selects to apply filter to Yes
     if isfield(obj.filt,'fltplot')& strcmp(obj.filt.fltplot,'Yes')
+         %error('Capability:getEventData:inappropriatefiltering','No data found for the specified filtering conditions.');
+        %return;
         % if there are both LSL and ULS
         % if ~isnan(obj.filt.LSL) & ~isnan(obj.filt.USL)
         % if filter by minvalue 
         %if strcmp(obj.filt.MinOrMax,'valuemin')
           % if user put both high and low thresholds
           if ~isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
-            where = sprintf('%s And [DataValue] <= %f %s [DataValue] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
+             if strcmp(obj.filt.RawCondition,'or') & (obj.filt.RawLowerVal >= obj.filt.RawUpperVal)
+                 error('Capability:getEventData:inappropriatefiltering','No data found for the specified filtering conditions.');
+             else
+                 where = sprintf('%s And [DataValue] <= %f %s [DataValue] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
+             end
           % else if there is only upper threshold input
           elseif  isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
             where = sprintf('%s And [DataValue] >= %f',where,obj.filt.RawUpperVal);

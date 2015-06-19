@@ -558,7 +558,11 @@ function where = makeWhere(pdid, args, obj)
         if strcmp(obj.filt.MinOrMax,'valuemin')
           % if user put both high and low thresholds
           if ~isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
-            where = sprintf('%s And [DataMin] <= %f %s [DataMin] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
+             if strcmp(obj.filt.RawCondition,'or') & (obj.filt.RawLowerVal >= obj.filt.RawUpperVal)
+                 error('Capability:getEventData:inappropriatefiltering','No data found for the specified filtering conditions.');  
+             else
+                 where = sprintf('%s And [DataMin] <= %f %s [DataMin] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
+             end
           % else if there is only upper threshold input
           elseif  isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
             where = sprintf('%s And [DataMin] >= %f',where,obj.filt.RawUpperVal);
@@ -572,8 +576,12 @@ function where = makeWhere(pdid, args, obj)
         elseif strcmp(obj.filt.MinOrMax,'valuemax')
             % if user put both high and low thresholds
           if ~isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
-            where = sprintf('%s And [DataMax] <= %f %s [DataMax] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
-          % else if there is only upper threshold input
+             if strcmp(obj.filt.RawCondition,'or') & (obj.filt.RawLowerVal >= obj.filt.RawUpperVal)
+                 error('Capability:getEventData:inappropriatefiltering','No data found for the specified filtering conditions.');
+             else
+                 where = sprintf('%s And [DataMax] <= %f %s [DataMax] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
+             end
+            % else if there is only upper threshold input
           elseif  isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
             where = sprintf('%s And [DataMax] >= %f',where,obj.filt.RawUpperVal);
            % else if there is only lower threshold input

@@ -2485,6 +2485,16 @@ catch ex
             if ishandle(h),delete(h),end
             % Return from the function and don't make the plot
             return
+       case 'Capability:getEventData:inappropriatefiltering'
+        % Display a warning message to the user
+        msgbox('Conflict or Duplicated filtering!',...
+            'Error', 'warn', 'modal')
+        % Reset the dot object to clear the system error information
+        handles.c.dot.reset
+        % Delete the message that data is being fetched from the database
+        if ishandle(h),delete(h),end
+        % Return from the function and don't make the plot
+        return
         otherwise
             % Rethrow the original exception
             rethrow(ex)
