@@ -141,7 +141,8 @@ function data = getEventData(obj, SEID, varargin)
 %   Revised - Dingchao Zhang - June 4, 2015
 %     - Added lines to query data by excluding a period of dates for
 %     EventDrive
-     
+%   Revised - Dingchao Zhang - June 19, 2015
+%     - Added lines to handle filtering eventdriven plot using user input thresholds      
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
     p = inputParser;
@@ -222,7 +223,7 @@ function data = getEventData(obj, SEID, varargin)
     end
     
     %% Generate the WHERE clause
-    where = makeWhere(SEID,p.Results);
+    where = makeWhere(SEID,p.Results,obj);
     
     %% Fetch the data
     % Formulate the entire SQL query for Pacific with its two archived databases
@@ -263,7 +264,7 @@ function data = getEventData(obj, SEID, varargin)
     
 end
 
-function where = makeWhere(xseid, args)
+function where = makeWhere(xseid, args, obj)
     % This function processses the input options and generates the proper WHERE clause
     
     % Evaluate the xseid that was passed in 
@@ -525,7 +526,27 @@ function where = makeWhere(xseid, args)
         end
         % No filtering is needed for 'All' vehicles
     end
-    
+  
+      % Add threshold filtering criteria to where statement
+    % if user selects to apply filter to Yes
+    if isfield(obj.filt,'fltplot')& strcmp(obj.filt.fltplot,'Yes')
+        % if there are both LSL and ULS
+        % if ~isnan(obj.filt.LSL) & ~isnan(obj.filt.USL)
+        % if filter by minvalue 
+        %if strcmp(obj.filt.MinOrMax,'valuemin')
+          % if user put both high and low thresholds
+          if ~isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataValue] <= %f %s [DataValue] >= %f',where,obj.filt.RawLowerVal,obj.filt.RawCondition,obj.filt.RawUpperVal);
+          % else if there is only upper threshold input
+          elseif  isnan(obj.filt.RawLowerVal) & ~isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataValue] >= %f',where,obj.filt.RawUpperVal);
+           % else if there is ongitly lower threshold input
+          elseif  ~isnan(obj.filt.RawLowerVal) & isnan(obj.filt.RawUpperVal)
+            where = sprintf('%s And [DataValue] <= %f',where,obj.filt.RawLowerVal);
+          end
+        
+        %end
+    end
 end
 
 function [seid, extid] = decomposexSEID(xSEID)
