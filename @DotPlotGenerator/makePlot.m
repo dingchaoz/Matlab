@@ -291,9 +291,13 @@ function makePlot(obj, visible)
     titleText = {sprintf('FC %.0f - SEID %.0f - %s',obj.FC,obj.SEID,obj.SystemErrorName)};
     titleText = [titleText {sprintf('Family: %s   Truck Type: %s   Vehicle: %s',obj.FamilyFilter,obj.TruckFilter,obj.VehicleFilter)}];
     titleText = [titleText {sprintf('Dates include: %s   Data Type: %s',obj.MonthFilter,obj.DataType)}];
-    if isprop(obj,'Exdatesfrom') & isprop(obj,'Exdatesto')
+    % if exclude from and to dates are properties of obj
+    if isprop(obj,'Exdatesfrom') && isprop(obj,'Exdatesto')
+        % if at least one of the properties is not empty
+        if ~isempty(obj.Exdatesfrom)||~isempty(obj.Exdatesto)
        %if ~isempty(obj.Exdatesfrom)& ~isempty(obj.Exdatesto)
          titleText = [titleText {sprintf('Exclude date from: %s   to: %s',obj.Exdatesfrom,obj.Exdatesto)}];
+        end
 %        %elseif ~isempty(obj.Exdatesto)
 %          titleText = [titleText {sprintf('Exclude date up to : %s   ',obj.Exdatesfrom)}];
 %        elseif ~isempty(obj.Exdatesfrom)

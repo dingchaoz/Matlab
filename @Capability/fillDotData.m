@@ -168,21 +168,30 @@ function fillDotData(obj, groupCode, group2Code)
         % obj.dot.Fltplot = obj.filt.fltplot;
         
         % Pass fileds to store the filtering criteria provided by users
+        % If filter by max value
         if strcmp(obj.filt.MinOrMax,'valuemax')
             obj.dot.FltValue = 'Max Value';
+        % Else if filter by min value
         elseif strcmp(obj.filt.MinOrMax,'valuemin')
             obj.dot.FltValue = 'Min Value';
         end
-        %obj.dot.FltValue = obj.filt.MinOrMax;
+
+        % Pass the or / and condition
         obj.dot.FltCondition = obj.filt.RawCondition;
+        
+        % Pass and convert from num to str if the rawupper value is not nan
         if ~isnan(obj.filt.RawUpperVal)
          obj.dot.FltUSL = num2str(obj.filt.RawUpperVal);
         else
+        % else pass an empty string
           obj.dot.FltUSL = '';
         end
+        
+         % Pass and convert from num to str if the rawlower value is not nan
         if ~isnan(obj.filt.RawLowerVal)
           obj.dot.FltLSL = num2str(obj.filt.RawLowerVal);
         else
+        % else pass an empty string
           obj.dot.FltLSL = '';
         end
      
@@ -210,6 +219,39 @@ function fillDotData(obj, groupCode, group2Code)
           d = obj.getEventData(SEID,ExtID,'software',sw,'date_a',date_a,'date_b',date_b,'trip',trip,'emb',emb,'fields',fields,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle);
         end
         
+          % Pass the yes or no filter and filter and or no conditions applied to dot
+        if isfield(obj.filt,'fltplot')&& strcmp(obj.filt.fltplot,'Yes')
+            obj.dot.Fltplot = 'Yes';
+            %obj.dot.FltCondition = obj.filt.MinorMax;
+        else
+            obj.dot.Fltplot = 'No';
+            %obj.dot.FltCondition = '';
+        end
+        % Pass the yes or no filter applied to dot
+        % obj.dot.Fltplot = obj.filt.fltplot;
+        
+        % Pass fileds to store the filtering criteria provided by users
+        % Set filter by eventdriven value
+        obj.dot.FltValue = 'Eventdriven Value';
+
+        % Pass the or / and condition
+        obj.dot.FltCondition = obj.filt.RawCondition;
+        
+        % Pass and convert from num to str if the rawupper value is not nan
+        if ~isnan(obj.filt.RawUpperVal)
+         obj.dot.FltUSL = num2str(obj.filt.RawUpperVal);
+        else
+        % else pass an empty string
+          obj.dot.FltUSL = '';
+        end
+        
+         % Pass and convert from num to str if the rawlower value is not nan
+        if ~isnan(obj.filt.RawLowerVal)
+          obj.dot.FltLSL = num2str(obj.filt.RawLowerVal);
+        else
+        % else pass an empty string
+          obj.dot.FltLSL = '';
+        end
         
         % If there was no data for this parameter
         if ~isfield(d,'DataValue')
