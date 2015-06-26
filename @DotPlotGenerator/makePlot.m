@@ -300,6 +300,11 @@ function makePlot(obj, visible)
 %          titleText = [titleText {sprintf('Exclude date to: %s   ',obj.Exdatesfrom)}];
 %        end
     end
+    
+    % if filter is applied, pass the user inputs to the label
+    if strcmp(obj.Fltplot,'Yes')     
+       titleText = [titleText {sprintf('Data is filtered by %s <= %s %s >= %s',obj.FltValue,obj.FltLSL,obj.FltCondition,obj.FltUSL)}];
+    end
     titleText = [titleText {sprintf('%s   Program: %s',getSWFiltStr,obj.Program),''}]; % Software Filter
     title(titleText,'FontSize',13) % Actually set the title
     

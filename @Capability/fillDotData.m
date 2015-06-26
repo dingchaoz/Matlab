@@ -41,6 +41,8 @@ function fillDotData(obj, groupCode, group2Code)
 %   Revised - Dingchao Zhang - June 4, 2015
 %     - Added lines to query data by excluding a period of dates for
 %     EventDrive
+%   Revised - Dingchao Zhang - June 26, 2015
+%       - Added properties  to store the filtering criteria provided by users   
  
     
     % Pull out the filtering values from the filt structure
@@ -154,6 +156,35 @@ function fillDotData(obj, groupCode, group2Code)
             assignGroupDataM(obj, d, groupCode, group2Code, true);
         end
         
+        % Pass the yes or no filter and filter and or no conditions applied to dot
+        if isfield(obj.filt,'fltplot')
+            obj.dot.Fltplot = 'Yes';
+            %obj.dot.FltCondition = obj.filt.MinorMax;
+        else
+            obj.dot.Fltplot = 'No';
+            %obj.dot.FltCondition = '';
+        end
+        % Pass the yes or no filter applied to dot
+        % obj.dot.Fltplot = obj.filt.fltplot;
+        
+        % Pass fileds to store the filtering criteria provided by users
+        if strcmp(obj.filt.MinOrMax,'valuemax')
+            obj.dot.FltValue = 'Max Value';
+        elseif strcmp(obj.filt.MinOrMax,'valuemin')
+            obj.dot.FltValue = 'Min Value';
+        end
+        %obj.dot.FltValue = obj.filt.MinOrMax;
+        obj.dot.FltCondition = obj.filt.RawCondition;
+        if ~isnan(obj.filt.RawUpperVal)
+         obj.dot.FltUSL = num2str(obj.filt.RawUpperVal);
+        else
+          obj.dot.FltUSL = '';
+        end
+        if ~isnan(obj.filt.RawLowerVal)
+          obj.dot.FltLSL = num2str(obj.filt.RawLowerVal);
+        else
+          obj.dot.FltLSL = '';
+        end
      
     else % ExtID ~= NaN
         % Get the SEID and ExtID

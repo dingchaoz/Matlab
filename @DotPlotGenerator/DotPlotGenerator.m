@@ -12,7 +12,8 @@ classdef DotPlotGenerator < handle
 %       - Added properties to store exclude dates
 %   Revised - Dingchao Zhang - June 4, 2015
 %       - Added properties Fltplot to store the user input to apply fitler or not
-        
+%   Revised - Dingchao Zhang - June 26, 2015
+%       - Added properties  to store the filtering criteria provided by users       
     
     properties
         % General information for the title / axis labels
@@ -49,6 +50,11 @@ classdef DotPlotGenerator < handle
         Group2Order
         % Added a filed to store the user input to apply fitler or not
         Fltplot
+        % Added fileds to store the filtering criteria provided by users
+        FltCondition
+        FltValue
+        FltUSL
+        FltLSL
        
     end
     
