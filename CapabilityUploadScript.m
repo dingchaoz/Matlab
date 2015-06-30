@@ -63,6 +63,11 @@ Nighthawk = CapabilityUploader('Nighthawk');
 Nighthawk.dataUploader;
 clear Nighthawk
 
+% Work on Sierra
+Nighthawk = CapabilityUploader('Sierra');
+Sierra.dataUploader;
+clear Sierra
+
 % Move the MR Industrial Data
 MoveMRIndCapData
 
