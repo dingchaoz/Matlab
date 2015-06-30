@@ -134,6 +134,12 @@ exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Seahaw
 % % Seahawk Manual
 % exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Man'),'Seahawk','DragnetPU_Man','BDC')
 
+%%Sierra
+% Sierra Root 
+sierraroot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Sierra_L';
+% sierra default (use the 330UBus)
+exportThresholds(r,l,fullfile(yukonRoot,'MY17\L330UBus'),'Sierra','Default','BDO')
+
 %% Yukon
 % Yukon Root
 yukonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_L';
@@ -169,11 +175,13 @@ exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B360_HHP'),'Nighthawk','Nighth
 AyrtonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\MR_Worldwide_2\Ayrton';
 % Ayrton Default (use the 96kW FOTON family)
 exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Default','BGY')
-% Nighthawk_LHP 
-exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton','Ayrton_96KW_GAZ','BGY')
-% Nighthawk_MHP 
+% Ayrton FOTON
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Foton','BGY')
+% Ayrton Gaas 96 kw
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton','Gaas','BGY')
+% Ayrton Gaas 120 kw
 exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_120 kW GAZ'),'Ayrton','Ayrton_120KW_GAZ','BGY')
-% Nighthawk_HHP 
+% Ayrton Foton 130 kw
 exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_130 kW FOTON'),'Ayrton','Ayrton_130KW_FOTON','BGY')
 
 

@@ -63,6 +63,13 @@ Seahawk.updatePrecalcResults;
 clear Seahawk
 progTime.Seahawk = toc(a);
 
+% Sierra
+a = tic;
+Sierra = Capability('Sierra');
+Sierra.updatePrecalcResults;
+clear Sierra
+progTime.Sierra = toc(a);
+
 % Yukon
 a = tic;
 Yukon = Capability('Yukon');
