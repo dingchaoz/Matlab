@@ -91,8 +91,10 @@ exportThresholds(r,l,fullfile(dragonccRoot,'MY16\DragnetCC_Auto'),'DragonCC','De
 exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','Dragnet_CC','BDC')
 % Dragnet_CC_16 (use the Auto family)
 exportThresholds(r,l,fullfile(dragonccRoot,'MY16\DragnetCC_Auto'),'DragonCC','Dragnet_CC_16','BDC')
+% Dragnet_CC_16.5 (use the Auto family)
+exportThresholds(r,l,fullfile(dragonccRoot,'MY16.5\DragnetCC_Auto'),'DragonCC','Dragnet_CC_16_5','BDC')
 % Plain Dragon Front (should update this to use a current product calibration)
-exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','Dragon_Front','BDC')
+exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','DragonCC','BDC')
 % % DragonCC Auto
 % exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','DragonCC_Auto','BDC')
 % % DragonCC Manual
@@ -108,7 +110,7 @@ exportThresholds(r,l,fullfile(dragonmrRoot,'MY15\B360'),'DragonMR','Dragnet_B','
 % Dragnet_B_16 (use the B360 family)
 exportThresholds(r,l,fullfile(dragonmrRoot,'MY16\B360'),'DragonMR','Dragnet_B_16','BDH')
 % Plain Dragon Rear (should update this to use a current product calibration)
-exportThresholds(r,l,fullfile(dragonmrRoot,'MY15\B360'),'DragonMR','Dragon_Rear','BDH')
+exportThresholds(r,l,fullfile(dragonmrRoot,'MY15\B360'),'DragonMR','DragonMR','BDH')
 % % DragonMR B260
 % exportThresholds(r,l,fullfile(dragonmrRoot,'Alpha\B260'),'DragonMR','B260','BDH')
 % % DragonMR B280Hyb
@@ -125,6 +127,8 @@ exportThresholds(r,l,fullfile(seahawkRoot,'MY16\DragnetPU_Auto'),'Seahawk','Defa
 exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Dragnet_PU','BDC')
 % Dragnet_PU_16 (use the Auto family)
 exportThresholds(r,l,fullfile(seahawkRoot,'MY16\DragnetPU_Auto'),'Seahawk','Dragnet_PU_16','BDC')
+% Dragnet_PU_17 (use the Auto family)
+exportThresholds(r,l,fullfile(seahawkRoot,'MY17\DragnetPU_Auto'),'Seahawk','Dragnet_PU_17','BDC')
 % Plain Seahawk (should update this to use a current product calibration)
 exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Seahawk','BDC')
 % % Seahawk Auto
@@ -136,9 +140,9 @@ exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Seahaw
 
 %%Sierra
 % Sierra Root 
-sierraroot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Sierra_L';
+sierraRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Sierra_L';
 % sierra default (use the 330UBus)
-exportThresholds(r,l,fullfile(yukonRoot,'MY17\L330UBus'),'Sierra','Default','BDO')
+exportThresholds(r,l,fullfile(sierraRoot,'MY17\L330UBus'),'Sierra','Default','BDO')
 
 %% Yukon
 % Yukon Root
