@@ -64,7 +64,7 @@ Nighthawk.dataUploader;
 clear Nighthawk
 
 % Work on Sierra
-Nighthawk = CapabilityUploader('Sierra');
+Sierra = CapabilityUploader('Sierra');
 Sierra.dataUploader;
 clear Sierra
 

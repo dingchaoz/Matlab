@@ -12,6 +12,7 @@ programs = {...
             'DragonCC';
             'DragonMR';
             'Seahawk';
+            'Sierra';
             'Yukon';
             'Nighthawk';
             'Blazer';

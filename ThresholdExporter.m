@@ -91,8 +91,10 @@ exportThresholds(r,l,fullfile(dragonccRoot,'MY16\DragnetCC_Auto'),'DragonCC','De
 exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','Dragnet_CC','BDC')
 % Dragnet_CC_16 (use the Auto family)
 exportThresholds(r,l,fullfile(dragonccRoot,'MY16\DragnetCC_Auto'),'DragonCC','Dragnet_CC_16','BDC')
+% Dragnet_CC_16.5 (use the Auto family)
+exportThresholds(r,l,fullfile(dragonccRoot,'MY16.5\DragnetCC_Auto'),'DragonCC','Dragnet_CC_16_5','BDC')
 % Plain Dragon Front (should update this to use a current product calibration)
-exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','Dragon_Front','BDC')
+exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','DragonCC','BDC')
 % % DragonCC Auto
 % exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','DragonCC_Auto','BDC')
 % % DragonCC Manual
@@ -108,7 +110,7 @@ exportThresholds(r,l,fullfile(dragonmrRoot,'MY15\B360'),'DragonMR','Dragnet_B','
 % Dragnet_B_16 (use the B360 family)
 exportThresholds(r,l,fullfile(dragonmrRoot,'MY16\B360'),'DragonMR','Dragnet_B_16','BDH')
 % Plain Dragon Rear (should update this to use a current product calibration)
-exportThresholds(r,l,fullfile(dragonmrRoot,'MY15\B360'),'DragonMR','Dragon_Rear','BDH')
+exportThresholds(r,l,fullfile(dragonmrRoot,'MY15\B360'),'DragonMR','DragonMR','BDH')
 % % DragonMR B260
 % exportThresholds(r,l,fullfile(dragonmrRoot,'Alpha\B260'),'DragonMR','B260','BDH')
 % % DragonMR B280Hyb
@@ -125,6 +127,8 @@ exportThresholds(r,l,fullfile(seahawkRoot,'MY16\DragnetPU_Auto'),'Seahawk','Defa
 exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Dragnet_PU','BDC')
 % Dragnet_PU_16 (use the Auto family)
 exportThresholds(r,l,fullfile(seahawkRoot,'MY16\DragnetPU_Auto'),'Seahawk','Dragnet_PU_16','BDC')
+% Dragnet_PU_17 (use the Auto family)
+exportThresholds(r,l,fullfile(seahawkRoot,'MY17\DragnetPU_Auto'),'Seahawk','Dragnet_PU_17','BDC')
 % Plain Seahawk (should update this to use a current product calibration)
 exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Seahawk','BDC')
 % % Seahawk Auto
@@ -133,6 +137,12 @@ exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Seahaw
 % exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto_Aisin'),'Seahawk','DragnetPU_Auto_Aisin','BDC')
 % % Seahawk Manual
 % exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Man'),'Seahawk','DragnetPU_Man','BDC')
+
+%%Sierra
+% Sierra Root 
+sierraRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Sierra_L';
+% sierra default (use the 330UBus)
+exportThresholds(r,l,fullfile(sierraRoot,'MY17\L330UBus'),'Sierra','Default','BDO')
 
 %% Yukon
 % Yukon RootyukonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_L';
@@ -169,11 +179,13 @@ exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B360_HHP'),'Nighthawk','Nighth
 AyrtonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\MR_Worldwide_2\Ayrton';
 % Ayrton Default (use the 96kW FOTON family)
 exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Default','BGY')
-% Nighthawk_LHP 
-exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton','Ayrton_96KW_GAZ','BGY')
-% Nighthawk_MHP 
+% Ayrton FOTON
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Foton','BGY')
+% Ayrton Gaas 96 kw
+exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton','Gaas','BGY')
+% Ayrton Gaas 120 kw
 exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_120 kW GAZ'),'Ayrton','Ayrton_120KW_GAZ','BGY')
-% Nighthawk_HHP 
+% Ayrton Foton 130 kw
 exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_130 kW FOTON'),'Ayrton','Ayrton_130KW_FOTON','BGY')
 
 
