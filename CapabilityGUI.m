@@ -61,27 +61,41 @@ handles.output = hObject;
 % Check that the necessary Matlab Toolboxes are installed on the user's machine
 v = ver;               % Get toolbox information
 toolbox = {v(:).Name}; % Strip off the toolbox names
-% Check for the Statistics Toolbox and the Database Toolbox
-if ~any(strcmp('Statistics Toolbox',toolbox)|strcmp('Database Toolbox',toolbox))
-    msgbox('You need to have the Statistics Toolbox and Database Toolbox installed in order for the Capability GUI program to function.', 'Error', 'error')
-    % Delete and close the GUI
-    delete(hObject)
-    return
-end
-% Check for the Statistics Toolbox
-if ~any(strcmp('Statistics Toolbox',toolbox))
-    msgbox('You need to have the Statistics Toolbox installed in order for the Capability GUI program to function.', 'Error', 'error')
-    % Delete and close the GUI
-    delete(hObject)
-    return
-end
-% Check for the Database Toolbox
-if  ~any(strcmp('Database Toolbox',toolbox))
-    msgbox('You need to have the Database Toolbox installed in order for the Capability GUI program to function.', 'Error', 'error')
-    % Delete and close the GUI
-    delete(hObject)
-    return
-end
+
+% If Matlab is older than 2015a, the matlab version will be smaller
+    % than 8.5.0
+    if verLessThan('matlab','8.5.0')
+        % Check for the Statistics Toolbox and the Database Toolbox
+        if ~any(strcmp('Statistics Toolbox',toolbox)|strcmp('Database Toolbox',toolbox))
+            msgbox('You need to have the Statistics Toolbox and Database Toolbox installed in order for the Capability GUI program to function.', 'Error', 'error')
+            return
+        end
+    
+        % Check for the Statistics Toolbox
+        if ~any(strcmp('Statistics Toolbox',toolbox))
+            msgbox('You need to have the Statistics Toolbox installed in order for the Capability GUI program to function.', 'Error', 'error')
+            return
+        end
+    else
+    % Else if using Matlab 2015a or newer version
+        % Check for the Statistics and Machine learning Toolbox which is the name for statitics toolbox in Matlab 2015 and the Database Toolbox
+        if ~any(strcmp('Statistics and Machine Learning Toolbox',toolbox)|strcmp('Database Toolbox',toolbox))
+            msgbox('You need to have the Statistics and Machine Learning Toolbox and Database Toolbox installed in order for the Capability GUI program to function.', 'Error', 'error')
+            return
+        end
+    
+        % Check for the Statistics and Machine Learning Toolbox
+        if ~any(strcmp('Statistics and Machine Learning Toolbox',toolbox))
+            msgbox('You need to have the Statistics and Machine Learning Toolbox installed in order for the Capability GUI program to function.', 'Error', 'error')
+            return
+        end
+    end
+    
+    % Check for the Database Toolbox
+    if  ~any(strcmp('Database Toolbox',toolbox))
+        msgbox('You need to have the Database Toolbox installed in order for the Capability GUI program to function.', 'Error', 'error')
+        return
+    end
 
 %% Program Display Name to Database Name Map
 
