@@ -28,12 +28,22 @@ function data = readDataInBuild(obj, fileName, cal)
 %   Revised - Yiyuan Chen - 2015/06/09
 %       - Modified to rectify bad cells recognized by Matlab due to shifted columns in 
 %         Ayrton's datainbuild file 
+%   Revised - Yiyuan Chen - 2015/07/16
+%       - Modified to skip the extra column "OverrideSubfileNumber" in datainbuild.csv of some new softwares
     
     % Open the file for reading
     fid = fopen(fileName); % addDataInBuild already checks for a valid file
     
     % Read the header line to get the cursor in the proper position
     header = fgetl(fid);
+ 
+    % Some new softwares has an extra column "OverrideSubfileNumber" in datainbuild.csv
+    
+    hdcommaidx = find(header==',');
+    orgheader = header; % save the original header (it's used later to check if it's a new header) 
+    if strcmp(header(hdcommaidx(21)+1 : hdcommaidx(22)),'"OverrideSubfileNumber",')
+        header = [header(1 : hdcommaidx(21)), header(hdcommaidx(22)+1 : end)]; % use the older header
+    end
     
     % Count the number of commas in the header to check the number of columns
     % If there aren't 34 columns of data present
@@ -79,6 +89,14 @@ function data = readDataInBuild(obj, fileName, cal)
                 % Remove all new line characters from the line
                 line = line(line~=char(10)&line~=char(13));
             end
+
+            % some softwares have an extra column in datainbuild, which should be skipped
+            commaidx = find(line==',');
+            if strcmp(orgheader(hdcommaidx(21)+1 : hdcommaidx(22)),'"OverrideSubfileNumber",') 
+                % if the original header has "OverrideSubfileNumber", skip its value
+                line = [line(1:commaidx(21)), line(commaidx(22)+1 : end)];
+            end            
+            
             % Set the line in the raw data, replacing instances of '","' with a non-printing group separator cahracter
             % Trim the leading and trailing quotation mark " from the line, too
             rawData{lineNumber} = regexprep(line(2:end-1),'","',char(29));
