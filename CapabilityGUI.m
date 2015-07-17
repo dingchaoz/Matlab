@@ -123,6 +123,7 @@ progMap = {
   'Nighthawk',                                 'Nighthawk';
   'Pele',                                      'Pele';
   'Shadowfax',                                 'Shadowfax';
+  'Sierra',                                    'Sierra';
   'Vanguard',                                  'Vanguard';
   'Ventura',                                   'Ventura';
   };

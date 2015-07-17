@@ -141,7 +141,9 @@ function data = getMinMaxData(obj, pdid, varargin)
 %     - Modified the SQL query to fetch data from archived database as well
 %   Revised - Yiyuan Chen - 2015/04/05
 %     - Modified the SQL query to fetch data from Acadia's archived database as well
-    
+%   Revised - Yiyuan Chen - 2015/05/31
+%     - Modified the SQL query to fetch data from Seahawk's archived database as well
+
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
     p = inputParser;

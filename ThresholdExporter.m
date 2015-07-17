@@ -138,17 +138,17 @@ exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Seahaw
 % % Seahawk Manual
 % exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Man'),'Seahawk','DragnetPU_Man','BDC')
 
-%%Sierra
+%% Sierra
 % Sierra Root 
 sierraRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Sierra_L';
 % sierra default (use the 330UBus)
 exportThresholds(r,l,fullfile(sierraRoot,'MY17\L330UBus'),'Sierra','Default','BDO')
 
 %% Yukon
-% Yukon RootyukonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_L';
+% Yukon Root
+yukonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_L';
 % Yukon Default (use the L450 family)
 exportThresholds(r,l,fullfile(yukonRoot,'MY16\L450'),'Yukon','Default','BDO')
-
 % Yukon Dragnet_L (use the L450 family)
 exportThresholds(r,l,fullfile(yukonRoot,'MY15\L450'),'Yukon','Dragnet_L','BDO')
 % Yukon Dragnet_L_16 (use the L450 family)
