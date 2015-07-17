@@ -6,9 +6,6 @@ classdef DotPlotGenerator < handle
 %   Original Version - Chris Remington - April 11, 2012
 %   Revised - Chris Remington - October 23, 2012
 %       - Broke out all functions to be defined in files external to this classdef file
-%   Revised - Dingchao Zhang - March 20th, 2015
-%       - Added Fault Code matching information
-        
     
     properties
         % General information for the title / axis labels
@@ -19,8 +16,6 @@ classdef DotPlotGenerator < handle
         DataType
         FC
         Program
-         % Added Fault Code matching information
-        FaultCode
         % Information about how the data is sliced
         TruckFilter
         FamilyFilter
@@ -41,7 +36,6 @@ classdef DotPlotGenerator < handle
         GroupOrder
         Labels2
         Group2Order
-       
     end
     
     methods % Implemented externally

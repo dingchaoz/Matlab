@@ -134,19 +134,11 @@ function data = getEventData(obj, SEID, varargin)
 %     - Moved to the use of tryfetch from just fetch to commonize error handling
 %   Revised - Yiyuan Chen - 2014/12/17
 %     - Modified the SQL query to fetch data from archived database as well
-<<<<<<< HEAD
-%   Revised - Dingchao Zhang - March 20, 2015
-%     - Added the SQL query to fetch fault code matching data from table dbo.FC
-    
-=======
 %   Revised - Yiyuan Chen - 2015/04/05
 %     - Modified the SQL query to fetch data from Acadia's archived database as well
 %   Revised - Yiyuan Chen - 2015/04/06
 %     - Modified the SQL query to fetch data from Seahawk's archived database as well, which stores SEID 8289 with 32160014
-%   Revised - Yiyuan Chen - 2015/05/31
-%     - Modified the SQL query to fetch data from Seahawk's archived database as well
-
->>>>>>> 36be44295208da6bbf2a1842f4a01da1ae45f719
+    
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
     p = inputParser;
@@ -253,42 +245,6 @@ function data = getEventData(obj, SEID, varargin)
     
     % Move to the use of the common tryfetch to get the data
     data = obj.tryfetch(sql,100000);
-    
-    % Generate the select statement for FC matches in MinMaxFC view
-    
-    % Create the head of the SQL query
-    selectfc_head = 'SELECT DISTINCT t3.TruckName, t1.[Cal Version], t1.Date,t1.abs_time,t1.[Active Fault Code], t1.[ECM Run Time(s)], t1.TruckID, t2.*,t3.[Family],t3.[TruckType] FROM (SELECT * FROM dbo.FC';
-    
-    % Create the tail of the SQL query
-    selectfc_tail = ['AS t2 ON t1.[Cal Version] = t2.CalibrationVersion AND t1.TruckID = t2.TruckID LEFT JOIN dbo.tbltrucks AS t3 ON t1.[Truck Name] = t3.TruckName ' where ...        
-     ' AND (ABS(t1.abs_time - t2.datenum) <= 0.5)'];
- 
-    % Combine the head, body, tail together to form the SQL query %
-%      if isnan(obj.dot.USL) && isnan(obj.dot.LSL)
-%        data.fc = ([]);
-  % Proceed to fetch fault code data only when capability data is not empty
-   if ~isempty(data)
-     if ~isnan(obj.dot.USL)
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) 'AND DataValue > ' num2str(obj.dot.USL) ' )' selectfc_tail];
-       % Add the FC match results to data.fc structure
-       data.fc = obj.tryfetch(sql_fc,100000);
-%        try
-%     % Fill the data into the dot object
-%        handles.c.fillDotData(group,group2)
-%        catch ex
-%            if ~isempty(ex.identifier)
-%            data.fc = ([]);
-%            end
-%        end
-     elseif ~isnan(obj.dot.LSL)
-       sql_fc = [selectfc_head ' WHERE [Active Fault Code] = ' num2str(obj.dot.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(SEID) ' AND ExtID = ' num2str(p.Results.ExtID) ' AND DataValue < ' num2str(obj.dot.LSL) ' )' selectfc_tail];
-       % Add the FC match results to data.fc structure
-      data.fc = obj.tryfetch(sql_fc,100000);
-        
-     end
-   end
     
 end
 

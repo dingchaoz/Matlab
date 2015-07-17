@@ -28,8 +28,7 @@ function makePlot(obj, visible)
 %       - Modified labeling: added Ppk, Mean, Sigma, FC; removed a few things
 %   Revised - Chris Remington - April 10, 2014
 %       - Adapted from boxplot to a dot plot, added ability to do 2 grouping
-%   Revised - Dingchao Zhang - March 20, 2015
-%       - Added variable to count fault code match instances and to display it    
+    
     %% Sort Data
     % If the group order isn't manually specified
     if isempty(obj.GroupOrder)
@@ -108,84 +107,6 @@ function makePlot(obj, visible)
         %numGroups = length(obj.GroupOrder);
     end
     
-     %% Sort Fault Code Group Data
-    % If the group order isn't manually specified
-    if isempty(obj.FaultCode.GroupOrder)
-        % Get a unique listing of the groups present
-        %groups = unique(obj.GroupData);
-        fcgroups = unique(obj.FaultCode.GroupData);
-        % Sort the groups in decending order
-        if isnumeric(fcgroups)
-            % You can't get here anymore because software is converted to a string 
-            % before it is passed to this function so that 8 digit number get displayed
-            % correctly in the box plot
-            
-            % For numeric groupings (like software version) use the output of unique
-            % in reverse (unique this returns the list sorted in ascending order)
-            % The GroupData needs to be a single column (size(obj.GroupData,2)==1) in
-            % order for this to work
-            obj.FaultCode.GroupOrder = num2str(fcgroups(end:-1:1));
-            % If it ends up as a character array (i.e., only one group)
-            %if ischar(groupOrder)
-            %    groupOrder = {groupOrder};
-            %end
-            
-            % Set the labels to be the same as the group strings
-            obj.FaultCode.Labels = obj.FaultCode.GroupOrder;
-            
-        else % should be a cellstring
-            % Convert to lower case so strings are sorted properly
-            [~, IX] = sortrows(lower(fcgroups), -1);
-            % Recapture the correctly sorted lowercase group order using the original
-            % labels in their original case
-            obj.FaultCode.GroupOrder = fcgroups(IX);
-            % Set the labels to be the same as the group strings
-            obj.FaultCode.Labels = obj.FaultCode.GroupOrder;
-        end
-        %numGroups = length(obj.GroupOrder);
-    else
-        % Use the specified groups, calculate the number of groups present
-        %numGroups = length(obj.GroupOrder);
-    end
-    
-    % If the group order isn't manually specified
-    if isempty(obj.FaultCode.Group2Order)
-        % Get a unique listing of the groups present
-        fcgroups2 = unique(obj.FaultCode.Group2Data);
-        % Sort the groups in decending order
-        if isnumeric(fcgroups2)
-            % You can't get here anymore because software is converted to a string 
-            % before it is passed to this function so that 8 digit number get displayed
-            % correctly in the box plot
-            
-            % For numeric groupings (like software version) use the output of unique
-            % in reverse (unique this returns the list sorted in ascending order)
-            % The GroupData needs to be a single column (size(obj.GroupData,2)==1) in
-            % order for this to work
-            obj.FaultCode.Group2Order = num2str(fcgroups2(end:-1:1));
-            % If it ends up as a character array (i.e., only one group)
-            %if ischar(groupOrder)
-            %    groupOrder = {groupOrder};
-            %end
-            
-            % Set the labels to be the same as the group strings
-            obj.FaultCode.Labels2 = obj.FaultCode.Group2Order;
-            
-        else % should be a cellstring
-            % Convert to lower case so strings are sorted properly
-            [~, IX] = sortrows(lower(fcgroups2), -1);
-            % Recapture the correctly sorted lowercase group order using the original
-            % labels in their original case
-            obj.FaultCode.Group2Order = fcgroups2(IX);
-            % Set the labels to be the same as the group strings
-            obj.FaultCode.Labels2 = obj.FaultCode.Group2Order;
-        end
-        %numGroups = length(obj.GroupOrder);
-    else
-        % Use the specified groups, calculate the number of groups present
-        %numGroups = length(obj.GroupOrder);
-    end
-    
     %% Create the Dot plot
     % If visible was set to 1
     if visible
@@ -199,8 +120,7 @@ function makePlot(obj, visible)
     % If there is actually data present
     if ~isempty(obj.Data)
         % Make the plot, capture where separation lines need to be drawn (do those at end)
-         separationLines = obj.dotplot(obj.Data, obj.GroupData, obj.GroupOrder, obj.Labels, obj.Group2Data, obj.Group2Order, obj.Labels2);
-        %separationLines = obj.dotplot2(obj.Data, obj.GroupData, obj.GroupOrder, obj.Labels, obj.Group2Data, obj.Group2Order, obj.Labels2);
+        separationLines = obj.dotplot(obj.Data, obj.GroupData, obj.GroupOrder, obj.Labels, obj.Group2Data, obj.Group2Order, obj.Labels2);
     else
         % Don't think it's possible to make it here
         error('Where''s my data? No Data to Plot.')
@@ -307,14 +227,6 @@ function makePlot(obj, visible)
     xText = [xText {sprintf('Sample Size: %.0f   Failures: %0.f   Ppk: %.3f',length(obj.Data),calcNumFail,calcPpk)}];
     % Global minima and global maxima
     xText = [xText {sprintf('Min: %g   Max: %g  Mean: %g   Std: %g',min(obj.Data),max(obj.Data),mu,sigma)}];
-    % Global minima and global maxima
-    %FC_count = length(unique(fc_match.Date));
-    if isempty(obj.FaultCode)
-        FC_count = 0 ;
-    else
-        FC_count = length(unique(obj.FaultCode.Date));
-    end
-    xText = [xText {sprintf('FaultCode Instances: %.0f',FC_count)}];
     % Set the actual strings to the xlabel
     xlabel(xText,'FontSize',13);
     
