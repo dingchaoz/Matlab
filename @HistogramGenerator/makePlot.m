@@ -164,12 +164,59 @@ else % Set the Title string (for the top of the plot) and dont' include a distri
         ''},'FontSize',13);
 end
 
-% Build and set the X-Asis text (for the bottom of the plot)
-xText = {sprintf('%s (%s)',obj.ParameterName, obj.ParameterUnits)};
-% Add the LSL if it is defined
-if ~isnan(obj.LSL),xText = [xText {sprintf('LSL: %s = %g', obj.LSLName, obj.LSL)}];end
-% Add the USL if it is defined
-if ~isnan(obj.USL),xText = [xText {sprintf('USL: %s = %g', obj.USLName, obj.USL)}];end
+    % Parameter name and units
+    
+    % If Matlab is older than 2015a, the matlab version will be smaller
+    % than 8.5.0
+    if verLessThan('matlab','8.5.0')
+        
+        % Parameter name and units
+        xText = {sprintf('%s (%s)', obj.ParameterName, obj.ParameterUnits)};
+        % Display the threshold name and value, also calculate min and max of the data
+        % inside of the threshold(s) (if applicable)
+        %nonFailMinMaxText = '';
+        % If there is a LSL specificed
+        if ~isempty(obj.LSL) && ~isnan(obj.LSL) % Set the LSL text
+            xText = [xText {sprintf('LSL: %s = %g',obj.LSLName,obj.LSL)}];
+            %nonFailMinMaxText = sprintf('   Min (>LSL): %g',min(obj.Data(obj.Data>obj.LSL)));
+        end
+        % If there is an USL specified
+        if ~isempty(obj.USL) && ~isnan(obj.USL) % Set the USL text
+            xText = [xText {sprintf('USL: %s = %g',obj.USLName,obj.USL)}];
+            %nonFailMinMaxText = [nonFailMinMaxText sprintf('   Max(<USL): %g',max(obj.Data(obj.Data<obj.USL)))];
+        end   
+    
+    % Else if it a Matlab2015 a version or newer, we need to add \\_ among the
+    % string to make the _ sign show correctly other than as a subscript
+    else
+        
+        % Split the parameter name with _ as deliminator, and then join them back
+            % with \\_, to solve the underscore printed as subscript issue
+        ParamName = strjoin(strsplit(obj.ParameterName,'_'),'\\_');
+
+        xText = {sprintf('%s (%s)', ParamName, obj.ParameterUnits)};
+        % Display the threshold name and value, also calculate min and max of the data
+        % inside of the threshold(s) (if applicable)
+        %nonFailMinMaxText = '';
+        % If there is a LSL specificed
+        if ~isempty(obj.LSL) && ~isnan(obj.LSL) % Set the LSL text
+            % Split the LSL name with _ as deliminator, and then join them back
+            % with \\_, to solve the underscore printed as subscript issue
+            LSLName = strjoin(strsplit(obj.LSLName,'_'),'\\_');
+            xText = [xText {sprintf('LSL: %s = %g',LSLName,obj.LSL)}];
+            %xText = [xText {sprintf('LSL: %s = %g',obj.LSLName,obj.LSL)}];
+            %nonFailMinMaxText = sprintf('   Min (>LSL): %g',min(obj.Data(obj.Data>obj.LSL)));
+        end
+        % If there is an USL specified
+        if ~isempty(obj.USL) && ~isnan(obj.USL) % Set the USL text
+            % Split the USL name with _ as deliminator, and then join them back
+            % with \\_, to solve the underscore printed as subscript issue
+            USLName = strjoin(strsplit(obj.USLName,'_'),'\\_');
+            xText = [xText {sprintf('LSL: %s = %g',USLName,obj.USL)}];
+            %xText = [xText {sprintf('USL: %s = %g',obj.USLName,obj.USL)}];
+            %nonFailMinMaxText = [nonFailMinMaxText sprintf('   Max(<USL): %g',max(obj.Data(obj.Data<obj.USL)))];
+        end
+    end
 
 % If there were specification limits specified and obj.Dist could be calculated
 if ~isempty(obj.Dist)
