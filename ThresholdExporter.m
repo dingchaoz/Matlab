@@ -34,7 +34,7 @@ exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\X3'),'HDPacific','DNET_X2',
 % Pacific Dragnet X3
 exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\X3'),'HDPacific','DNET_X3','BDR')
 % Pacific Dragnet Black / X12(use LE3 as I think all OBD should be common across Black / X12)
-exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\12L LE3'),'HDPacific','DNET_Black','BDR')
+exportThresholds(r,l,fullfile(pacificRoot,'MY16_Beta\12L_LE3'),'HDPacific','DNET_Black','BDR')
 % Pacific CPS X1
 exportThresholds(r,l,fullfile(manualCals,'PacificCPS_X1'),'HDPacific','X1','BDR')
 % Pacific CPS X2
@@ -229,7 +229,7 @@ exportThresholds(r,l,fullfile(ClydesdaleRoot,'DIG\380_2100_AP'),'Clydesdale','De
 %% Shadowfax
 ShadowfaxRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Shadowfax';
 % Shadowfax Default
-exportThresholds(r,l,fullfile(ShadowfaxRoot,'PP2\130_2500'),'Shadowfax','Default','BFV')
+exportThresholds(r,l,fullfile(ShadowfaxRoot,'PP2_Recycle\130_2500'),'Shadowfax','Default','BFV')
 
 %% Copy output to correct location (do this for compatibility reasons at the present time)
 % % Copy those outputs to the @SQLProcessor folder for its useage

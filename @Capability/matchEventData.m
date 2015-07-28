@@ -118,6 +118,8 @@ function [matched, header] = matchEventData(obj, SEID, varargin)
 %     - Modified the SQL query to fetch data from Acadia's archived database as well
 %   Revised - Yiyuan Chen - 2015/05/31
 %     - Modified the SQL query to fetch data from Seahawk's archived database as well
+%   Revised - Yiyuan Chen - 2015/07/28
+%     - Modified to process special diagnostics
 
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
@@ -202,10 +204,10 @@ function [matched, header] = matchEventData(obj, SEID, varargin)
     end
     
     % Find the number of ExtIDs present
-    numParams = max(rawData.ExtID)+1;
     % Below is the old method that has a problem when a system error only
     % broadcast one parameter on an ExtID of 1 (specifically SEID 7834)
-    %numParams = length(unique(rawData.ExtID));
+    ExtIDList = unique(rawData.ExtID);
+    numParams = length(ExtIDList); % use this method again for special diagnostics
     
     %% Process Data
     
@@ -220,7 +222,7 @@ function [matched, header] = matchEventData(obj, SEID, varargin)
     % Fill in the parameter names
     for i = 1:numParams
         % Fill in the name of this parameter
-        header{i+5} = obj.getEvddInfo(SEID, i-1, 0);
+        header{i+5} = obj.getEvddInfo(SEID, ExtIDList(i), 0);
     end
     
     % If there is only data from 1 SEID present, do this the easy way
@@ -280,7 +282,7 @@ function [matched, header] = matchEventData(obj, SEID, varargin)
         % Pass in only the 2 - 5 lines that need matching
         try
             % Try to match the parameters together
-            matched(writeIdx,:) = createLine(d, numParams, ...
+            matched(writeIdx,:) = createLine(d, numParams, ExtIDList, ...
                 rawData.ExtID(readIdx:readIdx+j), rawData.DataValue(readIdx:readIdx+j));
         catch ex
             % If there was an error, move on to the next line
@@ -311,7 +313,7 @@ function [matched, header] = matchEventData(obj, SEID, varargin)
     
 end
 
-function line = createLine(d, numParams, ExtID, DataValue)
+function line = createLine(d, numParams, ExtIDList, ExtID, DataValue)
 %   This takes in the separate parameter values for a "set" of parameters that were
 %   broadcast and writes them into a single line
 %   
@@ -329,16 +331,16 @@ function line = createLine(d, numParams, ExtID, DataValue)
     line{5} = d.Software;
     
     % For each parameter that should be present (each ExtID that should have data)
-    for i = 0:(numParams-1)
+    for i = 1:numParams
         % Get the index of the ExtID
-        idx = ExtID==i;
+        idx = ExtID==ExtIDList(i);
         % If it is in the list of data passed in
         if sum(idx) == 1
             % Add it to the appropriate location
-            line{6+i} = DataValue(idx);
+            line{5+i} = DataValue(idx);
         elseif sum(idx) == 0
             % Else set that location to a NaN
-            line{6+i} = NaN;
+            line{5+i} = NaN;
         else % there was more than one match
             % Check to see if there is duplicate data present in the database
             if length(unique(DataValue)) < length(DataValue)

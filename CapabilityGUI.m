@@ -2076,8 +2076,10 @@ else
     SEID = handles.c.filt.SEID;
     ExtID = handles.c.filt.ExtID;
     % Check the evdd if there is more than one ExtID for this SEID
-    % Get the list of SEIDs from the xSEID
+    % Get the list of SEIDs & ExtIDs from the xSEID
     SEIDList = handles.c.evdd.xSEID-floor(handles.c.evdd.xSEID/2^16)*2^16;
+    SEIDidx = find(SEIDList==SEID);
+    ExtIDList = floor(handles.c.evdd.xSEID(SEIDidx)/2^16);
     % If there is more than one ExtID
     if sum(SEIDList==SEID) > 1
         %% Do it the harder way and grid parameters from all ExtIDs together first
@@ -2116,7 +2118,8 @@ else
         % Manualy filter the data using Matlab because you can't do it with matchEventData
         
         %% Pull out the values to do the filtering on
-        filtData = cell2mat(data(:,ExtID+6));
+        ExtIDidx = find(ExtIDList==ExtID);
+        filtData = cell2mat(data(:,ExtIDidx+5));
         % If a value was entered into both boxes
         if ~isnan(valA) && ~isnan(valB)
             % Execute based on the condition specified
@@ -2178,8 +2181,8 @@ else
         
     else
         %% There is only one ExtID, use getEventData for the job
-        % Quick consistency check, is the ExtID 0? (it should be)
-        if ExtID ~= 0, error('Logic Error in Function'), end
+        % Quick consistency check, is the ExtID 0? (it should be, except SEID 7834)
+        if ExtID ~= 0 && SEID~=7834, error('Logic Error in Function'), end
         
         % Formulate the 'values' filter field
         % If there are valid numbers in both fields
