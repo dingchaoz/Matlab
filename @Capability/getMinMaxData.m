@@ -258,7 +258,7 @@ function where = makeWhere(pdid, args)
     if pdid==89752 % LDC diagnostics have two publicDataIDs
         where = sprintf('WHERE [PublicDataID] in (%.0f, 179702) ',pdid);
     elseif pdid==89754
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 179704) ',pdid);
+        where = sprintf('WHERE [PublicDataID] in (%.0f, 179703) ',pdid);
     else
         where = sprintf('WHERE [PublicDataID] = %.0f',pdid);
     end

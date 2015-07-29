@@ -1798,7 +1798,7 @@ if isnan(toDate)
             if pdid==89752 %Set publicDataID to the new one for LPC_ct_DiscreteHighSet & LPC_ct_DiscreteLowSet
                 pdid = 197902;
             elseif pdid==89754
-                pdid = 197904;
+                pdid = 197903;
             else
             end
             
