@@ -255,7 +255,13 @@ function where = makeWhere(pdid, args)
     % This function processses the input options and generates the proper WHERE clause
     
     % Start the where clause with the Public Data ID
-    where = sprintf('WHERE [PublicDataID] = %.0f',pdid);
+    if pdid==89752 % LDC diagnostics have two publicDataIDs
+        where = sprintf('WHERE [PublicDataID] in (%.0f, 179702) ',pdid);
+    elseif pdid==89754
+        where = sprintf('WHERE [PublicDataID] in (%.0f, 179704) ',pdid);
+    else
+        where = sprintf('WHERE [PublicDataID] = %.0f',pdid);
+    end
     
     %% Add filtering based on the EMBFlag if needed
     if args.emb == 0

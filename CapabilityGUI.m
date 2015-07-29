@@ -1795,6 +1795,13 @@ if isnan(toDate)
         if ~isnan(handles.c.filt.CriticalParam)
             % Get the public data id
             pdid = handles.c.getPublicDataID(handles.c.filt.CriticalParam);
+            if pdid==89752 %Set publicDataID to the new one for LPC_ct_DiscreteHighSet & LPC_ct_DiscreteLowSet
+                pdid = 197902;
+            elseif pdid==89754
+                pdid = 197904;
+            else
+            end
+            
             if isnan(fromSWnum)
                 if isnan(toSWnum)
                     sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d',handles.c.program, pdid);
