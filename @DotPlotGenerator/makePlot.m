@@ -306,11 +306,17 @@ function makePlot(obj, visible)
     end
     
     % if filter is applied, pass the user inputs to the label
-    if strcmp(obj.Fltplot,'Yes')     
-       titleText = [titleText {sprintf('Data is filtered by %s <= %s %s >= %s',obj.FltValue,obj.FltLSL,obj.FltCondition,obj.FltUSL)}];
+    if strcmp(obj.Fltplot,'Yes')
+       if ~isempty(obj.FltUSL) && ~isempty(obj.FltLSL) 
+         titleText = [titleText {sprintf('Data is filtered by %s <= %s %s >= %s',obj.FltValue,obj.FltLSL,obj.FltCondition,obj.FltUSL)}];
+       elseif isempty(obj.FltUSL)
+         titleText = [titleText {sprintf('Data is filtered by %s <= %s',obj.FltValue,obj.FltLSL)}];
+       elseif isempty(obj.FltLSL)
+         titleText = [titleText {sprintf('Data is filtered by %s >= %s',obj.FltValue,obj.FltUSL)}];  
+       end
     end
     titleText = [titleText {sprintf('%s   Program: %s',getSWFiltStr,obj.Program),''}]; % Software Filter
-    title(titleText,'FontSize',13) % Actually set the title
+    title(titleText,'FontSize',10) % Actually set the title
     
     % Generate and set the x label
     % Parameter name and units
@@ -346,7 +352,7 @@ function makePlot(obj, visible)
     xText = [xText {sprintf('FaultCode Instances: %.0f',FC_count)}];
 
     % Set the actual strings to the xlabel
-    xlabel(xText,'FontSize',13);
+    xlabel(xText,'FontSize',10);
 %     xText2 = 'test';
 %     xlabel(xText2,'FontSize',13,'Color','r');
     

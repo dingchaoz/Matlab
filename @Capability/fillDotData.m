@@ -157,7 +157,7 @@ function fillDotData(obj, groupCode, group2Code)
         end
         
         % Pass the yes or no filter and filter and or no conditions applied to dot
-        if isfield(obj.filt,'fltplot')
+        if isfield(obj.filt,'fltplot') && strcmp(obj.filt.fltplot,'Yes')
             obj.dot.Fltplot = 'Yes';
             %obj.dot.FltCondition = obj.filt.MinorMax;
         else
