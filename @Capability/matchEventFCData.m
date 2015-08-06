@@ -166,10 +166,10 @@ function [matched, header] = matchEventFCData(obj, SEID, varargin)
     % Combine the head, body, tail together to form the SQL query %
 %      if isnan(obj.dot.USL) && isnan(obj.dot.LSL)
 %        rawData.fc = ([]);
-   
-     if ~isnan(obj.filt.USL)
+   if ~isempty(rawData)
+     %if ~isnan(obj.filt.USL)
        sql_fc = [selectfc_head ' WHERE [ActiveFaultCode] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) 'AND DataValue > ' num2str(obj.filt.USL) ' )' selectfc_tail];
+       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ')' selectfc_tail];
        % Add the FC match results to data.fc structure
        rawData.fc = obj.tryfetch(sql_fc,100000);
 %        try
@@ -180,22 +180,22 @@ function [matched, header] = matchEventFCData(obj, SEID, varargin)
 %            data.fc = ([]);
 %            end
 %        end
-     elseif ~isnan(obj.filt.LSL)
-       sql_fc = [selectfc_head ' WHERE [ActiveFaultCode] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
-       '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' AND DataValue < ' num2str(obj.filt.LSL) ' )' selectfc_tail];
-       % Add the FC match results to data.fc structure
-      rawData.fc = obj.tryfetch(sql_fc,100000);
-        
-   end
+     %elseif ~isnan(obj.filt.LSL)
+%        sql_fc = [selectfc_head ' WHERE [ActiveFaultCode] = ' num2str(obj.filt.FC) ' ) AS t1 INNER JOIN' ...
+%        '(SELECT * FROM dbo.tblEventDrivenData WHERE SEID = ' num2str(obj.filt.SEID) ' AND ExtID = ' num2str(obj.filt.ExtID) ' AND DataValue < ' num2str(obj.filt.LSL) ' )' selectfc_tail];
+%        % Add the FC match results to data.fc structure
+%       rawData.fc = obj.tryfetch(sql_fc,100000);
+%         
+  
     
     % If there was no data in the database
-    if isempty(rawData)
+   else
         % return an empty set
         matched = [];
         header = [];
         % Exit the function
         return
-    end
+   end
     
     % Find the number of ExtIDs present
     numParams = max(rawData.ExtID)+1;
