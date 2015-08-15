@@ -37,32 +37,31 @@ for i = 1:length(foldercontents)
     if daten >= str2num(Syymmdd) && daten <= str2num(Eyymmdd)
         disp(['Processing ' filename])
         load(fullfile(path,filename));
+  %% clear parameteres that are input via the varargin when not all the parameters requested are not available in the mat file      
         for j = 1 : nargin-3
             if ~exist(char(varargin{j}),'var')%isempty(char(who('-regexp',char(varargin{j}))))
                 if j==1
-                    break
+                    continue
                 else
-                    if exist(char(varargin{j-1}),'var')
-                        eval(['clearvars ' char(varargin{j-1})]);
-                        disp(['skipping ' filename])
-                        break
-                    end % if exist(char(varargin{j}),'var')
+                    for ct = length(varargin):-1:1
+                        if exist(char(varargin{ct}),'var')
+                            eval(['clearvars ' char(varargin{ct})]);
+                        end % if exist(char(varargin{j}),'var')
+                    end % for ct = length(varagin):-1:2
+                    disp(['skipping ' filename])
+                    break
                 end % if j==1
             end % ~exist(char(varargin{j}),'var')
         end % for j = 4 : nargin
-        if j < nargin-3
-            disp(['skipping ' filename])
-            continue
-        end % if j < nargin
-        
+
+%% create variables such as parameter1 through parameter n where n = length of varargin        
         for k = 1: nargin - 3
             if exist(char(varargin{k}),'var')
-%                 data{end+1,k}= eval('eval(char(varargin(k)))');
                   eval(strcat('parameter',num2str(k),' = ','[parameter',num2str(k),';',' eval(char(varargin(k)))];'));
             end % if exist(char(varargin{k}),'var')
         end
-        %         data = {data; filedata};
         
+    
     end % if daten >= Syymmdd && daten <= Eyymmdd
     
     for l = 1: nargin -3
