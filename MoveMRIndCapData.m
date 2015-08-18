@@ -8,6 +8,7 @@ programs = {
     'Clydesdale','\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata\Workhorse\Clydesdale';
     % Shadowfax
     'Shadowfax','\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata\Shadow';
+    'Shadowfax','\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata\Admiral';
 };
 
 %% Automatic Recursion Used on On-Highway programs

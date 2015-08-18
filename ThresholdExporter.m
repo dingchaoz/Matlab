@@ -86,7 +86,7 @@ exportThresholds(r,l,fullfile(peleRoot,'Development\Manual 125 kW'),'Pele','Pele
 % DragonCC Root
 dragonccRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_CC';
 % DragonCC Default (use the Auto family)
-exportThresholds(r,l,fullfile(dragonccRoot,'MY16\DragnetCC_Auto'),'DragonCC','Default','BDC')
+exportThresholds(r,l,fullfile(dragonccRoot,'MY17\DragnetCC_Auto'),'DragonCC','Default','BDC')
 % Dragnet_CC (use the Auto family)
 exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','Dragnet_CC','BDC')
 % Dragnet_CC_16 (use the Auto family)
@@ -122,7 +122,7 @@ exportThresholds(r,l,fullfile(dragonmrRoot,'MY15\B360'),'DragonMR','DragonMR','B
 % Seahawk Root
 seahawkRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_PU';
 % Seahawk Default (use the Auto family)
-exportThresholds(r,l,fullfile(seahawkRoot,'MY16\DragnetPU_Auto'),'Seahawk','Default','BDC')
+exportThresholds(r,l,fullfile(seahawkRoot,'MY17\DragnetPU_Auto'),'Seahawk','Default','BDC')
 % Dragnet_PU (use the Auto family)
 exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Dragnet_PU','BDC')
 % Dragnet_PU_16 (use the Auto family)
@@ -141,8 +141,16 @@ exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Seahaw
 %% Sierra
 % Sierra Root 
 sierraRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Sierra_L';
-% sierra default (use the 330UBus)
-exportThresholds(r,l,fullfile(sierraRoot,'MY17\L330UBus'),'Sierra','Default','BDO')
+% Sierra Default (use the 450)
+exportThresholds(r,l,fullfile(sierraRoot,'MY17\L450'),'Sierra','Default','BGV')
+% Sierra HybUBus (use the 330HybUBus)
+exportThresholds(r,l,fullfile(sierraRoot,'MY17\L330HybUBus'),'Sierra','HybUBus','BGV')
+% Sierra UBus (use the 330UBus)
+exportThresholds(r,l,fullfile(sierraRoot,'MY17\L330UBus'),'Sierra','UBus','BGV')
+% Sierra HT (use the 350HT)
+exportThresholds(r,l,fullfile(sierraRoot,'MY17\L350_HT'),'Sierra','HT','BGV')
+% Sierra Hyb (use the 370Hyb)
+exportThresholds(r,l,fullfile(sierraRoot,'MY17\L370Hyb'),'Sierra','Hyb','BGV')
 
 %% Yukon
 % Yukon Root
@@ -203,9 +211,9 @@ venturaRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Ca
 % Ventura2 Root
 ventura2Root = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Ventura_II';
 % Ventura Default (use the Alpha Mainline family)
-exportThresholds(r,l,fullfile(venturaRoot,'MY15\Mainline'),'Ventura','Default','BFY')
+exportThresholds(r,l,fullfile(venturaRoot,'MY15\Ve_ISV200'),'Ventura','Default','BFY')
 % Ventura2 (use the Ventura2_MY16 Mainline family)
-exportThresholds(r,l,fullfile(ventura2Root,'MY16\Mainline'),'Ventura','Ventura2','BFY')
+exportThresholds(r,l,fullfile(ventura2Root,'MY16\Ve2_ISV275hp_250k'),'Ventura','Ventura2','BFY')
 
 %% Blazer
 BlazerRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Blazer';
