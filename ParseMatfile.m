@@ -28,7 +28,6 @@ datenumber =[];
 len = [];
 for varcount = 1:length(varargin)
     eval(['parameter',num2str(varcount),'= [];'])
-    %     eval(['datenumber',num2str(varcount),'= [];'])
 end % for varcount = 1:length(varargin)
 %% Looping through the matfiles in the specified path to gather data
 foldercontents = dir(fullfile(path,'*.mat'));
@@ -44,7 +43,7 @@ for i = 1:length(foldercontents)
         load(fullfile(path,filename));
         %% clear parameteres that are input via the varargin when not all the parameters requested are not available in the mat file
         for j = 1 : nargin-3
-            if ~exist(char(varargin{j}),'var')%isempty(char(who('-regexp',char(varargin{j}))))
+            if ~exist(char(varargin{j}),'var')
                 if j==1
                     continue
                 else
@@ -65,8 +64,6 @@ for i = 1:length(foldercontents)
             for k = 1: nargin - 3
                 if exist(char(varargin{k}),'var')
                     eval(strcat('parameter',num2str(k),' = ','[parameter',num2str(k),';',' eval(char(varargin(k)))];')); % gets the parameter values stored
-                    %                   eval(strcat('datenumber',num2str(k),' = ','repmat(dataDateNum',char(39),',length(eval(varargin{k})),1);')); % gets the date
-                    %                   datenumber = [datenumber;eval(['datenumber',num2str(k)])];
                 end % if exist(char(varargin{k}),'var')
             end
             
@@ -89,7 +86,7 @@ for i = 1:length(foldercontents)
         if exist(char(varargin{l}),'var')
             eval(['clearvars ' char(varargin{l})]);
         end % if exist(char(varargin{l}),'var')
-    end
+    end % for l = 1: nargin -3
     
 end % foldercontents = dir(fullfile(path,'*.mat'));
 %% concatenate required data into a matrix
