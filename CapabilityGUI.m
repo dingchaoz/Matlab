@@ -1799,6 +1799,8 @@ if isnan(toDate)
                 pdid = 197902;
             elseif pdid==89754
                 pdid = 197903;
+            elseif pdid==163276 %Set publicDataID to the new one for V_ATP_pc_Urea_TankLvl
+                pdid = 47977;
             else
             end
             

@@ -92,7 +92,7 @@ exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','Drag
 % Dragnet_CC_16 (use the Auto family)
 exportThresholds(r,l,fullfile(dragonccRoot,'MY16\DragnetCC_Auto'),'DragonCC','Dragnet_CC_16','BDC')
 % Dragnet_CC_16.5 (use the Auto family)
-exportThresholds(r,l,fullfile(dragonccRoot,'MY16.5\DragnetCC_Auto'),'DragonCC','Dragnet_CC_16_5','BDC')
+exportThresholds(r,l,fullfile(dragonccRoot,'MY16.5\DD_Auto'),'DragonCC','Dragnet_CC_16_5','BDC')
 % Plain Dragon Front (should update this to use a current product calibration)
 exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','DragonCC','BDC')
 % % DragonCC Auto
@@ -174,13 +174,13 @@ exportThresholds(r,l,fullfile(yukonRoot,'MY15\L450'),'Yukon','Yukon','BDO')
 % Nighthawk Root
 nighthawkRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Nighthawk_B';
 % Nighthawk Default (use the B260 family)
-exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B260_LHP'),'Nighthawk','Default','BGU')
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B260_LHP_Beta'),'Nighthawk','Default','BGU')
 % Nighthawk_LHP (use the B260 family)
-exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B260_LHP'),'Nighthawk','Nighthawk_LHP','BGU')
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B260_LHP_Beta'),'Nighthawk','Nighthawk_LHP','BGU')
 % Nighthawk_MHP (use the B325 family)
-exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B325_MHP'),'Nighthawk','Nighthawk_MHP','BGU')
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B325_MHP_Beta'),'Nighthawk','Nighthawk_MHP','BGU')
 % Nighthawk_HHP (use the B360 family)
-exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B360_HHP'),'Nighthawk','Nighthawk_HHP','BGU')
+exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B360_HHP_Beta'),'Nighthawk','Nighthawk_HHP','BGU')
 
 %% Ayrton
 % Ayrton Root

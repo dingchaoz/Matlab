@@ -263,6 +263,8 @@ function where = makeWhere(pdid, args)
         where = sprintf('WHERE [PublicDataID] in (%.0f, 179702) ',pdid);
     elseif pdid==89754
         where = sprintf('WHERE [PublicDataID] in (%.0f, 179703) ',pdid);
+    elseif pdid==163276 % V_ATP_pc_Urea_TankLvl has two publicDataIDs
+        where = sprintf('WHERE [PublicDataID] in (%.0f, 47977) ',pdid);
     else
         where = sprintf('WHERE [PublicDataID] = %.0f',pdid);
     end
