@@ -4,8 +4,9 @@
 
 function data = PMSensorCapData(path,varargin)
 %% initializing variables
-data = {};
-RawData =[];
+data = [];
+Concatenated_Data =[];
+Concatenated_truck = [];
 %% Get the inputs passed via varargin argument; else set the defaults
 if ~isempty(varargin)
     % code to get Truck; Software; Date Range need to get here.
@@ -20,22 +21,25 @@ end %  ~isempty(varargin)
 Syymm = datestr(startdate,'yy-mm');
 Eyymm = datestr(enddate,'yy-mm');
 pathcontents = dir(path);
-for i = 3:length(pathcontents)
+for i = 3:length(pathcontents) % loop through the truck folders.
     if pathcontents(i).isdir == 1
         truckname = pathcontents(i).name;
         MatFilesPath = fullfile(path,truckname,'MatData_Files');
         if exist(MatFilesPath,'dir')
             foldercontents = dir(MatFilesPath);
-            for j = 3:length(foldercontents)
+            for j = 3:length(foldercontents) % loop through matfiles folder within the truck
                 try
                     if foldercontents(j).isdir
                         name = foldercontents(j).name;
                         if ~isempty(strfind(name,'_matfiles'))
                             nameparts = toklin(name,'_');
-                            if datenum(nameparts{1})>= datenum(Syymm) && datenum(nameparts{1})<= datenum(Eyymm)
+                            if datenum(nameparts{1})>= datenum(Syymm) && datenum(nameparts{1})<= datenum(Eyymm) % Check if folder yy-mm is within the startdate and enddate
                                 %% Get Data from the respective mat file.
-                                RawData = [RawData ; ParseMatfile(fullfile(MatFilesPath,name),startdate,enddate,'V_PMSC_mg_PMFE_SootAllow','V_ATP_ec_PMSC_Out','J39_PM_MeasurementActive')];
-                                keyboard
+                                folderdata = ParseMatfile(fullfile(MatFilesPath,name),startdate,enddate,'V_PMSC_mg_PMFE_SootAllow','V_ATP_ec_PMSC_Out','J39_PM_MeasurementActive');
+                                [rows col] = size(folderdata);
+                                truck = repmat(truckname,rows,1);
+                                Concatenated_Data = [Concatenated_Data;folderdata];
+                                Concatenated_truck = strvcat(Concatenated_truck,truck);
                             end % if datenum(nameparts{1})>= datenum(Syymm) && datenum(nameparts{1})<= datenum(Eyymm)
                         end %  if ~isempty(strfind(name,'_matfiles'))
                     end % if foldercontents(j).isdir
@@ -45,9 +49,17 @@ for i = 3:length(pathcontents)
                     obj.error.writef('MatFileParser Error Log File - %s \r\n PATH:- %s  \r\n',truckname, fullfile(MatFilesPath,foldercontents(j).name));
                     obj.error.write(msgstr);
                 end
+%                 clearvars 'folderdata' 'rows' 'truck' 'Concatenated_Data'
             end % for j = 3:length(foldercontents)
         else
             disp(['No mat data available for the truck ' truckname])
         end % if exist(fullfile(path,truckname,MatData_Files),'dir')
     end % if pathcontents(i).isdir == 1
 end % for i = 1:length(pathcontents)
+if ~isempty(Concatenated_Data)
+    data.V_PMSC_mg_PMFE_SootAllow = Concatenated_Data(:,1);
+    data.V_ATP_ec_PMSC_Out = Concatenated_Data(:,2);
+    data.J39_PM_MeasurementActive = Concatenated_Data(:,3);
+    data.truck = Concatenated_truck;
+    data.datenum = Concatenated_Data(:,4);
+end
