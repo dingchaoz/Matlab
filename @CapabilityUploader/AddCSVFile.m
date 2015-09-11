@@ -279,25 +279,62 @@ function AddCSVFile(obj, fullFileName, truckID)
         sprintf('WHERE [TruckID] = %0.f',truckID));
     
     %% Check Variable Existance
-    % Check for the variable we know we need, throw a custom error if they don't exist
-    
-    % Check for EventDriven_xSEID
-    if ~exist('EventDriven_xSEID','var')
+    % Check for EventDriven and MinMax related paramters exist on the
+    % screen
+    if (~exist('EventDriven_xSEID','var')|| ~exist('EventDriven_Data','var')) && (~exist('MinMax_PublicDataID','var')||~exist('MinMax_Data','var'))
+        
+        % Note that there was no MinMax data in this file (not not that MinMax data was expected)
+        disp(['No Event data in file ' fullFileName]);
+        obj.event.write(['No Event data in file ' fullFileName]);
+        % Update tblTrucks saying that there should have been MinMax data and wasn't
+        update(obj.conn, '[dbo].[tblTrucks]', {'EventData'}, {'No'}, ...
+        sprintf('WHERE [TruckID] = %0.f',truckID));
+            
+        % Note that there was no MinMax data in this file (not not that MinMax data was expected)
+        disp(['No MinMax data in file ' fullFileName]);
+        obj.event.write(['No MinMax data in file ' fullFileName]);
+        % Update tblTrucks saying that there should have been MinMax data and wasn't
+        update(obj.conn, '[dbo].[tblTrucks]', {'MinMaxData'}, {'No'}, ...
+        sprintf('WHERE [TruckID] = %0.f',truckID));
+            
         error('CapabilityUploader:AddCSVFile:ParameterMissing',...
-            'File was missing parameter EventDriven_xSEID.')
+            'File was missing eventdriven and minmax parameters.')
         
     % Check for EventDriven_Data
     elseif ~exist('EventDriven_Data','var')
+        % Note that there was no MinMax data in this file (not not that MinMax data was expected)
+        disp(['No Event data in file ' fullFileName]);
+        obj.event.write(['No Event data in file ' fullFileName]);
+        % Update tblTrucks saying that there should have been MinMax data and wasn't
+        update(obj.conn, '[dbo].[tblTrucks]', {'EventData'}, {'No'}, ...
+        sprintf('WHERE [TruckID] = %0.f',truckID));
+    
         error('CapabilityUploader:AddCSVFile:ParameterMissing',...
             'File was missing parameter EventDriven_Data.')
         
     % Check for MinMax_PublicDataID
     elseif ~exist('MinMax_PublicDataID','var')
+        
+        % Note that there was no MinMax data in this file (not not that MinMax data was expected)
+        disp(['No MinMax data in file ' fullFileName]);
+        obj.event.write(['No MinMax data in file ' fullFileName]);
+        % Update tblTrucks saying that there should have been MinMax data and wasn't
+        update(obj.conn, '[dbo].[tblTrucks]', {'MinMaxData'}, {'No'}, ...
+        sprintf('WHERE [TruckID] = %0.f',truckID));
+    
         error('CapabilityUploader:AddCSVFile:ParameterMissing',...
             'File was missing parameter MinMax_PublicDataID.')
         
     % Check for MinMax_Data
     elseif ~exist('MinMax_Data','var')
+        
+        % Note that there was no MinMax data in this file (not not that MinMax data was expected)
+        disp(['No MinMax data in file ' fullFileName]);
+        obj.event.write(['No MinMax data in file ' fullFileName]);
+        % Update tblTrucks saying that there should have been MinMax data and wasn't
+        update(obj.conn, '[dbo].[tblTrucks]', {'MinMaxData'}, {'No'}, ...
+        sprintf('WHERE [TruckID] = %0.f',truckID));
+    
         error('CapabilityUploader:AddCSVFile:ParameterMissing',...
             'File was missing parameter MinMax_Data.')
         
