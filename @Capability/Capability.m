@@ -273,7 +273,7 @@ classdef Capability < handle
                     obj.obd = 'obdii';
                 case {'Elrond','Eclipse','Pele','Eukon'}    
                     obj.obd = 'eurovi';
-                case {'Panther','Arayton'}
+                case {'Panther','Ayrton'}
                     obj.obd = 'euro5';
                 case {'????????'}
                     obj.obd = 'euro6';

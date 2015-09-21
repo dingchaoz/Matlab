@@ -1795,11 +1795,11 @@ if isnan(toDate)
         if ~isnan(handles.c.filt.CriticalParam)
             % Get the public data id
             pdid = handles.c.getPublicDataID(handles.c.filt.CriticalParam);
-            if pdid==89752 %Set publicDataID to the new one for LPC_ct_DiscreteHighSet & LPC_ct_DiscreteLowSet
+            if pdid==89752 %Set publicDataID to the new one for LPC_ct_DiscreteHighSet & LPC_ct_DiscreteLowSet for Ventura
                 pdid = 197902;
             elseif pdid==89754
                 pdid = 197903;
-            elseif pdid==163276 %Set publicDataID to the new one for V_ATP_pc_Urea_TankLvl
+            elseif pdid==163276 %Set publicDataID to the new one for V_ATP_pc_Urea_TankLvl for Ventura
                 pdid = 47977;
             else
             end

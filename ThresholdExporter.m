@@ -106,11 +106,11 @@ dragonmrRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\C
 % DragonMR Default (use the B360 family)
 exportThresholds(r,l,fullfile(dragonmrRoot,'MY16\B360'),'DragonMR','Default','BDH')
 % Dragnet_B (use the B360 family)
-exportThresholds(r,l,fullfile(dragonmrRoot,'MY15\B360'),'DragonMR','Dragnet_B','BDH')
+exportThresholds(r,l,fullfile(dragonmrRoot,'MY15_PP2\B360'),'DragonMR','Dragnet_B','BDH')
 % Dragnet_B_16 (use the B360 family)
 exportThresholds(r,l,fullfile(dragonmrRoot,'MY16\B360'),'DragonMR','Dragnet_B_16','BDH')
 % Plain Dragon Rear (should update this to use a current product calibration)
-exportThresholds(r,l,fullfile(dragonmrRoot,'MY15\B360'),'DragonMR','DragonMR','BDH')
+exportThresholds(r,l,fullfile(dragonmrRoot,'MY15_PP2\B360'),'DragonMR','DragonMR','BDH')
 % % DragonMR B260
 % exportThresholds(r,l,fullfile(dragonmrRoot,'Alpha\B260'),'DragonMR','B260','BDH')
 % % DragonMR B280Hyb
@@ -158,11 +158,11 @@ yukonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calb
 % Yukon Default (use the L450 family)
 exportThresholds(r,l,fullfile(yukonRoot,'MY16\L450'),'Yukon','Default','BDO')
 % Yukon Dragnet_L (use the L450 family)
-exportThresholds(r,l,fullfile(yukonRoot,'MY15\L450'),'Yukon','Dragnet_L','BDO')
+exportThresholds(r,l,fullfile(yukonRoot,'MY15_PP2\L450'),'Yukon','Dragnet_L','BDO')
 % Yukon Dragnet_L_16 (use the L450 family)
 exportThresholds(r,l,fullfile(yukonRoot,'MY16\L450'),'Yukon','Dragnet_L_16','BDO')
 % Plain Yukon  (should update this to use a current product calibration)
-exportThresholds(r,l,fullfile(yukonRoot,'MY15\L450'),'Yukon','Yukon','BDO')
+exportThresholds(r,l,fullfile(yukonRoot,'MY15_PP2\L450'),'Yukon','Yukon','BDO')
 % % DragonMR L330UBus
 % exportThresholds(r,l,fullfile(yukonRoot,'Alpha\L330UBus'),'Yukon','L330UBus','BDO')
 % % DragonMR L350
