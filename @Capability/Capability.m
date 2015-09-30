@@ -114,7 +114,7 @@ classdef Capability < handle
               'ISL',          'Yukon',         'W4-S129433', 'CAPABILITYDB';
               'Chrysler PU',  'Seahawk',       'W4-S129433', 'CAPABILITYDB';
               'ISX',          'HDPacific',     'W4-S129433', 'CAPABILITYDB';
-              'Acadia',       'Acadia',        'W4-S129433', 'CAPABILITYDB';
+              'Acadia',       'Acadia',        'W4-S132377', 'CAPABILITYDEV';
               'Ayrton',       'Ayrton',        'W4-S129433', 'CAPABILITYDB'; 
               'Nighthawk',    'Nighthawk',     'W4-S129433', 'CAPABILITYDB';
               'Vanguard',     'Vanguard',      'W4-S129433', 'CAPABILITYDB';

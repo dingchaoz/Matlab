@@ -132,7 +132,7 @@ classdef CapabilityUploader < Capability
         
         % Method to initalize new log files (i.e., when connecting to the database)
         % This should be called on the PostSet event of the 'program' property
-        function openLogFiles(obj,~,~)
+        function openLogFiles(obj,path,~)
             % If old log writers still exist
             if ~isempty(obj.error) || ~isempty(obj.event) || ~isempty(obj.warning) || ~isempty(obj.timer)
                 % Something is broken if it's possible to get here
@@ -142,10 +142,10 @@ classdef CapabilityUploader < Capability
             end
             
             % Declare the logging objects
-            obj.error = logWriter('Error_Log', fullfile('..\capbility_logs',obj.program,'error'));
-            obj.event = logWriter('Event_Log', fullfile('..\capbility_logs',obj.program,'event'));
-            obj.warning = logWriter('Warning_Log', fullfile('..\capbility_logs',obj.program,'warning'));
-            obj.timer = logWriter('Timer_Log', fullfile('..\capbility_logs',obj.program,'timer'));
+            obj.error = logWriter('Error_Log', fullfile(path,obj.program,'error'));
+            obj.event = logWriter('Event_Log', fullfile(path,obj.program,'event'));
+            obj.warning = logWriter('Warning_Log', fullfile(path',obj.program,'warning'));
+            obj.timer = logWriter('Timer_Log', fullfile(path,obj.program,'timer'));
             
             % Initalize the headers of the log files
             obj.error.writef('CapabilityUploader Error Log File - %s Program\r\n',obj.program);
