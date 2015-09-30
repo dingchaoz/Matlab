@@ -26,10 +26,18 @@ function uploadCalibratables(matFile,program,family,calVersion,calRevision)
             'integratedSecurity=true;loginTimeout=5;'));
     
     % Clear out the old data entry from the database
-%     curs = exec(conn,sprintf('DELETE FROM [dbo].[tblCals2] WHERE [Family] = ''%s''',family));
+ %curs = exec(conn,sprintf('DELETE FROM [dbo].[tblCals2] WHERE [Family] = ''%s''',family));
 %     % Close and clear the cursor
 %     close(curs);clear curs;
     
+%     sqlquery = 'select max ([CalVersion]) FROM [Acadia].[dbo].[tblCal3]';
+   % curs = exec(conn,'select max ([CalVersion]) FROM [Acadia].[dbo].[tblCal3]');
+    curs = exec(conn,sprintf('select CalVersion FROM [dbo].[tblCals3] where CalVersion in ''%s''',calVersion));
+    curs = fetch(curs);
+    
+    %results = fetch(conn,sqlquery);
+
+
     % Open the new file for reading
     fid = fopen(matFile,'r');
     % Read in the binary data bit-by-bit and put into a logical array
