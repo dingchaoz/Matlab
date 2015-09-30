@@ -1,4 +1,4 @@
-function uploadCalibratables(matFile,program,family)
+function uploadCalibratables(matFile,program,family,calVersion,calRevision)
 %   Uploads the .mat files with the calibratable values into the database
 %   
 %   Usage: uploadCalibratables(fileList, family)
@@ -17,14 +17,18 @@ function uploadCalibratables(matFile,program,family)
     
     % Open a connection to the database here
     % Maybe in the future this could use the SQLBasics object to get it's connection
+    
+%   Revised - Dingchao Zhang - Sep 30th, 2015    
+%   - Enable script to isert mainline cals' rev and
+%   verion info
     conn = database(program,'','','com.microsoft.sqlserver.jdbc.SQLServerDriver',...
-           sprintf('%s%s;%s','jdbc:sqlserver://W4-S129433;instanceName=CAPABILITYDB;database=',program,...
+           sprintf('%s%s;%s','jdbc:sqlserver://W4-S132377;instanceName=CapabilityDev;database=',program,...
             'integratedSecurity=true;loginTimeout=5;'));
     
     % Clear out the old data entry from the database
-    curs = exec(conn,sprintf('DELETE FROM [dbo].[tblCals] WHERE [Family] = ''%s''',family));
-    % Close and clear the cursor
-    close(curs);clear curs;
+%     curs = exec(conn,sprintf('DELETE FROM [dbo].[tblCals2] WHERE [Family] = ''%s''',family));
+%     % Close and clear the cursor
+%     close(curs);clear curs;
     
     % Open the new file for reading
     fid = fopen(matFile,'r');
@@ -32,7 +36,7 @@ function uploadCalibratables(matFile,program,family)
     A = fread(fid,Inf,'ubit1=>logical');
     
     % Upload the data and engine family to the database
-    fastinsert(conn,'[dbo].[tblCals]',{'Family','MatFile'},{family,A});
+    fastinsert(conn,'[dbo].[tblCals3]',{'Family','MatFile','CalVersion','CalRev'},{family,A,calVersion,calRevision});
     
     % Close the file
     fclose(fid);
