@@ -184,17 +184,17 @@ exportThresholds(r,l,fullfile(nighthawkRoot,'MY17\B360_HHP_Beta'),'Nighthawk','N
 
 %% Ayrton
 % Ayrton Root
-AyrtonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\MR_Worldwide_2\Ayrton';
+ayrtonRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\MR_Worldwide_2\Ayrton';
 % Ayrton Default (use the 96kW FOTON family)
-exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Default','BGY')
+exportThresholds(r,l,fullfile(ayrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Default','BGY')
 % Ayrton FOTON
-exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Foton','BGY')
+exportThresholds(r,l,fullfile(ayrtonRoot,'Development\Manual_96 kW FOTON'),'Ayrton','Foton','BGY')
 % Ayrton Gaas 96 kw
-exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton','Gaas','BGY')
+exportThresholds(r,l,fullfile(ayrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton','Gaas','BGY')
 % Ayrton Gaas 120 kw
-exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_120 kW GAZ'),'Ayrton','Ayrton_120KW_GAZ','BGY')
+exportThresholds(r,l,fullfile(ayrtonRoot,'Development\Manual_120 kW GAZ'),'Ayrton','Ayrton_120KW_GAZ','BGY')
 % Ayrton Foton 130 kw
-exportThresholds(r,l,fullfile(AyrtonRoot,'Development\Manual_130 kW FOTON'),'Ayrton','Ayrton_130KW_FOTON','BGY')
+exportThresholds(r,l,fullfile(ayrtonRoot,'Development\Manual_130 kW FOTON'),'Ayrton','Ayrton_130KW_FOTON','BGY')
 
 
 %% Vanguard
@@ -213,31 +213,31 @@ ventura2Root = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\C
 % Ventura Default (use the Alpha Mainline family)
 exportThresholds(r,l,fullfile(venturaRoot,'MY15\Ve_ISV200'),'Ventura','Default','BFY')
 % Ventura2 (use the Ventura2_MY16 Mainline family)
-exportThresholds(r,l,fullfile(ventura2Root,'MY16\Ve2_ISV275hp_250k'),'Ventura','Ventura2','BFY')
+exportThresholds(r,l,fullfile(ventura2Root,'MY16\Ve2_ISV275hp_500k'),'Ventura','Ventura2','BFY')
 
 %% Blazer
-BlazerRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Blazer';
+blazerRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Blazer';
 % Blazer Default
-exportThresholds(r,l,fullfile(BlazerRoot,'DIG\173_2500'),'Blazer','Default','BFU')
+exportThresholds(r,l,fullfile(blazerRoot,'DIG\173_2500'),'Blazer','Default','BFU')
 
 %% Bronco
-BroncoRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer';
+broncoRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer';
 % Bronco Default
-exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\DIG\300_2500'),'Bronco','Default','BEE')
+exportThresholds(r,l,fullfile(broncoRoot,'Workhorse Bronco\DIG\300_2500'),'Bronco','Default','BEE')
 % Bronco Lite
-exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco Lite\FP\173_2300'),'Bronco','Bronco_Lite','BEE')
+exportThresholds(r,l,fullfile(broncoRoot,'Workhorse Bronco Lite\FP\173_2300'),'Bronco','Bronco_Lite','BEE')
 % Bronco
-exportThresholds(r,l,fullfile(BroncoRoot,'Workhorse Bronco\DIG\300_2500'),'Bronco','Bronco','BEE')
+exportThresholds(r,l,fullfile(broncoRoot,'Workhorse Bronco\DIG\300_2500'),'Bronco','Bronco','BEE')
 
 %% Clydesdale
-ClydesdaleRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Workhorse Clydesdale';
+clydesdaleRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Workhorse Clydesdale';
 % Clydesdale Default
-exportThresholds(r,l,fullfile(ClydesdaleRoot,'DIG\380_2100_AP'),'Clydesdale','Default','BEG')
+exportThresholds(r,l,fullfile(clydesdaleRoot,'DIG\380_2100_AP'),'Clydesdale','Default','BEG')
 
 %% Shadowfax
-ShadowfaxRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Shadowfax';
+shadowfaxRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Shadowfax';
 % Shadowfax Default
-exportThresholds(r,l,fullfile(ShadowfaxRoot,'PP2_Recycle\130_2500'),'Shadowfax','Default','BFV')
+exportThresholds(r,l,fullfile(shadowfaxRoot,'PP2_Recycle\130_2500'),'Shadowfax','Default','BFV')
 
 %% Copy output to correct location (do this for compatibility reasons at the present time)
 % % Copy those outputs to the @SQLProcessor folder for its useage

@@ -268,7 +268,17 @@ function where = makeWhere(pdid, args)
     elseif pdid==174914 % V_UDD_tm_PowerCtrl_HighErr has two publicDataIDs for Acadia
         where = sprintf('WHERE [PublicDataID] in (%.0f, 123029) ',pdid);
     elseif pdid==174915 % V_UDD_tm_PowerCtrl_LowErr has two publicDataIDs for Acadia
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 123031) ',pdid);        
+        where = sprintf('WHERE [PublicDataID] in (%.0f, 123031) ',pdid);
+    elseif pdid==174916 % V_UDD_tm_Pump_HighErr has two publicDataIDs for Acadia
+        where = sprintf('WHERE [PublicDataID] in (%.0f, 123032) ',pdid);
+    elseif pdid==174917 % V_UDD_tm_Pump_LowErr has two publicDataIDs for Acadia
+        where = sprintf('WHERE [PublicDataID] in (%.0f, 123033) ',pdid);
+    elseif pdid==174399 % V_UDD_tm_DoserInj_Fault has two publicDataIDs for Acadia
+        where = sprintf('WHERE [PublicDataID] in (%.0f, 123068) ',pdid);
+    elseif pdid==174392 % V_UTDD_tm_LineHtr1_HighErr has two publicDataIDs for Acadia
+        where = sprintf('WHERE [PublicDataID] in (%.0f, 110309) ',pdid);
+    elseif pdid==174391 % V_UTDD_tm_LineHtr1_LowErr has two publicDataIDs for Acadia
+        where = sprintf('WHERE [PublicDataID] in (%.0f, 110308) ',pdid); 
     else
         where = sprintf('WHERE [PublicDataID] = %.0f',pdid);
     end
