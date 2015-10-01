@@ -1,4 +1,4 @@
-function runCaltermCLI(cal,ecfg,filter,export,code)
+function runCaltermCLI(cal,ecfg,filter,export,xml,code)
 %This generates a .bat file and call the CaltermCLI to generate a .m export file
 %   
 %   Inputs -
@@ -14,12 +14,23 @@ function runCaltermCLI(cal,ecfg,filter,export,code)
 %   Original Version - Chris Remington - March 21, 2012
 %   Revised - Chris Remington - January 13, 2014
 %     - Modified to simply call the entire CLI command at once
+%   Revised - Dingchao Zhang - Oct 1, 2015
+%     - Modified to add export xml file using CLI command
     
+
+
     % Forumulate the CLI command call
-    test = sprintf('%s -Cexport -P"%s" -S"%s" -E"%s" -G"%s" -O"%s" -Dfalse -FmatLabMFile -Lcal',...
+    mexport = sprintf('%s -Cexport -P"%s" -S"%s" -E"%s" -G"%s" -O"%s" -Dfalse -FmatLabMFile -Lcal',...
         '"C:\Software\Calterm III\CaltermCLI.exe"',code,cal,ecfg,filter,export);
     
     % Run the CLI command
-    dos(test);
+    dos(mexport);
+    
+    % Forumulate the CLI command call
+    xmlexport = sprintf('%s -Cexport -P"%s" -S"%s" -E"%s" -G"%s" -O"%s" -Dfalse -FXML -Lcal',...
+        '"C:\Software\Calterm III\CaltermCLI.exe"',code,cal,ecfg,filter,xml);
+    
+    % Run the CLI command
+    dos(xmlexport);
     
 end

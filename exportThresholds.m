@@ -38,6 +38,8 @@ function exportThresholds(r,l,mainline,program,famName,code)
     exportFile = fullfile(copyCalToDir,[famName '_export.m']);
     % Generate the name of the export .mat file
     matFile = fullfile(copyCalToDir,[famName '_export.mat']);
+     % Generate the name of the xml file
+    xmlFile = fullfile(copyCalToDir,[famName '_export.exp.xml']);
     
     % Get the mainline calibration names (this makes a directory in suppdata if need be)
     [cal, ecfg, calVer,calRev] = getMainlineCal(mainline,copyCalToDir);
@@ -47,13 +49,13 @@ function exportThresholds(r,l,mainline,program,famName,code)
    for i = 1: length(cal)
        
         % Run the Calterm CLI to generate the .m export file
-        runCaltermCLI(cal{i},ecfg{i},filterFile,exportFile,code);
+        runCaltermCLI(cal{i},ecfg{i},filterFile,exportFile,xmlFile,code);
 
         % Read in the .m file, parse the values, then save the variables as a .mat file
         m2mat(exportFile,matFile,filterFile,program)
 
         % Upload the .mat file for this program
-        uploadCalibratables(matFile,program,famName,calVer{i},calRev{i})
+        uploadCalibratables(matFile,xmlFile,program,famName,calVer{i},calRev{i})
    end
    
 end
