@@ -54,6 +54,9 @@ function uploadCalibratables(matFile,xmlFile,program,family,calVersion,calRevisi
         % Upload the data and engine family to the database
         fastinsert(conn,'[dbo].[tblCals2]',{'Family','xmlFile','CalVersion','CalRev'},{family,A_xml,calVersion,calRevision});
         
+            
+        fprintf('Cal Version %s and Revision %s is uploaded to database cal table in Family %s of program %s.\n',calVersion,calRevision, family,program)
+        
         % Close the file
         fclose(fid);
 
@@ -62,7 +65,7 @@ function uploadCalibratables(matFile,xmlFile,program,family,calVersion,calRevisi
     
     else
     % Else print cal already uploaded    
-         fprintf('Cal Version %s and Revision %s was already uploaded to database cal table.\n',calVersion,calRevision)
+         fprintf('Cal Version %s and Revision %s was already uploaded to database cal table in Family %s of program %s.\n',calVersion,calRevision, family,program)
     
     end
 end

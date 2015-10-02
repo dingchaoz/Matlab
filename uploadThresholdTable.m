@@ -77,12 +77,12 @@ function uploadThresholdTable(matFile,program,family,calVersion,calRev)
         close(conn)
     
         % Else print cal already uploaded    
-        fprintf('Cal Version %s and Revision %s is uploaded to database cal table.\n',calVersion,calRev);
+        fprintf('Cal Version %s and Revision %s is uploaded to database cal table in Family %s of program %s.\n',calVersion,calRev, family,program);
     
     else
         
-        % Else print cal already uploaded    
-        fprintf('Cal Version %s and Revision %s was already uploaded to database cal table.\n',calVersion,calRev);
+        % Else print cal already uploaded     
+         fprintf('Cal Version %s and Revision %s was already uploaded to database cal table in Family %s of program %s.\n',calVersion,calRev, family,program);
     end
      
 end

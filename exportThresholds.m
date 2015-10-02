@@ -50,17 +50,17 @@ function exportThresholds(r,l,mainline,program,famName,code)
 % Loop through all mainline cals, and insert them and the calver, rev info into the database    
    for i = 1: length(cal)
        
-%         % Run the Calterm CLI to generate the .m export file
-%         runCaltermCLI(cal{i},ecfg{i},filterFile,exportFile,xmlFile,code);
-% 
-%         % Read in the .m file, parse the values, then save the variables as a .mat file
-%         m2mat(exportFile,matFile,filterFile,program)
+        % Run the Calterm CLI to generate the .m export file
+        runCaltermCLI(cal{i},ecfg{i},filterFile,exportFile,xmlFile,code);
 
-        % Upload the .mat and .xml binary file for this program
+        % Read in the .m file, parse the values, then save the variables as a .mat file
+        m2mat(exportFile,matFile,filterFile,program)
+
+%         Upload the .mat and .xml binary file for this program
         uploadCalibratables(matFile,xmlFile,program,famName,calVer{i},calRev{i})
         
-        % Upload the threshold names and values table for this program
-%         uploadThresholdTable(matFile,program,famName,calVer{i},calRev{i})
+%         Upload the threshold names and values table for this program
+        uploadThresholdTable(matFile,program,famName,calVer{i},calRev{i})
    end
    
 end

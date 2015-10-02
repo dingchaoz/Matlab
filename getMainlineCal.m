@@ -22,9 +22,8 @@ function [calFile, ecfgFile, calVer, calRev] = getMainlineCal(mainlineRoot,copyC
 %     - Went to the old wildcard code and instead just will keep the newest .ecfg or .xcal
 %       if there are multiples in the mainline directory
 %   Revised - Dingchao Zhang - Sep 30th, 2015    
-%   - Enable script to isert mainline cals' rev and
-%   verion info
-
+%   - Get multiple cals in the mainline cal directory and extract ver and
+%   rev info  of the cal
 
 
     % Grab the file names of the latest mainline calibration
