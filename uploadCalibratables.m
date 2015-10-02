@@ -26,12 +26,12 @@ function uploadCalibratables(matFile,xmlFile,program,family,calVersion,calRevisi
             'integratedSecurity=true;loginTimeout=5;'));
     
     %% Execute SQL query to see if the cal version already exists
-    Cal_Ver = exec(conn,sprintf('select CalVersion FROM [dbo].[tblCals3] where CalVersion in (''%s'')',calVersion));
+    Cal_Ver = exec(conn,sprintf('select CalVersion FROM [dbo].[tblCals3] where CalVersion in (''%s'') and Family = ''%s''' ,calVersion,family));
     % Fetch the query
     Cal_Ver = fetch(Cal_Ver);
     
     %% Execute SQL query to see if the cal revision already exists
-    Cal_Rev = exec(conn,sprintf('select CalRev FROM [dbo].[tblCals3] where CalRev in (''%s'')',calRevision));
+    Cal_Rev = exec(conn,sprintf('select CalRev FROM [dbo].[tblCals3] where CalRev in (''%s'') and Family = ''%s''',calRevision,family));
     % Fetch the query
     Cal_Rev = fetch(Cal_Rev);
     
@@ -52,9 +52,7 @@ function uploadCalibratables(matFile,xmlFile,program,family,calVersion,calRevisi
         A_xml = fread(fid_xml,Inf,'ubit1=>logical');
 
         % Upload the data and engine family to the database
-        fastinsert(conn,'[dbo].[tblCals2]',{'Family','MatFile','CalVersion','CalRev'},{family,A_xml,calVersion,calRevision});
-        
-        
+        fastinsert(conn,'[dbo].[tblCals2]',{'Family','xmlFile','CalVersion','CalRev'},{family,A_xml,calVersion,calRevision});
         
         % Close the file
         fclose(fid);
@@ -64,7 +62,7 @@ function uploadCalibratables(matFile,xmlFile,program,family,calVersion,calRevisi
     
     else
     % Else print cal already uploaded    
-         fprintf('Cal Version %s and Revision %s is already uploaded to database cal table.\n',calVersion,calRevision)
+         fprintf('Cal Version %s and Revision %s was already uploaded to database cal table.\n',calVersion,calRevision)
     
     end
 end
