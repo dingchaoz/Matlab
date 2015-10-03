@@ -20,7 +20,9 @@ function pdid = getPublicDataID(obj, paramName)
 %   Revised - Yiyuan Chen 2015/02/04
 %     - Set the fake PublicDataID direcly to 999999 if the parameter is
 %     the number of failed cylinders, for EQUALLY_FAILED_INJECTORS_ERROR
-    
+%   Revised - Deepika S Namboothiri, Yiyuan Chen 2015/10/02
+%      Modified to extract all public data IDs for the same critical parameter
+
     % Check the input to the function
     if ~ischar(paramName)
         error('Capability:getPublicDataID:InvalidInput','Input to paramName must be a string');
@@ -42,7 +44,7 @@ function pdid = getPublicDataID(obj, paramName)
             % If there were any matches
             if any(idx)
                 % Return the largest Public Data ID match found
-                pdid = max(obj.paramInfoCache.PublicDataID(idx));
+                pdid = obj.paramInfoCache.PublicDataID(idx);
                 % Exit the function as there is no need to look in the database
                 return
             end
@@ -51,40 +53,27 @@ function pdid = getPublicDataID(obj, paramName)
     
     % There was no info in the paramInfoCache, look in the databse and update the cache 
     % accordingly
-    
+
     % Formulate the sql query
     sql = ['SELECT [Data], [DataType], [Unit], [Min], [Max], [BNumber], [PublicDataID], ' ...
            '[Calibration] FROM [dbo].[tblDataInBuild] WHERE [Data] = ''' paramName ''''];
-    
+       
     % Use the common tryfetch method to handle re-connecting to the data-base upon error
     d = obj.tryfetch(sql);
     
     % If there was any data returned
     if ~isempty(d)
-        
-        % Find the index of the largest calibration version
-        [~, idx] = max(d.Calibration);
-        %  The below if statement was added because these parameters have a different PublicID in 50997001. 
-        %  This is not an ideal change, but a temporary work around by Sri Seshadri.    
-        doublePublicIDParam={'V_ATP_pc_Urea_TankLvl','V_UDD_tm_DoserInj_Fault','V_UTD_trc_TankT_ChrgT_Diff','V_UTD_trc_TankT_CoolantT_Diff'}; 
-        
-        if strcmp('Pele',obj.program)&& ismember(paramName,doublePublicIDParam)&& max(d.Calibration) == 50997001     
-            idx = idx -1  ;
-        end
-        
+        % fetch the unique publicDataIDs only
+        [pdid, idx, ~] = unique(d.PublicDataID);
         % Update all fields of the paramInfoCache
-        obj.paramInfoCache.Data = [obj.paramInfoCache.Data d.Data(idx)];
-        obj.paramInfoCache.DataType = [obj.paramInfoCache.DataType d.DataType(idx)];
-        obj.paramInfoCache.Unit = [obj.paramInfoCache.Unit d.Unit(idx)];
-        obj.paramInfoCache.Min = [obj.paramInfoCache.Min d.Min(idx)];
-        obj.paramInfoCache.Max = [obj.paramInfoCache.Max d.Max(idx)];
-        obj.paramInfoCache.BNumber = [obj.paramInfoCache.BNumber d.BNumber(idx)];
-        obj.paramInfoCache.PublicDataID = [obj.paramInfoCache.PublicDataID d.PublicDataID(idx)];
-        obj.paramInfoCache.Calibration = [obj.paramInfoCache.Calibration d.Calibration(idx)];
-        
-        % Return the pdid from the newest software version
-        pdid = d.PublicDataID(idx);
-        
+        obj.paramInfoCache.Data = [obj.paramInfoCache.Data d.Data(idx)'];
+        obj.paramInfoCache.DataType = [obj.paramInfoCache.DataType d.DataType(idx)'];
+        obj.paramInfoCache.Unit = [obj.paramInfoCache.Unit d.Unit(idx)'];
+        obj.paramInfoCache.Min = [obj.paramInfoCache.Min d.Min(idx)'];
+        obj.paramInfoCache.Max = [obj.paramInfoCache.Max d.Max(idx)'];
+        obj.paramInfoCache.BNumber = [obj.paramInfoCache.BNumber d.BNumber(idx)'];
+        obj.paramInfoCache.PublicDataID = [obj.paramInfoCache.PublicDataID d.PublicDataID(idx)'];
+        obj.paramInfoCache.Calibration = [obj.paramInfoCache.Calibration d.Calibration(idx)'];
     else
         % There was no match, throw an error
         error('Capability:getPublicDataID:NoMatch', 'The parameter %s was not found in the database', paramName);

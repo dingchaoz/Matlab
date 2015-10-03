@@ -11,7 +11,7 @@ function data = getMinMaxData(obj, pdid, varargin)
 %       with an X1 engine and software of 510001.
 %   
 %   Inputs ---
-%   pdid:      Public Data ID of the parameter
+%   pdid:      Public Data ID(s) of the parameter
 %   varargin:  listing of properties and their values. (see below)
 %   
 %              'engfam'    Specifies the filtering based on an engine family
@@ -145,6 +145,8 @@ function data = getMinMaxData(obj, pdid, varargin)
 %     - Modified the SQL query to fetch data from Seahawk's archived database as well
 %   Revised - Yiyuan Chen - 2015/08/10
 %     - Modified the SQL query to fetch data from Pacific's archived database 3 (from 2014/12/01) as well
+%   Revised - Deepika S Namboothiri, Yiyuan Chen - 2015/10/02
+%     - Modified the WHERE clause in SQL query to fetch data for parameters with multiple public data ids
     
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
@@ -257,30 +259,18 @@ end
 
 function where = makeWhere(pdid, args)
     % This function processses the input options and generates the proper WHERE clause
-    
-    % Start the where clause with the Public Data ID
-    if pdid==89752 % LDC diagnostics have two publicDataIDs for Ventura
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 179702) ',pdid);
-    elseif pdid==89754
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 179703) ',pdid);
-    elseif pdid==163276 % V_ATP_pc_Urea_TankLvl has two publicDataIDs for Ventura
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 47977) ',pdid);
-    elseif pdid==174914 % V_UDD_tm_PowerCtrl_HighErr has two publicDataIDs for Acadia
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 123029) ',pdid);
-    elseif pdid==174915 % V_UDD_tm_PowerCtrl_LowErr has two publicDataIDs for Acadia
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 123031) ',pdid);
-    elseif pdid==174916 % V_UDD_tm_Pump_HighErr has two publicDataIDs for Acadia
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 123032) ',pdid);
-    elseif pdid==174917 % V_UDD_tm_Pump_LowErr has two publicDataIDs for Acadia
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 123033) ',pdid);
-    elseif pdid==174399 % V_UDD_tm_DoserInj_Fault has two publicDataIDs for Acadia
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 123068) ',pdid);
-    elseif pdid==174392 % V_UTDD_tm_LineHtr1_HighErr has two publicDataIDs for Acadia
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 110309) ',pdid);
-    elseif pdid==174391 % V_UTDD_tm_LineHtr1_LowErr has two publicDataIDs for Acadia
-        where = sprintf('WHERE [PublicDataID] in (%.0f, 110308) ',pdid); 
-    else
-        where = sprintf('WHERE [PublicDataID] = %.0f',pdid);
+    S = cell(1,length(pdid));
+    for i = 1:length(pdid) % convert each publicDataID to a string for sql query
+        if i == length(pdid)
+            S{i} = strcat(int2str(pdid(i)),')'); % concatenate ')' if the publicDataID is the last one
+        else
+            S{i} = strcat(int2str(pdid(i)),',');
+        end
+    end
+
+    where = 'WHERE [PublicDataID] in (';
+    for i = 1:length(S) % make a WHERE clause containing all publicDataIDs
+        where = sprintf('%s%s',where,S{i});
     end
     
     %% Add filtering based on the EMBFlag if needed
