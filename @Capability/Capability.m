@@ -13,6 +13,8 @@ classdef Capability < handle
 %   Revised - Chris Remington - March 20, 2014
 %     - Merged Sri's Dot Plot functions into the main code to allow that functionality
 %       within the GUI
+% Revised -- Dingchao Zhang--Test different methods of constructing
+% obj.cals
     
     properties % Public
         % Structure to hold the filtering values for a current plot configuration
