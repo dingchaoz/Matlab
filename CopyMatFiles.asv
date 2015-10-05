@@ -6,8 +6,13 @@ Root = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\ETD_Data';
 DestRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\ETD_Data\MinMaxData';
 program = {'Acadia'};
 Folder = {'Acadia'};
+DestFolder = {'Acadia'};
 
 for i = 1: length(program)
+    %     Destination = fullfile(DestRoot,DestFolder{i},'MatFiles');
+    %     lastfilecopied = LastfileProcessed(Destination);
+    %     datelastfile = str2double(lastfilecopied(end-9:end-4));
+    %     startfolder = [datestr(datenum(num2str(datelastfilecopied),'yymmdd'),'yy-mm'), '_matfiles'];
     sourcepath = fullfile(Root,Folder{i},'MatData');
     foldercontents = dir(sourcepath);
     targetfolders = foldercontents(cell2mat({foldercontents(:).isdir}));
@@ -15,12 +20,21 @@ for i = 1: length(program)
         truckname = targetfolders(j).name;
         MatData_Contents = dir(fullfile(sourcepath,truckname));
         tgtMatFolders = MatData_Contents(cell2mat({MatData_Contents(:).isdir}));
-        for k = 1:length(tgtMatFolders)
+        Destination = fullfile(DestRoot,DestFolder{i},truckname);
+        lastfilecopied = Lastfileprocessed(Destination);
+        if ~isempty(lastfilecopied)
+            datelastfile = str2double(lastfilecopied(end-9:end-4));
+            startfolder = [datestr(datenum(num2str(datelastfilecopied),'yymmdd'),'yy-mm'), '_matfiles'];
+        else
+            startfolder = [];
+        end
+        for k = 3:length(tgtMatFolders)
             directory = tgtMatFolders(k).name;
             if ~isempty(strfind(directory,'_matfiles'))
                 parts = toklin(directory,'_');
                 try
                     datenum(parts{1});
+                    
                     if numel(dir(fullfile(sourcepath,truckname,directory)))>2
                         for l = 3: length(dir(fullfile(sourcepath,truckname,directory)))
                             

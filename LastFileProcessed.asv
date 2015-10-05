@@ -3,7 +3,7 @@
 function filename = LastFileProcessed(directory)
 lastfile = [];
 if exist(fullfile(directory,'Matfiles'),'dir')
-    lastfile = LatestFileinDirectory(fullfile(directory,'Matfiles'));
+  lastfile = LatestFileinDirectory(directory,'Matfiles');
 else
     mkdir(fullfile(directory,'Matfiles'));
 end
@@ -18,11 +18,7 @@ else
     mkdir(fullfile(directory,'Matfiles','error'));
 end % if exist(fullfile(directory,'error'),'dir')
 [files id] = sort(lastfile,'descend');
-if ~isempty(files)
-    filename = files(1,:);
-else
-    filename = [];
-end % if ~isempty(files)
+filename = files(1,:);
 end %function LastFileProcessed(directory)
 
 

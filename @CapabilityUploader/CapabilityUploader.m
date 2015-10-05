@@ -34,6 +34,7 @@ classdef CapabilityUploader < Capability
         
         % Known software versions on this program (used the check reversed LDD S/W versions)
         knownSw
+        path
         
     end
     
@@ -45,19 +46,25 @@ classdef CapabilityUploader < Capability
     %% Constructor and Destructor
     methods % Constructor + Destructor
         % The constructor
-        function obj = CapabilityUploader(program)
+        function obj = CapabilityUploader(program,varargin)
             
             % If no program was passed in
             if ~exist('program','var')
                 % Default to Pacific
                 program = 'HDPacific';
             end
+            input = nargin;
             
             % Display message
             fprintf('CapabilityUploader constructor called for the %s program.\n',program)
             
             % Call constructor for Capability and pass in the program name
             obj = obj@Capability(program);
+            if input > 1
+                obj.path = varargin{1};
+            else 
+                obj.path = '..\capability_logs';
+            end
             
             % Set the networkLogRoot property for where to dump log files
             obj.networkLogRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\ETD_Data\MinMaxData\Log_Files';
@@ -132,7 +139,7 @@ classdef CapabilityUploader < Capability
         
         % Method to initalize new log files (i.e., when connecting to the database)
         % This should be called on the PostSet event of the 'program' property
-        function openLogFiles(obj,path,~)
+        function openLogFiles(obj)
             % If old log writers still exist
             if ~isempty(obj.error) || ~isempty(obj.event) || ~isempty(obj.warning) || ~isempty(obj.timer)
                 % Something is broken if it's possible to get here
@@ -142,10 +149,10 @@ classdef CapabilityUploader < Capability
             end
             
             % Declare the logging objects
-            obj.error = logWriter('Error_Log', fullfile(path,obj.program,'error'));
-            obj.event = logWriter('Event_Log', fullfile(path,obj.program,'event'));
-            obj.warning = logWriter('Warning_Log', fullfile(path',obj.program,'warning'));
-            obj.timer = logWriter('Timer_Log', fullfile(path,obj.program,'timer'));
+            obj.error = logWriter('Error_Log', fullfile(obj.path,obj.program,'error'));
+            obj.event = logWriter('Event_Log', fullfile(obj.path,obj.program,'event'));
+            obj.warning = logWriter('Warning_Log', fullfile(obj.path,obj.program,'warning'));
+            obj.timer = logWriter('Timer_Log', fullfile(obj.path,obj.program,'timer'));
             
             % Initalize the headers of the log files
             obj.error.writef('CapabilityUploader Error Log File - %s Program\r\n',obj.program);
