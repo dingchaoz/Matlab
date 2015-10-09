@@ -394,22 +394,23 @@ classdef Capability < handle
             % Clear out any old ones if they exist
             obj.cals = [];
             
+            tic;
             % Read in binary data from the original database for each engine family
             calData = fetch(obj.conn, 'SELECT [Family],[MatFile] FROM [dbo].[tblCals]');
-            
+            toc;
             % Read in the threshold names and value table data from the new
             % test database for each engine family each latest ver and rev
             % uploaded
             calData1 = fetch(obj.conn, 'SELECT [Family],[MatFile] FROM [dbo].[tblCals1]');
-            
+            toc;
             % Read in xml binary data from the database for each engine
             % family and latest ver and rev uploaded
             calData2 = fetch(obj.conn, 'SELECT [Family],[xmlFile] FROM [dbo].[tblCals2]');
-            
+            toc;
              % Read the latest mat binary data from the database for each engine family
              % selectc query needs to be changed
             calData3 = fetch(obj.conn, 'SELECT [Family],[matFile] FROM [dbo].[tblCals3]');
-            
+            toc;
             
             % If there was no data present
             if isempty(calData)
@@ -444,6 +445,7 @@ classdef Capability < handle
             end
             
             prog = obj.privateProgram;
+            tic;
             % For each engine family present
             for i = 1:length(calData.Family)
                 % Engine Family
@@ -456,7 +458,7 @@ classdef Capability < handle
                 obj.cals.(calData.Family{i}) = load([loc prog '_' fam '.mat']);
             end
             
-            
+            toc;
             % For each engine family present
             for i = 1:length(calData1.Family)
                 % Engine Family
@@ -469,7 +471,7 @@ classdef Capability < handle
                 % Need to be modified
                 obj.cals1.(calData1.Family{i}) = load([loc prog '_' fam '.mat']);
             end
-            
+            toc;
             
             % For each engine family present
             for i = 1:length(calData2.Family)
@@ -482,7 +484,7 @@ classdef Capability < handle
                 % Read in and assign the data from the .mat file for this engine family
                 obj.cals2.(calData2.Family{i}) = load([loc prog '_' fam '.xml']);
             end
-            
+            toc;
             
             % For each engine family present
             for i = 1:length(calData3.Family)
@@ -495,7 +497,7 @@ classdef Capability < handle
                 % Read in and assign the data from the .mat file for this engine family
                 obj.cals3.(calData3.Family{i}) = load([loc prog '_' fam '3.mat']);
             end
-            
+            toc;
             
             
             
