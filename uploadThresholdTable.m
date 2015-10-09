@@ -47,23 +47,27 @@ function uploadThresholdTable(matFile,program,family,calVersion,calRev)
         end
 
        
-        
+        %% Fill up Family, Calver and CalRev to an array of the same length of parameters
+        %% so these cell arrays can be uploaded to the database schema
+        % Create array of lengths of threshold values
         Family = cell(1,length(Value));
         CalVersion = cell(1,length(Value));
         CalRev = cell(1,length(Value));
         
+        %% Fill up the cell array with strings of values
         Family(1,:) = cellstr(family);
         CalVersion(1,:) = cellstr(num2str(calVersion));
         CalRev(1,:) = cellstr(num2str(calRev));
         
-         % Reshape Value and Family to conform to Threshold    
+         % Transpose Value and Family arrays to conform to Threshold    
         Value = Value';
         Family = Family';
        
 
         % Create calTable struct to hold table to be inserted
         calTable = struct('Family',{},'CalVersion',{},'CalRev',{},'Threshold',{},'Value',{});
-
+        
+        % Fill up the structure of Caltable
         calTable(1).Threshold = Threshold;
         calTable(1).Value = Value;
         calTable(1).Family = Family;

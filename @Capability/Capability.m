@@ -387,6 +387,17 @@ classdef Capability < handle
             % Read in binary data from the database for each engine family
             calData = fetch(obj.conn, 'SELECT [Family],[MatFile] FROM [dbo].[tblCals]');
             
+            % Read in the  from the database for each engine family
+            calData1 = fetch(obj.conn, 'SELECT [Family],[MatFile] FROM [dbo].[tblCals1]');
+            
+            % Read in xml binary data from the database for each engine family
+            calData2 = fetch(obj.conn, 'SELECT [Family],[xmlFile] FROM [dbo].[tblCals2]');
+            
+             % Read the latest mat binary data from the database for each engine family
+             % selectc query needs to be changed
+            calData3 = fetch(obj.conn, 'SELECT [Family],[xmlFile] FROM [dbo].[tblCals3]');
+            
+            
             % If there was no data present
             if isempty(calData)
                 % Don't bother doing anything, leave the field as an empty set
