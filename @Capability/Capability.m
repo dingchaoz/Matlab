@@ -396,19 +396,25 @@ classdef Capability < handle
 %             fam = {'Default';'Acadia_X1';'Acadia_X3'};
 %             Calrev1= [537,536];
 %             Calrev3 = [527,528];
+            warmupData = fetch(obj.conn, 'SELECT [Family] FROM [dbo].[tblTrucks]');
             tic;
             % Read in binary data from the original database for each engine family
             calData = fetch(obj.conn, 'SELECT [Family],[MatFile] FROM [dbo].[tblCals]');
-            toc;
+            a = toc;
+            display(a,'It takes following seconds to fetch mat BLOB from original tblCals')
             % Read in the threshold names and value table data from the new
             % test database for each engine family each latest ver and rev
             % uploaded
+            tic;
             calData1 = fetch(obj.conn, 'SELECT [Family],[Threshold],[Value],[CalVersion],[CalRev] FROM [dbo].[tblCals1]  where CalRev in (537,527)');
-            toc;
+            a1 = toc;
+            display(a1,'It takes following seconds to fetch threhold names and values table from modified tblCals1')
             % Read in xml binary data from the database for each engine
             % family and latest ver and rev uploaded
+            tic;
              calData2 = fetch(obj.conn, sprintf('SELECT [Family],[xmlFile],[CalVersion],[CalRev] FROM [dbo].[tblCals2] where CalRev in (537,527)'));
-            toc;
+            a2 = toc;
+            display(a2,'It takes following seconds to fetch xml BLOB from modified tblCals2')
              % Read the latest mat binary data from the database for each engine family
              % selectc query needs to be changed
 
@@ -417,9 +423,10 @@ classdef Capability < handle
 %             'or [Family] =%s and [CalRev] =%d or [Family] =%s and [CalRev] =%d',...
 %             char(fam((1))),Calrev1((randi(2))),char(fam((2))),Calrev1((randi(2)),char(fam((3))),Calrev3((randi(2))))));
                  
+          tic;
           calData3 = fetch(obj.conn, sprintf('SELECT [Family],[matFile],[CalVersion],[CalRev] FROM [dbo].[tblCals3] where CalRev in (537,527)'));
-          
-          toc;
+          a3 = toc;
+          display(a3,'It takes following seconds to fetch mat BLOB from modified tblCals')
             
             % If there was no data present
             if isempty(calData)
@@ -467,20 +474,30 @@ classdef Capability < handle
                 obj.cals.(calData.Family{i}) = load([loc prog '_' fam '.mat']);
             end
             
-            toc;
+            b = toc;
+            display(b,'It takes following seconds to write and read threshold table from binary file to matfile')
+            display(a + b ,'It takes following seconds in total to fill up obj.cals from the original tblCals')
             % For each engine family present
-            for i = 1:length(calData1.Family)
+            tic;
+%             for i = 1:length(calData1.Family)
+            for i = 1:3
                 % Engine Family
-                fam = calData.Family{i};
+                calData1.fam = unique(calData1.Family);
                 % Write the downloaded data to a local .mat file
+                structure = struct();
+                for j = 1:548
+                    structure.(strtrim(calData1.Threshold{j})) = calData1.Value(j);
+                end
 %                 fid = fopen([loc prog '_' fam '.mat'],'w');
 %                 fwrite(fid,calData1.MatFile{i},'ubit1');
 %                 fclose(fid);
                 % Read in and assign the data from the .mat file for this engine family
                 % Need to be modified
-                obj.cals1.(calData1.Family{i}) = load([loc prog '_' fam '.mat']);
+                obj.cals1.(calData1.fam{i}) = structure;
             end
-            toc;
+            b1 = toc;
+            display(b1,'It takes following seconds to process the threshold table')
+            display(a1 + b1 ,'It takes following seconds in total to fill up obj.cals from the tblCals1')
             
 %             % For each engine family present
 %             for i = 1:length(calData2.Family)
@@ -494,7 +511,7 @@ classdef Capability < handle
 %                 obj.cals2.(calData2.Family{i}) = load([loc prog '_' fam '.xml']);
 %             end
 %             toc;
-            
+            tic;
             % For each engine family present
             for i = 1:length(calData3.Family)
                 % Engine Family
@@ -506,9 +523,16 @@ classdef Capability < handle
                 % Read in and assign the data from the .mat file for this engine family
                 obj.cals3.(calData3.Family{i}) = load([loc prog '_' fam '3.mat']);
             end
-            toc;
+            b3 = toc;
+            display(b3,'It takes following seconds to write and read threshold table from binary file to matfile')
+            display(a3 + b3 ,'It takes following seconds in total to fill up obj.cals from the tblCals3')
             
             
+            %% Write time results to file for analysis
+            fileID = fopen('caltest.txt','a+t');
+            time = [a,b,a+b,a1,b1,a1+b1,a3,b3,a3+b3,a2];
+            fprintf(fileID,'%6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f\n ',time);
+            fclose(fileID);    
             
         end
         
