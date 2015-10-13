@@ -427,6 +427,11 @@ classdef Capability < handle
           calData3 = fetch(obj.conn, sprintf('SELECT [Family],[matFile],[CalVersion],[CalRev] FROM [dbo].[tblCals3] where CalRev in (537,527)'));
           a3 = toc;
           display(a3,'It takes following seconds to fetch mat BLOB from modified tblCals')
+          
+          tic;
+          calData4 = fetch(obj.conn, sprintf('SELECT [Family],[Threshold],[Value],[CalVersion],[CalRev] FROM [dbo].[tblCals1]  where Family = ''Default'' and CalRev = 536 and Threshold = ''C_AAP_IR_Hlim'''));
+          a4 = toc;
+          display(a4,'It takes following seconds to fetch specifid threshold values from tblCals1')
             
             % If there was no data present
             if isempty(calData)
@@ -530,8 +535,8 @@ classdef Capability < handle
             
             %% Write time results to file for analysis
             fileID = fopen('caltest.txt','a+t');
-            time = [a,b,a+b,a1,b1,a1+b1,a3,b3,a3+b3,a2];
-            fprintf(fileID,'%6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f\n ',time);
+            time = [a,b,a+b,a1,b1,a1+b1,a3,b3,a3+b3,a2,a4];
+            fprintf(fileID,'%6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f\n ',time);
             fclose(fileID);    
             
         end
