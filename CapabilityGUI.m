@@ -1793,31 +1793,26 @@ handles.c.filt.software = [fromSWnum toSWnum];
 if isnan(toDate)
     if isnan(handles.c.filt.ExtID) % for MinMax parameters
         if ~isnan(handles.c.filt.CriticalParam)
-            % Get the public data id
+            % Get the public data id(s)
             pdid = handles.c.getPublicDataID(handles.c.filt.CriticalParam);
-            if pdid==89752 %Set publicDataID to the new one for LPC_ct_DiscreteHighSet & LPC_ct_DiscreteLowSet for Ventura
-                pdid = 197902;
-            elseif pdid==89754
-                pdid = 197903;
-            elseif pdid==163276 %Set publicDataID to the new one for V_ATP_pc_Urea_TankLvl for Ventura
-                pdid = 47977;
-            else
-            end
-            
-            if isnan(fromSWnum)
-                if isnan(toSWnum)
-                    sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d',handles.c.program, pdid);
+
+            for i = 1:length(pdid) % fetch the max date for each public data id
+                if isnan(fromSWnum)
+                    if isnan(toSWnum)
+                        sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d',handles.c.program, pdid(i));
+                    else
+                        sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d And CalibrationVersion <= %d',handles.c.program, pdid(i), toSWnum);
+                    end
                 else
-                    sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d And CalibrationVersion <= %d',handles.c.program, pdid, toSWnum);
+                    if isnan(toSWnum)
+                        sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d And CalibrationVersion >= %d',handles.c.program, pdid(i), fromSWnum);
+                    else
+                        sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d And CalibrationVersion Between %d And %d',handles.c.program, pdid(i), fromSWnum, toSWnum);
+                    end
                 end
-            else
-                if isnan(toSWnum)
-                    sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d And CalibrationVersion >= %d',handles.c.program, pdid, fromSWnum);
-                else
-                    sql = sprintf('SELECT max(datenum) FROM %s.dbo.tblMinMaxData WHERE PublicDataID = %d And CalibrationVersion Between %d And %d',handles.c.program, pdid, fromSWnum, toSWnum);
-                end
+                toDate(i) = cell2mat(struct2cell(fetch(handles.c.conn, sql))); 
             end
-            toDate = cell2mat(struct2cell(fetch(handles.c.conn, sql)));
+            toDate = max(toDate); % choose the latest date among all public data ids
         else
             % Do nothing to toDate if the parameter does not exist yet since it's just a switch to a new platform
         end
@@ -1883,7 +1878,7 @@ end
 
 function updatePossibleVehicles(handles)
 
-% Change the list of avaiable truck names beased on the select engine family
+% Change the list of avaiable truck names based on the select engine family
 % and truck type
 familiesSel = handles.c.filtDisp.engfams(get(handles.lstFamily,'Value'));
 typesSel =    handles.c.filtDisp.vehtypes(get(handles.lstVehType,'Value'));
@@ -2021,7 +2016,7 @@ if isnan(handles.c.filt.ExtID)
     
     %% Get Data From Database
     try
-        % Find the public data id of the parameter
+        % Find the public data id(s) of the parameter
         pdid = handles.c.getPublicDataID(handles.c.filt.CriticalParam);
         % Fetch the data from the database (filtering on either DataMin or DataMax as selected by the user)
         d = handles.c.getMinMaxData(pdid,'software',sw,'date',date,'trip',trip,'emb',emb,'engfam',engfam,'vehtype',vehtype,'vehicle',vehicle,rawMM,valuesFilt);
@@ -2078,7 +2073,7 @@ if isnan(handles.c.filt.ExtID)
     header = {'tod', 'Date/Time (UTC)', 'ECM_Run_Time', 'Truck Name', ...
               'Family', 'Software', 'Min/Max Set ID', ...
               [handles.c.filt.CriticalParam ' Min'], [handles.c.filt.CriticalParam ' Max']};
-    
+          
 else
     %% Event Driven System Error
     % Pull local copies of these
