@@ -87,6 +87,8 @@ function AddCSVFile(obj, fullFileName, truckID)
 %       - Added the feature of processing DOSER_USEDUP_DFM_ERR when uploading its capability data
 %   Revised - Yiyuan Chen - 2015/04/05
 %       - Added the feature of processing some more special diagnostics when uploading its capability data
+%   Revised - Dingchao Zhang - 2015/10/25
+%       - Add lines to update cal rev, ver, fileID info in tbleventdriven 
 
     %% Prerequisite Code
     % Get the name of the truckID to ensure that its a valid truck
@@ -272,6 +274,10 @@ function AddCSVFile(obj, fullFileName, truckID)
     dirData = dir(fullFileName);
     fileSize = sprintf('%.0f KB',dirData(1).bytes/1024);
     
+    % Assign the cal ver and rev to obj property
+    obj.CalVer = cal;
+    obj.CalRev = Calibration_Revision_Number;
+    
     % Update the informational columns for this truck in the tbiTrucks table
     update(obj.conn, 'tblTrucks', ...
         {'SoftwareCache','RevisionCache',             'ECMCode',  'LastFileDatenum','LastFileDateTime',         'ETDVersion','CaltermVersion','InitialMonitorRate','ScreenMonitorType','LogMode', 'MMMTurnedOn', 'LastFileSize'}, ...
@@ -377,6 +383,12 @@ function AddCSVFile(obj, fullFileName, truckID)
     % Initalize the write index for the above vector
     writeIdxEvent = 1;
     
+    
+    % Get the latest processed FileID and increment by 1
+    LastFileID = fetch(obj.conn, sprintf('SELECT max ([FileID]) FROM [dbo].[tblProcessedFiles]')); 
+    FileID = LastFileID.x + 1;
+    obj.FileID = FileID;
+    
     %% Loop through data
     % Loop through the entire .csv file, make sense of the data
     for i = 1:length(EventDriven_xSEID)
@@ -435,7 +447,7 @@ function AddCSVFile(obj, fullFileName, truckID)
             
             % Add the info to a new line of the eventDecoded cell array
             % colNames = {datenum, ECMRunTime, SEID, ExtID, DataValue, CalibrationVersion, TruckID, EMBFlag, TripFlag}
-            eventDecoded(writeIdxEvent,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, ExtID, decodedData, cal, truckID, 0, 0};
+            eventDecoded(writeIdxEvent,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, ExtID, decodedData, cal, truckID, 0, 0,FileID};
             
             % Execute extra processings for some special diagnostics
             if writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==3036 && cell2mat(eventDecoded(writeIdxEvent-1,3))==3036 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.000005
@@ -525,6 +537,7 @@ function AddCSVFile(obj, fullFileName, truckID)
     update(obj.conn, 'tblTrucks', {'BlankLines'}, {blankLines}, ...
         sprintf('WHERE [TruckID] = %.0f',truckID));
     
+    
     %% Do the MinMax separatly
     %   This is needed for the current logic necessary to discern MinMax
     % data sets differently for each other (one set per key-off event).
@@ -546,7 +559,7 @@ function AddCSVFile(obj, fullFileName, truckID)
         end
         
         % Process it and add it to the database
-        obj.processMinMaxData(abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_PublicDataID, MinMax_Data, cal, truckID);
+        obj.processMinMaxData(abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_PublicDataID, MinMax_Data, cal, truckID,FileID);
         
         % Update tblTrucks saying that there was MinMax data
         update(obj.conn, '[dbo].[tblTrucks]', {'MinMaxData'}, {'Yes'}, ...
@@ -579,7 +592,7 @@ function AddCSVFile(obj, fullFileName, truckID)
     %excessEventDecoded = eventDecoded(excessDataFlag, :);
     
     % Define Event Driven column names
-    colNamesED = {'datenum', 'ECMRunTime', 'SEID', 'ExtID', 'DataValue', 'CalibrationVersion', 'TruckID', 'EMBFlag', 'TripFlag'};
+    colNamesED = {'datenum', 'ECMRunTime', 'SEID', 'ExtID', 'DataValue', 'CalibrationVersion', 'TruckID', 'EMBFlag', 'TripFlag','FileID'};
     % If there was any good data in the file
     if size(goodEventDecoded,1) > 0
         startUpload = tic;disp('Tic - Uploading good event driven data to the database.')

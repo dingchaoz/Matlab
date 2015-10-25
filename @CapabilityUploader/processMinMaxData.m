@@ -48,6 +48,8 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
 %        if PublicIDs don't match but are valid, decodedData is valid and EMBFlag is set to 1;
 %        if PublicIDs don't match and are invalid, decodedData is NaN and EMBFlag is set to 1, 
 %           which however won't get uploaded;)
+%   Revised - Dingchao Zhang - 2015/10/25
+%   Update FileID column in tblMinMaxdata
     
     %% Initalize
     % Get the indicies of the valid MinMax data
@@ -342,9 +344,9 @@ function setID = createMinMaxSet(obj, datenum, ECM_Run_Time, cal, truckID, meanM
     % Full column name definition
     %columns = {'datenum', 'ECMRunTime', 'CalibrationVersion', 'TruckID', 'dECMRunTime', 'dEngineRunTime', 'dOBDEngineRunTime', 'dTIVechileECMDistance', 'dTIVehicleEngineDistance', 'MMMUpdateRate', 'EMBFlag', 'TripFlag'};
     % Shortened list of columns of only data that will get uploaded
-    colNames = {'ConditionID','datenum', 'ECMRunTime', 'CalibrationVersion', 'TruckID', 'MMMUpdateRate', 'EMBFlag', 'TripFlag'};
+    colNames = {'ConditionID','datenum', 'ECMRunTime', 'CalibrationVersion', 'TruckID', 'MMMUpdateRate', 'EMBFlag', 'TripFlag','FileID'};
     % Assemble the line of data to add to the database
-    data = {setID, datenum, ECM_Run_Time, cal, truckID, meanMMM, 0, 0};
+    data = {setID, datenum, ECM_Run_Time, cal, truckID, meanMMM, 0, 0,FileID};
     % Upload the data with the new, largest condition id value
     fastinsert(obj.conn, '[dbo].[tblMinMaxDataConditions]', colNames, data);
     
