@@ -79,13 +79,13 @@ classdef CapabilityUploader < Capability
             % Add post-set listener (initalize the list of possible softwares based on tblErrTable)
             obj.addlistener('program','PostSet',@obj.setPossibleSw);
             
-            % Add property to store the processed file ID
+            % Initialze property to store the processed file ID
             obj.FileID;
             
-            % Add property to store the Cal Version
+            % Initialze property to store the Cal Version
             obj.CalVer;
             
-            % Add property to store the Cal Rev
+            % Initialze property to store the Cal Rev
             obj.CalRev;
             
         end

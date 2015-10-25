@@ -243,7 +243,7 @@ function AddProcessedFile(obj, file, truckID)
 %Add a file name to the processed files table
     try
         % Insert this file into the processed files table in the database
-        fastinsert(obj.conn, 'tblProcessedFiles', {'TruckID','FileName','CalVersion','CalRev'}, {truckID,file,obj.FileID,obj.CalVer,obj.CalRev})
+        fastinsert(obj.conn, 'tblProcessedFiles', {'TruckID','FileName','FileID','CalVersion','CalRev'}, {truckID,file,obj.FileID,obj.CalVer,obj.CalRev})
     catch ex
         % If this was a unique key violation
         if strncmp(['Java exception occurred: ' char(10) 'java.sql.BatchUpdateException: Violation of UNIQUE KEY constraint'],ex.message,91)
@@ -263,7 +263,7 @@ function present = CheckProcessedFile(obj, file, truckID)
 %Check is a file name is listed as already having been processed
     try
         % Look for this file in the database alreadyfetch(obj.conn, sprintf('SELECT [FileName],[TruckID] FROM [dbo].[tblProcessedFiles] WHERE [FileName] = ''%s'' And [TruckID] = %.0f',file,truckID));
-        data = 1;
+         data = fetch(obj.conn, sprintf('SELECT [FileName],[TruckID] FROM [dbo].[tblProcessedFiles] WHERE [FileName] = ''%s'' And [TruckID] = %.0f',file,truckID));
         % If there was no data returned
         if isempty(data)
             % Return false as the file has not been processed yet

@@ -374,7 +374,7 @@ function AddCSVFile(obj, fullFileName, truckID)
     numRecord = sum(~strcmp('NaN', EventDriven_xSEID)&~strcmp('NaN', EventDriven_Data));
     % This is what will get loaded into the database
     % 9 columns of data and as many rows as have data
-    eventDecoded = cell(numRecord, 9);
+    eventDecoded = cell(numRecord, 10);
     % Initalize the logical array to hold whether each line is excess data or not
     excessDataFlag(1:numRecord,1) = false;
     % Start a counter for the number of blank lines in the file (all values are a NaN)
@@ -559,7 +559,7 @@ function AddCSVFile(obj, fullFileName, truckID)
         end
         
         % Process it and add it to the database
-        obj.processMinMaxData(abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_PublicDataID, MinMax_Data, cal, truckID,FileID);
+        obj.processMinMaxData(abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_PublicDataID, MinMax_Data, cal, truckID);
         
         % Update tblTrucks saying that there was MinMax data
         update(obj.conn, '[dbo].[tblTrucks]', {'MinMaxData'}, {'Yes'}, ...

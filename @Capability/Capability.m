@@ -63,6 +63,15 @@ classdef Capability < handle
         % Test property3 to hold a structure for each engine family's threshold values
         cals3
         
+        %Initialze property to store the processed file ID
+        FileID
+        
+        %Initialze property to store the processed file ID
+        CalVer
+        
+        %Initialze property to store the processed file ID
+        CalRev
+        
     end
     
     properties (SetAccess = private)
