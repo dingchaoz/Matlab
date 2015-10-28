@@ -213,7 +213,7 @@ ventura2Root = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\C
 % Ventura Default (use the Alpha Mainline family)
 exportThresholds(r,l,fullfile(venturaRoot,'MY15\Ve_ISV200'),'Ventura','Default','BFY')
 % Ventura2 (use the Ventura2_MY16 Mainline family)
-exportThresholds(r,l,fullfile(ventura2Root,'MY16\Ve2_ISV275hp_500k'),'Ventura','Ventura2','BFY')
+exportThresholds(r,l,fullfile(ventura2Root,'MY16\Ve2_ISV200hp'),'Ventura','Ventura2','BFY')
 
 %% Blazer
 blazerRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Blazer';

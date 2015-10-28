@@ -1,5 +1,5 @@
 function makePlot(obj, visible)
-%Save the Box Plot that makePlot generated
+%Save the Dot Plot that makePlot generated
 %   This will save the current figure using the settings correct for a dot plot
 %   to a file name that is specified.
 %   
@@ -252,7 +252,7 @@ function makePlot(obj, visible)
             % Split the USL name with _ as deliminator, and then join them back
             % with \\_, to solve the underscore printed as subscript issue
             USLName = strjoin(strsplit(obj.USLName,'_'),'\\_');
-            xText = [xText {sprintf('USL: %s = %g',USLName,obj.USL)}];
+            xText = [xText {sprintf('LSL: %s = %g',USLName,obj.USL)}];
             %xText = [xText {sprintf('USL: %s = %g',obj.USLName,obj.USL)}];
             %nonFailMinMaxText = [nonFailMinMaxText sprintf('   Max(<USL): %g',max(obj.Data(obj.Data<obj.USL)))];
         end
