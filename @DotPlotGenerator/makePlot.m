@@ -206,8 +206,7 @@ function makePlot(obj, visible)
     % Generate and set the x label
     % Parameter name and units
     
-    % If Matlab is older than 2015a, the matlab version will be smaller
-    % than 8.5.0
+    % If Matlab is older than 2015a, the matlab version will be smaller than 8.5.0
     if verLessThan('matlab','8.5.0')
         
         % Parameter name and units
@@ -252,7 +251,7 @@ function makePlot(obj, visible)
             % Split the USL name with _ as deliminator, and then join them back
             % with \\_, to solve the underscore printed as subscript issue
             USLName = strjoin(strsplit(obj.USLName,'_'),'\\_');
-            xText = [xText {sprintf('LSL: %s = %g',USLName,obj.USL)}];
+            xText = [xText {sprintf('USL: %s = %g',USLName,obj.USL)}];
             %xText = [xText {sprintf('USL: %s = %g',obj.USLName,obj.USL)}];
             %nonFailMinMaxText = [nonFailMinMaxText sprintf('   Max(<USL): %g',max(obj.Data(obj.Data<obj.USL)))];
         end
