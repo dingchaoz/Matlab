@@ -19,8 +19,10 @@ programs = {...
             'Bronco';
             'Clydesdale';
             'Shadowfax';
+            'Thunderbolt';
             'Vanguard';
             'Ventura';
+            'Vulture';
             };
 
 %% Output Location and Filtering

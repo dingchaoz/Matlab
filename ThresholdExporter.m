@@ -100,6 +100,24 @@ exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','Drag
 % % DragonCC Manual
 % exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Man'),'DragonCC','DragonCC_Man','BDC')
 
+%% Vulture
+% Vulture Root
+VultureRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Vulture';
+% Vulture Default (use the FE family as default)
+exportThresholds(r,l,fullfile(VultureRoot,'MY19\Vulture_FE'),'Vulture','Default','BHQ')
+%Vulture_FE
+exportThresholds(r,l,fullfile(VultureRoot,'MY19\Vulture_FE'),'Vulture','Vulture_FE','BHQ')
+%Vulture_HO
+exportThresholds(r,l,fullfile(VultureRoot,'MY19\Vulture_HO'),'Vulture','Vulture_HO','BHQ')
+
+%% Thunderbolt
+% Thunderbolt Root
+ThunderboltRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_CC';
+% Thunderbolt Default (use the CC_Auto family as default)
+exportThresholds(r,l,fullfile(ThunderboltRoot,'MY19\CC_Auto'),'Thunderbolt','Default','BHQ')
+% Thunderbolt CC_Auto
+exportThresholds(r,l,fullfile(ThunderboltRoot,'MY19\CC_Auto'),'Thunderbolt','Thunderbolt_CC_Auto','BHQ')
+
 %% DragonMR
 % DragonMR Root
 dragonmrRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_B';
@@ -195,7 +213,6 @@ exportThresholds(r,l,fullfile(ayrtonRoot,'Development\Manual_96 kW GAZ'),'Ayrton
 exportThresholds(r,l,fullfile(ayrtonRoot,'Development\Manual_120 kW GAZ'),'Ayrton','Ayrton_120KW_GAZ','BGY')
 % Ayrton Foton 130 kw
 exportThresholds(r,l,fullfile(ayrtonRoot,'Development\Manual_130 kW FOTON'),'Ayrton','Ayrton_130KW_FOTON','BGY')
-
 
 %% Vanguard
 % Vanguard Root

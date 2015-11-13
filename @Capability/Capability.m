@@ -127,6 +127,8 @@ classdef Capability < handle
               'Mamba',        'Mamba',         'W4-S129433', 'CAPABILITYDB';
               'Shadowfax',    'Shadowfax',     'W4-S129433', 'CAPABILITYDB';
               'Sierra',       'Sierra',        'W4-S129433', 'CAPABILITYDB';
+              'Thunderbolt',  'Thunderbolt',   'W4-S129433', 'CAPABILITYDB';
+              'Vulture',      'Vulture',       'W4-S129433', 'CAPABILITYDB';
               };
             
             % If program wasn't passed in

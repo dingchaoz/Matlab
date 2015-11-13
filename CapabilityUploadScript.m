@@ -68,6 +68,16 @@ Sierra = CapabilityUploader('Sierra');
 Sierra.dataUploader;
 clear Sierra
 
+% Vulture
+Vulture = CapabilityUploader('Vulture');
+Vulture.dataUploader;
+clear Vulture
+
+% Thunderbolt
+Thunderbolt = CapabilityUploader('Thunderbolt');
+Thunderbolt.dataUploader;
+clear Thunderbolt
+
 % Move the MR Industrial Data
 MoveMRIndCapData
 
