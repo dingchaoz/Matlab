@@ -27,8 +27,8 @@ Mamba = CapabilityUploader('Mamba');
 Mamba.dataUploader;
 clear Mamba
 
-% Copy Pele data to ETD_Data
-MovePeleCapData
+% % Copy Pele data to ETD_Data
+% MovePeleCapData
 
 % Work on Pele
 Pele = CapabilityUploader('Pele');
