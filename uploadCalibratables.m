@@ -1,4 +1,4 @@
-function uploadCalibratables(matFile,program,family)
+function uploadCalibratables(matFile,program,family,calVersion,calRevision)
 %   Uploads the .mat files with the calibratable values into the database
 %   
 %   Usage: uploadCalibratables(fileList, family)
@@ -17,27 +17,47 @@ function uploadCalibratables(matFile,program,family)
     
     % Open a connection to the database here
     % Maybe in the future this could use the SQLBasics object to get it's connection
+    
+%   Revised - Dingchao Zhang - Sep 30th, 2015    
+%   - Enable script to isert mainline cals' rev and
+%   verion info, add xml file binary file into database
     conn = database(program,'','','com.microsoft.sqlserver.jdbc.SQLServerDriver',...
-           sprintf('%s%s;%s','jdbc:sqlserver://W4-S129433;instanceName=CAPABILITYDB;database=',program,...
+           sprintf('%s%s;%s','jdbc:sqlserver://W4-S129433;instanceName=CapabilityDB;database=',program,...
             'integratedSecurity=true;loginTimeout=5;'));
     
-    % Clear out the old data entry from the database
-    curs = exec(conn,sprintf('DELETE FROM [dbo].[tblCals] WHERE [Family] = ''%s''',family));
-    % Close and clear the cursor
-    close(curs);clear curs;
+    %% Execute SQL query to see if the cal version already exists
+    Cal_Ver = exec(conn,sprintf('select CalVersion FROM [dbo].[tblCals] where CalVersion in (''%s'') and Family = ''%s''' ,calVersion,family));
+    % Fetch the query
+    Cal_Ver = fetch(Cal_Ver);
     
-    % Open the new file for reading
-    fid = fopen(matFile,'r');
-    % Read in the binary data bit-by-bit and put into a logical array
-    A = fread(fid,Inf,'ubit1=>logical');
+    %% Execute SQL query to see if the cal revision already exists
+    Cal_Rev = exec(conn,sprintf('select CalRev FROM [dbo].[tblCals] where CalRev in (''%s'') and Family = ''%s''',calRevision,family));
+    % Fetch the query
+    Cal_Rev = fetch(Cal_Rev);
     
-    % Upload the data and engine family to the database
-    fastinsert(conn,'[dbo].[tblCals]',{'Family','MatFile'},{family,A});
+    % If the cal version and revision does not exist, insert the cal in
+    if strcmp(Cal_Rev.Data,'No Data') || strcmp(Cal_Ver.Data,'No Data')
+        
+        % Open the new file for reading
+        fid = fopen(matFile,'r');
+        % Read in the binary data bit-by-bit and put into a logical array
+        A = fread(fid,Inf,'ubit1=>logical');
+
+        % Upload the data and engine family to the database
+        fastinsert(conn,'[dbo].[tblCals]',{'Family','MatFile','CalVersion','CalRev'},{family,A,calVersion,calRevision});
+        
+            
+        fprintf('Cal Version %s and Revision %s is uploaded to database cal table in Family %s of program %s.\n',calVersion,calRevision, family,program)
+        
+        % Close the file
+        fclose(fid);
+
+        % Close the database connection
+        close(conn)
     
-    % Close the file
-    fclose(fid);
+    else
+    % Else print cal already uploaded    
+         fprintf('Cal Version %s and Revision %s was already uploaded to database cal table in Family %s of program %s.\n',calVersion,calRevision, family,program)
     
-    % Close the database connection
-    close(conn)
-    
+    end
 end
