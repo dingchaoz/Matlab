@@ -35,6 +35,8 @@ function [filesP,timeP,filesE,timeE] = csvUploader(obj, rootDir, truckID)
 %   Revised - Chris Remington - April 29, 2014
 %     - Added error handling for the case when a user trys to upload data but doesn't 
 %       have parmissions to do so
+%   Revised -Dingchao Zhang - 2015/10/25
+%  Update fileID, cal ver, cal rev info in the tblprocessedfiles
     
     %% Initalization
     % Set the number of files processed and time to do it to zero to start
@@ -241,7 +243,7 @@ function AddProcessedFile(obj, file, truckID)
 %Add a file name to the processed files table
     try
         % Insert this file into the processed files table in the database
-        fastinsert(obj.conn, 'tblProcessedFiles', {'TruckID','FileName'}, {truckID,file})
+        fastinsert(obj.conn, 'tblProcessedFiles', {'TruckID','FileName','FileID','CalVersion','CalRev'}, {truckID,file,obj.FileID,obj.CalVer,obj.CalRev})
     catch ex
         % If this was a unique key violation
         if strncmp(['Java exception occurred: ' char(10) 'java.sql.BatchUpdateException: Violation of UNIQUE KEY constraint'],ex.message,91)
@@ -260,8 +262,8 @@ end
 function present = CheckProcessedFile(obj, file, truckID)
 %Check is a file name is listed as already having been processed
     try
-        % Look for this file in the database already
-        data = fetch(obj.conn, sprintf('SELECT [FileName],[TruckID] FROM [dbo].[tblProcessedFiles] WHERE [FileName] = ''%s'' And [TruckID] = %.0f',file,truckID));
+        % Look for this file in the database alreadyfetch(obj.conn, sprintf('SELECT [FileName],[TruckID] FROM [dbo].[tblProcessedFiles] WHERE [FileName] = ''%s'' And [TruckID] = %.0f',file,truckID));
+         data = fetch(obj.conn, sprintf('SELECT [FileName],[TruckID] FROM [dbo].[tblProcessedFiles] WHERE [FileName] = ''%s'' And [TruckID] = %.0f',file,truckID));
         % If there was no data returned
         if isempty(data)
             % Return false as the file has not been processed yet

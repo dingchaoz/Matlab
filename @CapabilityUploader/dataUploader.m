@@ -38,6 +38,9 @@ function dataUploader(obj)
     if strcmp(obj.program,'HDPacific')
         % Override HDPacific to be the Pacific folder
         startDir = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\ETD_Data\MinMaxData\Pacific';
+%     elseif strcmp(obj.program,'Acadia')
+%         % Testing new csv upload script to add cal ver and rev status
+%         startDir = '\\CIDCSDFS01\US.COL.IOB\Users\ks692\OBD Analysis\Improvement\tblCalsImprovement\Acadia';
     else
         % Use the program name for all the rest
         startDir = ['\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\ETD_Data\MinMaxData\' obj.program];

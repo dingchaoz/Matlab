@@ -17,6 +17,8 @@ classdef CapabilityUploader < Capability
 %   Modified - Yiyuan Chen - 2014/11/25
 %       - Modified method decodeMinMax, because one more input and as one more output are needed 
 %         to identify what problem caused datavalue to be set to NaN
+%   Revised - Dingchao Zhang - 2015/10/25
+%       - Add properties to store cal rev, ver, fileID info
     
     %% Protected Properties
     properties (SetAccess = protected)
@@ -76,6 +78,15 @@ classdef CapabilityUploader < Capability
             
             % Add post-set listener (initalize the list of possible softwares based on tblErrTable)
             obj.addlistener('program','PostSet',@obj.setPossibleSw);
+            
+            % Initialze property to store the processed file ID
+            obj.FileID;
+            
+            % Initialze property to store the Cal Version
+            obj.CalVer;
+            
+            % Initialze property to store the Cal Rev
+            obj.CalRev;
             
         end
         

@@ -48,6 +48,10 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
 %        if PublicIDs don't match but are valid, decodedData is valid and EMBFlag is set to 1;
 %        if PublicIDs don't match and are invalid, decodedData is NaN and EMBFlag is set to 1, 
 %           which however won't get uploaded;)
+%   Revised - Dingchao Zhang - 2015/10/25
+%   Update FileID column in tblMinMaxdataconditions
+%   Revised - Dingchao Zhang - 2015/10/25
+%   Upload and update FileID, CalRev columns to tblMinMaxdata
     
     %% Initalize
     % Get the indicies of the valid MinMax data
@@ -59,7 +63,7 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
     numelMinMaxData = length(idxMinMaxOnly);
     
     % Initalize the desired output or MinMax data
-    minMaxData = cell(length(idxMinMaxOnly), 10);
+    minMaxData = cell(length(idxMinMaxOnly), 12);
     minMaxWriteIdx = 1;
     
     %% Loop Through Data
@@ -141,12 +145,12 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
                 if b >= a || (isnan(a) && isnan(b))
                     % a is the minimum and b is the maximum
                     % Create the entry in MinMax data here
-                    minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, a, b, cal, truckID, [], embflag, 0};
+                    minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, a, b, cal, truckID, [], embflag, 0,obj.FileID,obj.CalRev};
                     % Increment the write idx
                     minMaxWriteIdx = minMaxWriteIdx + 1;
                 else % b is the minimum and a is the maximum
                     % Create the entry in MinMax data here
-                    minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, b, a, cal, truckID, [], embflag, 0};
+                    minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, b, a, cal, truckID, [], embflag, 0,obj.FileID,obj.CalRev};
                     % Increment the write idx
                     minMaxWriteIdx = minMaxWriteIdx + 1;
                     % Write an entry in the warning log that there was a case of backword
@@ -178,7 +182,7 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
                 
                 if ~isnan(a)
                     % Write the single value to both Min and Max and turn on the EMB flag if value is not NaN
-                    minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], embflag, 0}; 
+                    minMaxData(minMaxWriteIdx,:) = {abs_time(globalIdx), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], embflag, 0,obj.FileID,obj.CalRev}; 
                     % Increment the write idx
                     minMaxWriteIdx = minMaxWriteIdx + 1;
                 else % Skip if data value is even NaN while match fails
@@ -266,7 +270,7 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
         
         if ~isnan(a)
             % Write the single value to both Min and Max and turn on the EMB flag
-            minMaxData(minMaxWriteIdx,:) = {abs_time(idxMinMaxOnly(idx)), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], embflag, 0};
+            minMaxData(minMaxWriteIdx,:) = {abs_time(idxMinMaxOnly(idx)), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], embflag, 0,obj.FileID,obj.CalRev};
             % Special addition here becuase we already assigned ConditionID's to
             % the other parameters in this set, do it here special for this
             % last one (assosiate with lask known MinMax set)
@@ -296,7 +300,7 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
         
         if ~isnan(a)
             % Write the single value to both Min and Max and turn on the EMB flag
-            minMaxData(minMaxWriteIdx,:) = {abs_time(idxMinMaxOnly(idx)), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], embflag, 0};
+            minMaxData(minMaxWriteIdx,:) = {abs_time(idxMinMaxOnly(idx)), setECM_Run_Time, publicDataID, a, a, cal, truckID, [], embflag, 0,obj.FileID,obj.CalRev};
             % Special addition here becuase we already assigned ConditionID's to
             % the other parameters in this set, do it here special for this
             % last one (assosiate with lask known MinMax set)
@@ -312,7 +316,7 @@ function processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_
     % Trim any excessive initalized rows
     minMaxData = minMaxData(1:minMaxWriteIdx-1,:);
     % Define upload column names
-    colNames = {'datenum', 'ECMRunTime', 'PublicDataID', 'DataMin', 'DataMax', 'CalibrationVersion', 'TruckID', 'ConditionID', 'EMBFlag', 'TripFlag'};
+    colNames = {'datenum', 'ECMRunTime', 'PublicDataID', 'DataMin', 'DataMax', 'CalibrationVersion', 'TruckID', 'ConditionID', 'EMBFlag', 'TripFlag','FileID','CalRev'};
     % Upload the data into the database
     fastinsert(obj.conn, '[dbo].[tblMinMaxData]', colNames, minMaxData);
     obj.event.write(['Found ' num2str(minMaxWriteIdx-1,'%.0f') ' minmax pairs']);
@@ -342,9 +346,9 @@ function setID = createMinMaxSet(obj, datenum, ECM_Run_Time, cal, truckID, meanM
     % Full column name definition
     %columns = {'datenum', 'ECMRunTime', 'CalibrationVersion', 'TruckID', 'dECMRunTime', 'dEngineRunTime', 'dOBDEngineRunTime', 'dTIVechileECMDistance', 'dTIVehicleEngineDistance', 'MMMUpdateRate', 'EMBFlag', 'TripFlag'};
     % Shortened list of columns of only data that will get uploaded
-    colNames = {'ConditionID','datenum', 'ECMRunTime', 'CalibrationVersion', 'TruckID', 'MMMUpdateRate', 'EMBFlag', 'TripFlag'};
+    colNames = {'ConditionID','datenum', 'ECMRunTime', 'CalibrationVersion', 'TruckID', 'MMMUpdateRate', 'EMBFlag', 'TripFlag','FileID'};
     % Assemble the line of data to add to the database
-    data = {setID, datenum, ECM_Run_Time, cal, truckID, meanMMM, 0, 0};
+    data = {setID, datenum, ECM_Run_Time, cal, truckID, meanMMM, 0, 0,obj.FileID};
     % Upload the data with the new, largest condition id value
     fastinsert(obj.conn, '[dbo].[tblMinMaxDataConditions]', colNames, data);
     
