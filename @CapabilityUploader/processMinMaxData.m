@@ -346,9 +346,9 @@ function setID = createMinMaxSet(obj, datenum, ECM_Run_Time, cal, truckID, meanM
     % Full column name definition
     %columns = {'datenum', 'ECMRunTime', 'CalibrationVersion', 'TruckID', 'dECMRunTime', 'dEngineRunTime', 'dOBDEngineRunTime', 'dTIVechileECMDistance', 'dTIVehicleEngineDistance', 'MMMUpdateRate', 'EMBFlag', 'TripFlag'};
     % Shortened list of columns of only data that will get uploaded
-    colNames = {'ConditionID','datenum', 'ECMRunTime', 'CalibrationVersion', 'TruckID', 'MMMUpdateRate', 'EMBFlag', 'TripFlag','FileID'};
+    colNames = {'ConditionID','datenum', 'ECMRunTime', 'CalibrationVersion', 'TruckID', 'MMMUpdateRate', 'EMBFlag', 'TripFlag'};
     % Assemble the line of data to add to the database
-    data = {setID, datenum, ECM_Run_Time, cal, truckID, meanMMM, 0, 0,obj.FileID};
+    data = {setID, datenum, ECM_Run_Time, cal, truckID, meanMMM, 0, 0};
     % Upload the data with the new, largest condition id value
     fastinsert(obj.conn, '[dbo].[tblMinMaxDataConditions]', colNames, data);
     

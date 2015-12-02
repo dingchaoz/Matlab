@@ -373,8 +373,8 @@ function AddCSVFile(obj, fullFileName, truckID)
     % Initialize an output variable to dump values into.
     numRecord = sum(~strcmp('NaN', EventDriven_xSEID)&~strcmp('NaN', EventDriven_Data));
     % This is what will get loaded into the database
-    % 9 columns of data and as many rows as have data
-    eventDecoded = cell(numRecord, 10);
+    % 11 columns of data and as many rows as have data
+    eventDecoded = cell(numRecord, 11);
     % Initalize the logical array to hold whether each line is excess data or not
     excessDataFlag(1:numRecord,1) = false;
     % Start a counter for the number of blank lines in the file (all values are a NaN)
@@ -447,7 +447,7 @@ function AddCSVFile(obj, fullFileName, truckID)
             
             % Add the info to a new line of the eventDecoded cell array
             % colNames = {datenum, ECMRunTime, SEID, ExtID, DataValue, CalibrationVersion, TruckID, EMBFlag, TripFlag}
-            eventDecoded(writeIdxEvent,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, ExtID, decodedData, cal, truckID, 0, 0,FileID};
+            eventDecoded(writeIdxEvent,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, ExtID, decodedData, cal, truckID, 0, 0,FileID,Calibration_Revision_Number};
             
             % Execute extra processings for some special diagnostics
             if writeIdxEvent>1 && ~isempty(cell2mat(eventDecoded(writeIdxEvent-1,:))) && SEID==3036 && cell2mat(eventDecoded(writeIdxEvent-1,3))==3036 && abs(abs_time(i)-cell2mat(eventDecoded(writeIdxEvent-1,1)))<0.000005
@@ -457,11 +457,11 @@ function AddCSVFile(obj, fullFileName, truckID)
                 % Increment the writeIdxEvent by 2
                 if ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==0
                     diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
-                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0,FileID,Calibration_Revision_Number};
                     writeIdxEvent = writeIdxEvent + 2;
                 elseif ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1
                     diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
-                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0,FileID,Calibration_Revision_Number};
                     writeIdxEvent = writeIdxEvent + 2;
                 else % Increment the writeIdxEvent
                     writeIdxEvent = writeIdxEvent + 1;
@@ -470,11 +470,11 @@ function AddCSVFile(obj, fullFileName, truckID)
                 % Similarly process for DPF_TOO_FREQUENT_REGEN_ERR
                 if ExtID==2 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1
                     diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
-                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0,FileID,Calibration_Revision_Number};
                     writeIdxEvent = writeIdxEvent + 2;
                 elseif ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==2
                     diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
-                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0,FileID,Calibration_Revision_Number};
                     writeIdxEvent = writeIdxEvent + 2;
                 else % Increment the writeIdxEvent
                     writeIdxEvent = writeIdxEvent + 1;
@@ -483,7 +483,7 @@ function AddCSVFile(obj, fullFileName, truckID)
                 % Similarly process for DOSER_USEDUP_DFM_ERR but calculate the product
                 if (ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1) || (ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==0)
                     prodData = decodedData * cell2mat(eventDecoded(writeIdxEvent-1,5));
-                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, prodData, cal, truckID, 0, 0};
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, prodData, cal, truckID, 0, 0,FileID,Calibration_Revision_Number};
                     writeIdxEvent = writeIdxEvent + 2;
                 else % Increment the writeIdxEvent
                     writeIdxEvent = writeIdxEvent + 1;
@@ -492,19 +492,19 @@ function AddCSVFile(obj, fullFileName, truckID)
                 % Similarly process for DPF_NOT_PRESENT_ERR
                 if ExtID==0 && cell2mat(eventDecoded(writeIdxEvent-1,4))==1
                     diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
-                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0,FileID,Calibration_Revision_Number};
                     writeIdxEvent = writeIdxEvent + 2;
                 elseif ExtID==1 && cell2mat(eventDecoded(writeIdxEvent-1,4))==0
                     diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
-                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0};
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 9, diffData, cal, truckID, 0, 0,FileID,Calibration_Revision_Number};
                     writeIdxEvent = writeIdxEvent + 2;
                 elseif ExtID==2 && cell2mat(eventDecoded(writeIdxEvent-1,4))==3
                     diffData = decodedData - cell2mat(eventDecoded(writeIdxEvent-1,5));
-                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 8, diffData, cal, truckID, 0, 0};
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 8, diffData, cal, truckID, 0, 0,FileID,Calibration_Revision_Number};
                     writeIdxEvent = writeIdxEvent + 2;
                 elseif ExtID==3 && cell2mat(eventDecoded(writeIdxEvent-1,4))==2
                     diffData = cell2mat(eventDecoded(writeIdxEvent-1,5)) - decodedData;
-                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 8, diffData, cal, truckID, 0, 0};
+                    eventDecoded(writeIdxEvent+1,:) = {abs_time(i), ECM_Run_Time_interp(i), SEID, 8, diffData, cal, truckID, 0, 0,FileID,Calibration_Revision_Number};
                     writeIdxEvent = writeIdxEvent + 2;
                 else % Increment the writeIdxEvent
                     writeIdxEvent = writeIdxEvent + 1;
@@ -592,7 +592,7 @@ function AddCSVFile(obj, fullFileName, truckID)
     %excessEventDecoded = eventDecoded(excessDataFlag, :);
     
     % Define Event Driven column names
-    colNamesED = {'datenum', 'ECMRunTime', 'SEID', 'ExtID', 'DataValue', 'CalibrationVersion', 'TruckID', 'EMBFlag', 'TripFlag','FileID'};
+    colNamesED = {'datenum', 'ECMRunTime', 'SEID', 'ExtID', 'DataValue', 'CalibrationVersion', 'TruckID', 'EMBFlag', 'TripFlag','FileID','CalRev'};
     % If there was any good data in the file
     if size(goodEventDecoded,1) > 0
         startUpload = tic;disp('Tic - Uploading good event driven data to the database.')
