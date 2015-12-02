@@ -27,8 +27,8 @@ Mamba = CapabilityUploader('Mamba');
 Mamba.dataUploader;
 clear Mamba
 
-% Copy Pele data to ETD_Data
-MovePeleCapData
+% % Copy Pele data to ETD_Data
+% MovePeleCapData
 
 % Work on Pele
 Pele = CapabilityUploader('Pele');
@@ -67,6 +67,16 @@ clear Nighthawk
 Sierra = CapabilityUploader('Sierra');
 Sierra.dataUploader;
 clear Sierra
+
+% Vulture
+Vulture = CapabilityUploader('Vulture');
+Vulture.dataUploader;
+clear Vulture
+
+% Thunderbolt
+Thunderbolt = CapabilityUploader('Thunderbolt');
+Thunderbolt.dataUploader;
+clear Thunderbolt
 
 % Move the MR Industrial Data
 MoveMRIndCapData

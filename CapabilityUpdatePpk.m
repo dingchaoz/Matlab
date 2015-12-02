@@ -126,6 +126,20 @@ Ventura.updatePrecalcResults;
 clear Ventura
 progTime.Ventura = toc(a);
 
+% Vulture
+a = tic;
+Vulture = Capability('Vulture');
+Vulture.updatePrecalcResults;
+clear Vulture
+progTime.Vulture = toc(a);
+
+% Thunderbolt
+a = tic;
+Thunderbolt = Capability('Thunderbolt');
+Thunderbolt.updatePrecalcResults;
+clear Thunderbolt
+progTime.Thunderbolt = toc(a);
+
 % Show the seconds for each program
 progTime
 

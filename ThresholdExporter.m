@@ -100,6 +100,24 @@ exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','Drag
 % % DragonCC Manual
 % exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Man'),'DragonCC','DragonCC_Man','BDC')
 
+%% Vulture
+% Vulture Root
+VultureRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Vulture';
+% Vulture Default (use the FE family as default)
+exportThresholds(r,l,fullfile(VultureRoot,'MY19\Vulture_FE'),'Vulture','Default','BHQ')
+%Vulture_FE
+exportThresholds(r,l,fullfile(VultureRoot,'MY19\Vulture_FE'),'Vulture','Vulture_FE','BHQ')
+%Vulture_HO
+exportThresholds(r,l,fullfile(VultureRoot,'MY19\Vulture_HO'),'Vulture','Vulture_HO','BHQ')
+
+%% Thunderbolt
+% Thunderbolt Root
+ThunderboltRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_CC';
+% Thunderbolt Default (use the CC_Auto family as default)
+exportThresholds(r,l,fullfile(ThunderboltRoot,'MY19\CC_Auto'),'Thunderbolt','Default','BHQ')
+% Thunderbolt CC_Auto
+exportThresholds(r,l,fullfile(ThunderboltRoot,'MY19\CC_Auto'),'Thunderbolt','Thunderbolt_CC_Auto','BHQ')
+
 %% DragonMR
 % DragonMR Root
 dragonmrRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\Calbert\Dragnet_B';
@@ -196,7 +214,6 @@ exportThresholds(r,l,fullfile(ayrtonRoot,'Development\Manual_120 kW GAZ'),'Ayrto
 % Ayrton Foton 130 kw
 exportThresholds(r,l,fullfile(ayrtonRoot,'Development\Manual_130 kW FOTON'),'Ayrton','Ayrton_130KW_FOTON','BGY')
 
-
 %% Vanguard
 % Vanguard Root
 % vanguardRoot = '\\CIDCSDFS01\EBU_Data01$\NACEPx\LDD Test Data\Calibrations3230\Vanguard\In Progress';
@@ -213,7 +230,7 @@ ventura2Root = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\C
 % Ventura Default (use the Alpha Mainline family)
 exportThresholds(r,l,fullfile(venturaRoot,'MY15\Ve_ISV200'),'Ventura','Default','BFY')
 % Ventura2 (use the Ventura2_MY16 Mainline family)
-exportThresholds(r,l,fullfile(ventura2Root,'MY16\Ve2_ISV275hp_500k'),'Ventura','Ventura2','BFY')
+exportThresholds(r,l,fullfile(ventura2Root,'MY16\Ve2_ISV200hp'),'Ventura','Ventura2','BFY')
 
 %% Blazer
 blazerRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_css\Off Highway Electronics VPI SW And Cal Integration\Cal Team\CalServer\Blazer';

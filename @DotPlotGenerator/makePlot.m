@@ -1,5 +1,5 @@
 function makePlot(obj, visible)
-%Save the Box Plot that makePlot generated
+%Save the Dot Plot that makePlot generated
 %   This will save the current figure using the settings correct for a dot plot
 %   to a file name that is specified.
 %   
@@ -206,8 +206,7 @@ function makePlot(obj, visible)
     % Generate and set the x label
     % Parameter name and units
     
-    % If Matlab is older than 2015a, the matlab version will be smaller
-    % than 8.5.0
+    % If Matlab is older than 2015a, the matlab version will be smaller than 8.5.0
     if verLessThan('matlab','8.5.0')
         
         % Parameter name and units
