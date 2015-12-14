@@ -92,21 +92,29 @@ function [calFile, ecfgFile, calVer, calRev] = getMainlineCal(mainlineRoot,copyC
     calFile = fullfile(copyCalToDir,calFile);
     ecfgFile = fullfile(copyCalToDir,ecfgFile);
     
+    if length(calFile) > length(ecfgFile)
+        for i = 1: length(calFile) - length(ecfgFile)
+            ecfgFile(length(ecfgFile) + i) = ecfgFile(length(ecfgFile));
+        end
+    end
+    
+    
     for i = 1: length(calFile)
         %% Extract the version and revision info about the cal
         
         s = char(calFile(i)); % Convert cell of calFile into char array
         tf = isstrprop(s, 'digit'); % Return a logic array where elements of s is a number
-        start_i = 0;
-        calVer{i} = '';
-        for j = 1: length(tf)-8
-            if sum(tf(j:j+7)) == 8
-                start_i = j;            
+        start_i = 0; % Initiate a variable to record the starting digit position of cal version
+        calVer{i} = ''; % Array to hold Cal version digit
+        
+        for j = 1: length(tf)-8 % Loop through every 8 char's corresponding digit determinant value
+            if sum(tf(j:j+7)) == 8 % If the 8 determinate values summing up to 8, meaning it is a cal version
+                start_i = j;      % Record the starting position       
             end
         end
         
-        for z = start_i : start_i + 7
-             calVer{i} = horzcat(calVer{i},s(z))
+        for z = start_i : start_i + 7 % Loop through the starting position and the following 7 digits
+             calVer{i} = horzcat(calVer{i},s(z)); % Concatenate them to form the Cal version string
         end
             
      
