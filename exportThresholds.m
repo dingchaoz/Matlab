@@ -46,7 +46,7 @@ function exportThresholds(r,l,mainline,program,famName,code)
     
     
     % Get the mainline calibration names (this makes a directory in suppdata if need be)
-    [cal, ecfg, calVer,calRev] = getMainlineCal(mainline,copyCalToDir);
+    [cal, ecfg, calVer,calRev] = getMainlineCal(mainline,copyCalToDir,program);
     
 
 % Loop through all mainline cals, and insert them and the calver, rev info into the database    

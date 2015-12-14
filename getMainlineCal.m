@@ -1,4 +1,4 @@
-function [calFile, ecfgFile, calVer, calRev] = getMainlineCal(mainlineRoot,copyCalToDir)
+function [calFile, ecfgFile, calVer, calRev] = getMainlineCal(mainlineRoot,copyCalToDir,program)
 %Goes out to the mainline cal folder and copies .xcal and .ecfg to local machine
 %   This should be used when you want to automatically pull in the latest version of a
 %   mainilne calibration.
@@ -122,16 +122,31 @@ function [calFile, ecfgFile, calVer, calRev] = getMainlineCal(mainlineRoot,copyC
             tf = isstrprop(s, 'digit'); % Return a logic array where elements of s is a number
             start_i = 0; % Initiate a variable to record the starting digit position of cal version
 
-
-            for j = 1: length(tf)-8 % Loop through every 8 char's corresponding digit determinant value
-                if sum(tf(j:j+7)) == 8 % If the 8 determinate values summing up to 8, meaning it is a cal version
-                    start_i = j;      % Record the starting position       
+            if ~strcmp(program,'HDPacific')
+                for j = 1: length(tf)-8 % Loop through every 8 char's corresponding digit determinant value
+                    if sum(tf(j:j+7)) == 8 % If the 8 determinate values summing up to 8, meaning it is a cal version
+                        start_i = j;      % Record the starting position       
+                    end
                 end
-            end
 
-            for z = start_i : start_i + 7 % Loop through the starting position and the following 7 digits
-                 calVer{i} = horzcat(calVer{i},s(z)); % Concatenate them to form the Cal version string
-            end    
+                for z = start_i : start_i + 7 % Loop through the starting position and the following 7 digits
+                     calVer{i} = horzcat(calVer{i},s(z)); % Concatenate them to form the Cal version string
+                end
+                
+            elseif strcmp(program,'HDPacific')
+                
+                for j = 1: length(tf)-6 % Loop through every 8 char's corresponding digit determinant value
+                    if sum(tf(j:j+5)) == 6 % If the 8 determinate values summing up to 8, meaning it is a cal version
+                        start_i = j;      % Record the starting position       
+                    end
+                end
+
+                for z = start_i : start_i + 5 % Loop through the starting position and the following 7 digits
+                     calVer{i} = horzcat(calVer{i},s(z)); % Concatenate them to form the Cal version string
+                end
+                
+            end
+                
         end
         
             
