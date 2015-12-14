@@ -94,10 +94,26 @@ function [calFile, ecfgFile, calVer, calRev] = getMainlineCal(mainlineRoot,copyC
     
     for i = 1: length(calFile)
         %% Extract the version and revision info about the cal
+        
+        s = char(calFile(i)); % Convert cell of calFile into char array
+        tf = isstrprop(s, 'digit'); % Return a logic array where elements of s is a number
+        start_i = 0;
+        calVer{i} = '';
+        for j = 1: length(tf)-8
+            if sum(tf(j:j+7)) == 8
+                start_i = j;            
+            end
+        end
+        
+        for z = start_i : start_i + 7
+             calVer{i} = horzcat(calVer{i},s(z))
+        end
+            
+     
         calSplit = strsplit(calFile{i},'\');  % Split the cal string into substrings using deliminator _
         calInfo = calSplit{length(calSplit)}; %Get the alst substring which has ver and rev info
         calInfoSplit = strsplit(calInfo,'_'); %Split the calInfo substring into smaller chunks
-        calVer{i} = calInfoSplit{length(calInfoSplit)-2};% Version is the 3rd substring counting from the alst
+        %calVer{i} = calInfoSplit{length(calInfoSplit)-2};% Version is the 3rd substring counting from the alst
         calRev{i} = calInfoSplit{length(calInfoSplit)};%Revesion is the last substring
         index = regexp(calRev{i},'\.');% Get the position the . is
         calRev{i} = calRev{i}(2:index-1); % Extract only the revision numeric value

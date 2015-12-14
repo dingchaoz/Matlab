@@ -31,6 +31,9 @@ function exportThresholds(r,l,mainline,program,famName,code)
 %   verion info
 %   Revised - Dingchao Zhang - Oct 2nd, 2015
 %   - Added script to upload cal threholds and tables
+%   Revised - Dingchao Zhang - Dec 14th, 2015
+%   - Added lines to directly upload cal threholds and values to tblCals
+%   for Chrysler and Pick-up programs
     
     % Calculate the filter file location based on the engine program name
     filterFile = fullfile(r,program,[program '_Thresholds.flt.txt']);
@@ -57,6 +60,13 @@ function exportThresholds(r,l,mainline,program,famName,code)
 
 %         Upload the .mat and .xml binary file for this program
         uploadCalibratables(matFile,program,famName,calVer{i},calRev{i})
+        
+        % Upload tabluar cal information to tblCals1 for DragonCC and
+        % pickup programs
+        if strcmp(program,'DragonCC') || strcmp(program,'Seahawk')
+            
+            uploadThresholdTable(matFile,program,famName,calVer{i},calRev{i})
+        end
         
    end
    
