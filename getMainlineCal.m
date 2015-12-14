@@ -24,6 +24,9 @@ function [calFile, ecfgFile, calVer, calRev] = getMainlineCal(mainlineRoot,copyC
 %   Revised - Dingchao Zhang - Sep 30th, 2015    
 %   - Get multiple cals in the mainline cal directory and extract ver and
 %   rev info  of the cal
+%   Revised - Dingchao Zhang - Dec 14th, 2015    
+%   - Modified script to recognize cal version by finding 8 consective
+%   digits in cal name instead of using specific location
 
 
     % Grab the file names of the latest mainline calibration
@@ -92,7 +95,11 @@ function [calFile, ecfgFile, calVer, calRev] = getMainlineCal(mainlineRoot,copyC
     calFile = fullfile(copyCalToDir,calFile);
     ecfgFile = fullfile(copyCalToDir,ecfgFile);
     
+    % Check if there are more cal files than ecfg files
     if length(calFile) > length(ecfgFile)
+        
+        % If yes, replicate the lastest ecfg file till the number of ecfg
+        % files is equal to the number of cal files
         for i = 1: length(calFile) - length(ecfgFile)
             ecfgFile(length(ecfgFile) + i) = ecfgFile(length(ecfgFile));
         end
@@ -102,23 +109,34 @@ function [calFile, ecfgFile, calVer, calRev] = getMainlineCal(mainlineRoot,copyC
     for i = 1: length(calFile)
         %% Extract the version and revision info about the cal
         
-        s = char(calFile(i)); % Convert cell of calFile into char array
-        tf = isstrprop(s, 'digit'); % Return a logic array where elements of s is a number
-        start_i = 0; % Initiate a variable to record the starting digit position of cal version
+        calSplit = strsplit(calFile{i},'\');  % Split the cal string into substrings using deliminator _
+        s = char(calSplit(length(calSplit))); % Convert cell of calFile into char array
         calVer{i} = ''; % Array to hold Cal version digit
         
-        for j = 1: length(tf)-8 % Loop through every 8 char's corresponding digit determinant value
-            if sum(tf(j:j+7)) == 8 % If the 8 determinate values summing up to 8, meaning it is a cal version
-                start_i = j;      % Record the starting position       
+        if s(1) == 'P' && s(4) == '.' && s(7) == '.'   % If the cal name starting with P and has dots in every 2 digits between
+            % Then the cal version is just the 8 digits after the P letter with . stripped off 
+            calVer{i} = horzcat(calVer{i},s(2),s(3),s(5),s(6),s(8),s(9))
+             
+        else
+            
+            tf = isstrprop(s, 'digit'); % Return a logic array where elements of s is a number
+            start_i = 0; % Initiate a variable to record the starting digit position of cal version
+
+
+            for j = 1: length(tf)-8 % Loop through every 8 char's corresponding digit determinant value
+                if sum(tf(j:j+7)) == 8 % If the 8 determinate values summing up to 8, meaning it is a cal version
+                    start_i = j;      % Record the starting position       
+                end
             end
+
+            for z = start_i : start_i + 7 % Loop through the starting position and the following 7 digits
+                 calVer{i} = horzcat(calVer{i},s(z)); % Concatenate them to form the Cal version string
+            end    
         end
         
-        for z = start_i : start_i + 7 % Loop through the starting position and the following 7 digits
-             calVer{i} = horzcat(calVer{i},s(z)); % Concatenate them to form the Cal version string
-        end
             
      
-        calSplit = strsplit(calFile{i},'\');  % Split the cal string into substrings using deliminator _
+        %calSplit = strsplit(calFile{i},'\');  % Split the cal string into substrings using deliminator _
         calInfo = calSplit{length(calSplit)}; %Get the alst substring which has ver and rev info
         calInfoSplit = strsplit(calInfo,'_'); %Split the calInfo substring into smaller chunks
         %calVer{i} = calInfoSplit{length(calInfoSplit)-2};% Version is the 3rd substring counting from the alst
