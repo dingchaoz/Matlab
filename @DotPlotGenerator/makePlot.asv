@@ -118,21 +118,12 @@ function makePlot(obj, visible)
     end
     
     %% Fix the underscore within truck name can't be displayed appropriately in 2015 or beyond version
-    if ~verLessThan('matlab','8.5.0')&& ~isempty(obj.Labels)
+    if ~verLessThan('matlab','8.5.0')&& 
         
         for i = 1:length(obj.Labels)
             
             % Insert \ before the _ in the labels name
             obj.Labels{i} = strjoin(strsplit(obj.Labels{i},'_'),'\\_');
-        end
-    end
-    
-     if ~verLessThan('matlab','8.5.0')&& ~isempty(obj.Labels2)
-        
-        for i = 1:length(obj.Labels2)
-            
-            % Insert \ before the _ in the labels name
-            obj.Labels2{i} = strjoin(strsplit(obj.Labels2{i},'_'),'\\_');
         end
     end
     
