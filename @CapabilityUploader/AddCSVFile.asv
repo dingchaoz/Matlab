@@ -90,8 +90,7 @@ function AddCSVFile(obj, fullFileName, truckID)
 %   Revised - Dingchao Zhang - 2015/10/25
 %       - Add lines to update cal rev, ver, fileID info in tbleventdriven 
 %   Revised - Dingchao Zhang - 2015/12/17
-%       - Add lines to specify failure modes of minmax, event driven data
-%       uploaded to tbltrucks
+%       - Add lines to specify failure modes of minmax,
 
     %% Prerequisite Code
     % Get the name of the truckID to ensure that its a valid truck
