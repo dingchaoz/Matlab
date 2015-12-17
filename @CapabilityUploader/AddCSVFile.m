@@ -285,15 +285,28 @@ function AddCSVFile(obj, fullFileName, truckID)
     TheLastFile = exec(obj.conn,sprintf('select LastFileDatenum FROM [dbo].[tblTrucks] where TruckName in (''%s'')' ,truckName));
     % Fetch the query
     TheLastFile = fetch(TheLastFile);
-    % Get the LastFileDatenum 
-    TheLastFile = TheLastFile.Data.LastFileDatenum;
+    
+    % See if there was any file uploaded from this truck before
+    if ~strcmp(TheLastFile.Data,'No Data')
+        % Get the LastFileDatenum 
+        TheLastFile = TheLastFile.Data.LastFileDatenum;
+    else
+        TheLastFile = 0;
+    end
     
      %% Execute SQL query to fetch the last received file's MinMax status
     TheLastFileMinMax = exec(obj.conn,sprintf('select MinMaxData FROM [dbo].[tblTrucks] where TruckName in (''%s'')' ,truckName));
     % Fetch the query
     TheLastFileMinMax = fetch(TheLastFileMinMax);
-    % Get the LastFile's MinMax status
-    TheLastFileMinMax = TheLastFileMinMax.Data.MinMaxData;
+    
+    % See if there was any file uploaded from this truck before
+    if ~strcmp(TheLastFileMinMax.Data,'No Data')
+        %% Get the LastFile's MinMax status
+        TheLastFileMinMax = TheLastFileMinMax.Data.MinMaxData;
+    else
+        TheLastFileMinMax = 'No';
+    end
+    
     
     % Update the informational columns for this truck in the tbiTrucks table
     update(obj.conn, 'tblTrucks', ...
