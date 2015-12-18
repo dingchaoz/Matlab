@@ -115,7 +115,7 @@ function [calFile, ecfgFile, calVer, calRev] = getMainlineCal(mainlineRoot,copyC
         
         if s(1) == 'P' && s(4) == '.' && s(7) == '.'   % If the cal name starting with P and has dots in every 2 digits between
             % Then the cal version is just the 8 digits after the P letter with . stripped off 
-            calVer{i} = horzcat(calVer{i},s(2),s(3),s(5),s(6),s(8),s(9))
+            calVer{i} = horzcat(calVer{i},s(2),s(3),s(5),s(6),s(8),s(9),s(11),s(12));
              
         else
             
