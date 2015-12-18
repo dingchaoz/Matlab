@@ -1,3 +1,12 @@
+%   Upload threhold names and values as a table format to tblCals or
+%   tblCals1 table in Database
+%   
+%   Original Version - Dingchao Zhang - Nov 11, 2015
+%   Revised - Dingchao Zhang - Dec 18, 2015
+%     - Append (1) to all the table threshold names to match with
+%     processing list format
+    
+
 function uploadThresholdTable(matFile,program,family,calVersion,calRev)
     
     % Define Conn
@@ -42,6 +51,25 @@ function uploadThresholdTable(matFile,program,family,calVersion,calRev)
             if t ~= 2
                 % Get the first element instead
                 Value{i} = Value{i}(1);
+            end
+
+        end
+        
+        % Append "(1)" to threshold name ending with tbl to match with processing list
+        %%% In the future, maybe certain threhold table's other position's
+        %%% threshold will be requested by 3 step onwer, then this part of
+        %%% script needs to be updated further
+
+        for i = 1:length(Threshold)
+            
+            % Split the threhold name using _ as the spliter
+            split_thd = strsplit(Threshold{i},'_');
+            
+            % Compare if the last part of the threshold name is Tbl
+            if strcmp(split_thd(length(split_thd)), 'Tbl')
+                % If yes, append (1) to the end of the name
+                Threshold{i} = strcat(Threshold{i},'(1)');
+                
             end
 
         end
