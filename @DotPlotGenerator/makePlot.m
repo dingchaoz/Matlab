@@ -28,6 +28,8 @@ function makePlot(obj, visible)
 %       - Modified labeling: added Ppk, Mean, Sigma, FC; removed a few things
 %   Revised - Chris Remington - April 10, 2014
 %       - Adapted from boxplot to a dot plot, added ability to do 2 grouping
+%   Revised - Dingchao Zhang - Dec 21, 2015
+%       - Fixed underscore displaying issue for 2015a version
     
     %% Sort Data
     % If the group order isn't manually specified
@@ -120,11 +122,14 @@ function makePlot(obj, visible)
     %% Fix the underscore within truck name can't be displayed appropriately in 2015 or beyond version
     if ~verLessThan('matlab','8.5.0')&& ~isempty(obj.Labels)
         
+
+        
         for i = 1:length(obj.Labels)
             
             % Insert \ before the _ in the labels name
             obj.Labels{i} = strjoin(strsplit(obj.Labels{i},'_'),'\\_');
         end
+         
     end
     
      if ~verLessThan('matlab','8.5.0')&& ~isempty(obj.Labels2)
@@ -213,6 +218,13 @@ function makePlot(obj, visible)
     % Lazy, calculate these here once
     mu = nanmean(obj.Data);
     sigma = nanstd(obj.Data);
+    
+    % Fix underscore display issue
+    if ~verLessThan('matlab','8.5.0')
+        
+        obj.SystemErrorName = strjoin(strsplit(obj.SystemErrorName,'_'),'\\_');
+         
+    end
     
     %% Label the Plot
     % Generate the title
