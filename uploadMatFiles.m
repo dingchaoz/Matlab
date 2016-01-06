@@ -1,3 +1,6 @@
+%%% Programs to upload matfiles
+%% Dingchao Zhang -- 01/06/2016
+
 % % For MR, there are a million folders so define program + folder here
 % programs = {
 %     % Seahawk
@@ -59,89 +62,62 @@ totalMoved = 0;
 % For each program
 for i = 1:size(programs,1)
     
-    % Generate the root directories for the two different file types from the program name
-    destDir = ['\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\ETD_Data\MinMaxData\' programs{i,1} '\'];
+
     rawDataDir = programs{i,2};
     
     %% Get truck folder listing
     % Get the directory information
-    truckFolderData = dir(rawDataDir);
-    truckList = {truckFolderData(3:end).name}';
-    truckList = truckList(cell2mat({truckFolderData(3:end).isdir}'));
+    FolderData = dir(rawDataDir);
+    List = {FolderData(3:end).name}';
+    List = List(cell2mat({FolderData(3:end).isdir}'));
     
     % Pull out the folder names and create full paths
-    for j = 1:length(truckList)
+    for j = 1:length(List)
         % Set the truck name
-        truckName = truckList{j};
+        folderName = List{j};
         
-        % Generate the name of the current and moveTo folder
-        moveToFolder = fullfile(destDir,truckName);
-        currentFolder = fullfile(rawDataDir,truckName,'RawCSVFiles\Min-Max data');
-        copyToFolder = fullfile(rawDataDir,truckName,'RawCSVFiles\Min-Max data\archived');
+        parentFolder = fullfile(rawDataDir,folderName);
+        truckFolderData = dir(parentFolder);
+        truckList = {truckFolderData(3:end).name}';
+        truckList = truckList(cell2mat({truckFolderData(3:end).isdir}'));
         
         % Look for MinMax files the cheater way for now do all .csv files
-        files = dir([currentFolder '\*Max*.csv*']);
-        %files = dir([currentFolder '\*.csv*']);
-        x = length(files);
-        % If any Cuty files were present
-        if x > 0
-            % Make a copyToFolder if it doesn't exist already
-            if ~exist(copyToFolder,'dir'), mkdir(copyToFolder), end
-            % Make a moveToFolder if it doesn't exist already
-            if ~exist(moveToFolder,'dir'), mkdir(moveToFolder), end
-            % Add this to the summation
-            totalMoved = totalMoved + x;
-            % Copy to processed folder first
-            copyfile([currentFolder '\*.csv*'],copyToFolder);
-            % Move the MinMax files to ETD_Data
-            try
-                movefile([currentFolder '\*.csv*'],moveToFolder);
-            catch
-                continue
-            end
-            % Display a message
-            fprintf('Moved % 3.0f files from %s to %s\r',x,currentFolder,moveToFolder);
-        else
-            % There were no Min/Max files present, display a message
-            fprintf('No MinMax files in     %s\r',currentFolder);
-        end
         
-        % Get the listing of all the processed folders
-        %midFolderData = dir(fullfile(rawDataDir,truckName,'RawCSVFiles\Min-Max data\ProcessedFiles'));
-        %midFolders = {midFolderData(3:end).name}';
-        %midFolders = midFolders(cell2mat({midFolderData(3:end).isdir}'));
+        currentFolder = fullfile(parentFolder,truckList,'MatData_Files');
         
-        % For each mid folder found
-        % Skip Mid folders for now
-        for k = []%1:length(midFolders)
+        for i = 1:length(currentFolder)
             
-            % Caclulate the current folder and copy folder
-            currentFolder = fullfile(rawDataDir,truckName,'RawCSVFiles\Min-Max data\ProcessedFiles',midFolders{k});
-            copyToFolder = fullfile(rawDataDir,truckName,'RawCSVFiles\Min-Max data\ProcessedFiles',midFolders{k},'archived');
+            subFolders = dir(char(currentFolder(i)));
+            subList = {subFolders(3:end).name}';
+            subList = subList(cell2mat({subFolders(3:end).isdir}'));
+            % a check if the folder is already processed, remove the
+            % previous folders and only process the latest folders
+            matFolder = fullfile(char(currentFolder(i)),subList);
             
-            % Look for MinMax files the cheater way for now do all .csv files
-            %files = dir([currentFolder '\*Min*.csv*']);
-            files = dir([currentFolder '\*.csv*']);
-            x = length(files);
-            % If any Cuty files were present
-            if x > 0
-                % Make a copyToFolder if it doesn't exist already
-                if ~exist(copyToFolder,'dir'), mkdir(copyToFolder), end
-                % Make a copyToFolder if it doesn't exist already
-                if ~exist(moveToFolder,'dir'), mkdir(moveToFolder), end
-                % Add this to the summation
-                totalMoved = totalMoved + x;
-                % Copy to processed folder first
-                copyfile([currentFolder '\*.csv*'],copyToFolder);
-                % Move the MinMax files to ETD_Data
-                movefile([currentFolder '\*.csv*'],moveToFolder);
-                % Display a message
-                fprintf('Moved % 3.0f files from %s to %s\r',x,currentFolder,moveToFolder);
-            else
-                % There were no Min/Max files present, display a message
-                fprintf('No MinMax files in     %s\r',currentFolder);
-            end
-        end
+            for j = 1: length(matFolder)
+                
+                files = dir([char(matFolder(j)) '\*.mat*']);
+                
+                % a check needs to be done to only process the unprocessed
+                % files by retriveing information from database
+                
+                % Then call a function to read, upload each individual
+                % file, probably need another for loop
+                   x = length(files);
+                    % If any Cuty files were present
+                    if x > 0
+            %            
+                       fprintf('there are mat files    %s\r',char(matFolder(j)));
+                    else
+                        % There were no Min/Max files present, display a message
+                        fprintf('No mat files in     %s\r',char(matFolder(j)));
+                    end    
+            end    
+            
+        end    
+     
+        
+       
     end
 end
 % Display finished message
