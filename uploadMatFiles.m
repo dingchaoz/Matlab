@@ -108,6 +108,11 @@ for i = 1:size(programs,1)
                     if x > 0
             %            
                        fprintf('there are mat files    %s\r',char(matFolder(j)));
+                       
+                       for z = 1 : length(files)
+                           file = char(files(z).name);
+                           test(matFolder(j),file);
+                       end
                     else
                         % There were no Min/Max files present, display a message
                         fprintf('No mat files in     %s\r',char(matFolder(j)));
