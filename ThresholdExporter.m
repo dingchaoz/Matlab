@@ -77,11 +77,11 @@ exportThresholds(r,l,fullfile(mambaRoot,'DIG\460_2100'),'Mamba','Mamba','BGB')
 
 %% Pele
 % Pele Root
-peleRoot = '\\cidcsdfs01\ebu_data01$\NACTGx\fngroup_ctc\MR_Worldwide\Calbert_China\Pele';
+peleRoot = '\\cidcsdfs01\ebu_data01$\NACTGx\fngroup_ctc\MR_Worldwide\Calbert_China\Pele2';
 % Pele Default (main Pele also)
-exportThresholds(r,l,fullfile(peleRoot,'Development\Manual 125 kW'),'Pele','Default','BGK')
+exportThresholds(r,l,fullfile(peleRoot,'Development\Foton - Manual 125 kW'),'Pele','Default','BGK')
 % Pele main export
-exportThresholds(r,l,fullfile(peleRoot,'Development\Manual 125 kW'),'Pele','Pele','BGK')
+exportThresholds(r,l,fullfile(peleRoot,'Development\Foton - Manual 125 kW'),'Pele','Pele','BGK')
 
 %% DragonCC
 % DragonCC Root
