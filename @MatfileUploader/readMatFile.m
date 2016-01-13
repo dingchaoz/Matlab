@@ -15,14 +15,14 @@
 
 %% faultcode summary: faultsActive,faultsUnique
 
-function test(matfolder,file)
+function readMatFile(obj,matfolder,file,truckID,program)
 
-program = 'DragonCC';
+%program = 'DragonCC';
 
  % Define Conn
-conn = database(program,'','','com.microsoft.sqlserver.jdbc.SQLServerDriver',...
-           sprintf('%s%s;%s','jdbc:sqlserver://W4-S129433;instanceName=CapabilityDB;database=',program,...
-            'integratedSecurity=true;loginTimeout=5;'));
+% conn = database(program,'','','com.microsoft.sqlserver.jdbc.SQLServerDriver',...
+%            sprintf('%s%s;%s','jdbc:sqlserver://W4-S129433;instanceName=CapabilityDB;database=',program,...
+%             'integratedSecurity=true;loginTimeout=5;'));
  
 % form the full matfile path
 matfile = char(fullfile(matfolder,file));
@@ -81,7 +81,7 @@ dutyCycParams = {'TruckID','abs_time','PC_Timestamp','ECM_Run_Time',...
  
          %% Fill up the cell array with strings of values
         TruckID = cell(1,length(abs_time));
-        TruckID(1,:) = cellstr('1');
+        TruckID(1,:) = cellstr(num2str(truckID));
         %abs_time = cell(1,length(Value{2}));
         %abs_time(1,:) = cellstr(num2str(Value{2}));
         %% PC time stamp truckID ok because cell
@@ -136,10 +136,10 @@ dutyCycParams = {'TruckID','abs_time','PC_Timestamp','ECM_Run_Time',...
         end
         
          % Upload the data and engine family to the database
-        fastinsert(conn,'[dbo].[tblMatData]',fieldnames(matTable),matTable);
+        fastinsert(obj.conn,'[dbo].[tblMatData]',fieldnames(matTable),matTable);
         
         % Close the database connection
-        close(conn)
+        close(obj.conn)
         
         % Else print cal already uploaded    
         fprintf('Mat file %s is uploaded to database matData table.\n',file,program);
