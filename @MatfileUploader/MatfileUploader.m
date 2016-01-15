@@ -79,14 +79,7 @@ classdef MatfileUploader < Capability
             % Add post-set listener (initalize the list of possible softwares based on tblErrTable)
             obj.addlistener('program','PostSet',@obj.setPossibleSw);
             
-            % Initialze property to store the processed file ID
-            obj.FileID;
-            
-            % Initialze property to store the Cal Version
-            obj.CalVer;
-            
-            % Initialze property to store the Cal Rev
-            obj.CalRev;
+          
             
         end
         
@@ -185,25 +178,8 @@ classdef MatfileUploader < Capability
     %% Methods Inplamented Externally
     methods
         %--------Main method, adds a single Calterm III .csv file to the database---------
-        % Add a .csv data file to the database
-        % This has been revised and splits data into two parts and uploades each to the
-        % correct database table
-        AddCSVFile(obj, fullFileName, truckID)
-        readMatFile(obj,matfolder,file,truckID,program)
-        % A variation on AddCSVFile that will instead read in the .mat files that CANape
-        % creates after nativly converting a .mdf file to a .mat file (this needs to take
-        % in cal version as this is not present in the 
-        success = AddMiniMatFile(obj, fullFileName, truckID, cals)
-        
-        %---------------Methods that decode raw data into engineering units---------------
-        % Convert raw hex into scaled numberic values
-        scaledData = hex2scaled(obj, hexString, dataType, varargin)
-        % Take in the Event Driven hex string and xSEID, use hex2scaled to
-        % return the properly scaled and decoded value
-        decodedData = decodeEvent(obj, xSEID, hexString, cal)
-        % Take in a Public Data ID and hex string, use hex2scaled to return
-        % a properly scaled and decoded value
-        [decodedData, EMBFlag] = decodeMinMax(obj, PublicDataID, hexString, cal, PublicIDmatch)
+       
+       
         
         %----------------Methods to keep track of truck software versions-----------------
         % Method to update the last know sw version of a truck (edits lastSoftwareCache)

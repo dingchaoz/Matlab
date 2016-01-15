@@ -173,13 +173,13 @@ function readMatFile(obj,matfolder,file,truckID,program)
         end
 
          % Upload the data and engine family to the database
-%         fastinsert(obj.conn,'[dbo].[tblFCData4]',fieldnames(fcTable),fcTable);
-%         
-%         % Close the database connection
-%         close(obj.conn)
-%         
-%         % Else print cal already uploaded    
-%         fprintf('Mat file %s is uploaded to database matData table.\n',file,program);
+        fastinsert(obj.conn,'[dbo].[tblMatData]',fieldnames(fcTable),fTable);
+        
+        % Close the database connection
+        close(obj.conn)
+        
+        % Else print cal already uploaded    
+        fprintf('Mat file %s is uploaded to database matData table.\n',file,program);
         
         
         
