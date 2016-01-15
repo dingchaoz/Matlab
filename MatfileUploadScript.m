@@ -35,8 +35,6 @@ Pele = MatfileUploader('Pele');
 Pele.matdataUploader;
 clear Pele
 
-% Sync Processed MR Data
-MoveMRCapData
 
 % Work on DragonCC
 DragonCC = MatfileUploader('DragonCC');

@@ -121,7 +121,13 @@ function matdataUploader(obj)
                             rethrow(ex)
                         end
                     end
-
+                    %%% TO-DO
+                    % rewrite the getTruckProcessData method, in mat
+                    % processed table, record truck name, truck ID, the
+                    % last processed file name, and its subfolder belongs
+                    % to, and then write a compare function using 12 as a
+                    % cycle to move to the next unprocessed folder
+                    
                     % Check if data should be processed for this truck
                     if ~obj.getTruckProcessData(truckID)
                         % Write a warning log entry

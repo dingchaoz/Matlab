@@ -13,7 +13,7 @@
 %% time parameters that we OBD need
 %%PC_Timestamp,abs_time(datenum format),ECM_Run_Time
 
-%% faultcode summary: faultsActive,faultsUnique
+%% faultcode summary: faultsActive,faultsActiveList,faultsActiveStr
 
 function readMatFile(obj,matfolder,file,truckID,program)
 
@@ -25,8 +25,8 @@ function readMatFile(obj,matfolder,file,truckID,program)
 %             'integratedSecurity=true;loginTimeout=5;'));
  
 % form the full matfile path
-matfile = char(fullfile(matfolder,file));
-
+%matfile = char(fullfile(matfolder,file));
+matfile = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata\DragonFront\FieldTest_FDV3\T8758_BG573629_3500\MatData_Files\12-01_matfiles\T8758_BG573629_3500_FDV3_120128.mat';
 % load the matfile into workspace
 load(matfile);
 
@@ -37,9 +37,107 @@ dutyCycParams = {'TruckID','abs_time','PC_Timestamp','ECM_Run_Time',...
     'GPS_Latitude','GPS_Longitude','GPS_Speed'};
 
 
-
 % Get all the parameter names from the mat file
-        allParams = who('-file', matfile);
+ allParams = who('-file', matfile);
+ 
+ %% Need to add error handling if ActiveFaults can't be found
+ % Find possible active faults arrays on different screen
+fIndex = strmatch('ActiveFaults',allParams); 
+
+stabs_time_array = {};
+endabs_time_array = {};
+stpc_time_array = {};
+endpc_time_array = {};
+stecm_time_array = {};
+endecm_time_array = {};
+screen_array = {};
+fc_array = {};
+
+% Loop through active fault code array
+for i = 1:length(fIndex)
+    
+    % fault code array
+    fcArray = eval(char(allParams(fIndex(i))));
+    
+    % Get the index of fcArray if there is fault code
+    % triggered
+    %acfIndex = find(~ismember(fcArray,'') == 1);
+    
+    %% Need to add error handling if faultsActiveList does not exist
+    %% what to do, maybe switch to faultsUnique or faultsActive
+    % if there are faults
+    %% can we use faultsUnique? when no fault code ,it is {''}--need to find an example that uses
+    % faultsUnique
+    if length(faultsActiveList) > 0
+        
+        % Loop through the fault code list
+        for j = 1:length(faultsActiveList)
+            
+            % get the fault code number
+            fcnum = faultsActiveList(j);
+            
+            % string concatenate to conform to the format of fault code 00: xxxx
+            % in ActiveFaults array 
+            if numel(num2str(fcnum)) == 4
+               fc = strcat('00:',num2str(fcnum)); 
+            elseif numel(num2str(fcnum)) == 3
+               fc = strcat('00:0',num2str(fcnum));
+            elseif numel(num2str(fcnum)) == 2
+               fc = strcat('00:00',num2str(fcnum));
+            elseif numel(num2str(fcnum)) == 1
+               fc = strcat('00:000',num2str(fcnum)); 
+            end
+            
+            
+            % Search each fault code if exist in the
+            %acfIndex = strfind(fcArray,fc);
+            acfIndex = ~cellfun('isempty',strfind(fcArray,fc));
+            acfIndex = find([acfIndex] == 1);
+            
+            % If the fc found in the current fault code array
+            if length(acfIndex) > 0 
+                
+                % get the start and end time of abs_time
+                stabs_time = abs_time(min(acfIndex));
+                endabs_time = abs_time(min(acfIndex));
+                % Append to abs_time_array
+                stabs_time_array = [stabs_time_array,stabs_time];
+                endabs_time_array = [endabs_time_array,endabs_time];
+                
+                % get the start and end time of PC_timestamp
+                stpc_time = PC_Timestamp(min(acfIndex));
+                endpc_time = PC_Timestamp(min(acfIndex));
+                % Append to PC_timestamp_array
+                stpc_time_array = [stpc_time_array,stpc_time];
+                endpc_time_array = [endpc_time_array,endpc_time];
+                
+                % get the start and end time of ECM_Run_Time
+                stecm_time = ECM_Run_Time(min(acfIndex));
+                endecm_time = ECM_Run_Time(min(acfIndex));
+                % Append to ECM_Run_Time_array
+                stecm_time_array = [stecm_time_array,stecm_time];
+                endecm_time_array = [endecm_time_array,endecm_time];
+                
+                % Get the screen
+                screen = char(allParams(fIndex(i)));
+                if strcmp(screen,'ActiveFaults')
+                    screen = strcat(screen,'_1_Sec_Screen_1');
+                end
+                
+                screen_array = [screen_array,screen];
+                fc_array = [fc_array,fcnum];
+                
+            end
+            
+        end
+       
+        
+    end
+    
+    
+   
+    
+end
 
         % Cell array to hold threshold values
 %         Value = cell(1,length(dutyCycParams));
@@ -69,6 +167,12 @@ dutyCycParams = {'TruckID','abs_time','PC_Timestamp','ECM_Run_Time',...
 %         end
         
         %print('finished');
+        
+        % Find if fault code exists, if yes, insert into fault code table
+        
+        
+        
+        
         
          % Create calTable struct to hold table to be inserted
         matTable = struct('TruckID',{},'abs_time',{},'PC_Timestamp',{},...
@@ -129,6 +233,8 @@ dutyCycParams = {'TruckID','abs_time','PC_Timestamp','ECM_Run_Time',...
             % parmeter is missing
             else 
                 
+                %% BoostPressure is missing from this matfile
+                %% need to have error handling here
                 print('parameter is missing from this matfile')
                 
             end
