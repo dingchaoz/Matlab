@@ -17,16 +17,9 @@
 
 function readMatFile(obj,matfolder,file,truckID,program)
 
-    %program = 'DragonCC';
-
-     % Define Conn
-    % conn = database(program,'','','com.microsoft.sqlserver.jdbc.SQLServerDriver',...
-    %            sprintf('%s%s;%s','jdbc:sqlserver://W4-S129433;instanceName=CapabilityDB;database=',program,...
-    %             'integratedSecurity=true;loginTimeout=5;'));
-
-    % form the full matfile path
-    %matfile = char(fullfile(matfolder,file));
-    matfile = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata\DragonFront\FieldTest_FDV3\T8758_BG573629_3500\MatData_Files\12-01_matfiles\T8758_BG573629_3500_FDV3_120128.mat';
+  % form the full matfile path
+    matfile = char(fullfile(matfolder,file));
+    %matfile = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata\DragonFront\FieldTest_FDV3\T8758_BG573629_3500\MatData_Files\12-01_matfiles\T8758_BG573629_3500_FDV3_120128.mat';
     % load the matfile into workspace
     load(matfile);
 
@@ -40,10 +33,11 @@ function readMatFile(obj,matfolder,file,truckID,program)
     % Get all the parameter names from the mat file
      allParams = who('-file', matfile);
 
-     %% Need to add error handling if ActiveFaults can't be found
-     % Find possible active faults arrays on different screen
+    %% Need to add error handling if ActiveFaults can't be found
+    % Find possible active faults arrays on different screen
     fIndex = strmatch('ActiveFaults',allParams); 
-
+    
+    % Initiate fault code related information arrays as placeholder
     stabs_time_array = {};
     endabs_time_array = {};
     stpc_time_array = {};
@@ -59,22 +53,13 @@ function readMatFile(obj,matfolder,file,truckID,program)
         % fault code array
         fcArray = eval(char(allParams(fIndex(i))));
 
-        % Get the index of fcArray if there is fault code
-        % triggered
-        %acfIndex = find(~ismember(fcArray,'') == 1);
-
-        %% Need to add error handling if faultsActiveList does not exist
-        %% what to do, maybe switch to faultsUnique or faultsActive
-        % if there are faults
-        %% can we use faultsUnique? when no fault code ,it is {''}--need to find an example that uses
-
         % get the unique faults list
         fcActiveList = unique(fcArray);
         fcActiveList = fcActiveList(length(fcActiveList));
         fcActiveList = strsplit(char(fcActiveList),'00:');
 
         %unique(ActiveFaults)
-        %if length(faultsActiveList) > 0
+        %if there are fault codes
         if length(fcActiveList) > 1   
             % Loop through the fault code list
             %for j = 2:length(faultsActiveList)
@@ -132,7 +117,7 @@ function readMatFile(obj,matfolder,file,truckID,program)
                     if strcmp(screen,'ActiveFaults')
                         screen = strcat(screen,'_1_Sec_Screen_1');
                     end
-
+                    % Append to screen_array and fc_array
                     screen_array = [screen_array,screen];
                     fc_array = [fc_array,fcnum];
 
@@ -143,12 +128,11 @@ function readMatFile(obj,matfolder,file,truckID,program)
 
         end
 
-
-
-
     end
-
-      % Create fault code table to hold fault related information
+    
+    % if there is fault code
+    if ~isempty(fc_array)
+    % Create fault code table to hold fault related information
     
         fcTable = struct('TruckID',{},'fc_array',{},'screen_array',{},...
             'stabs_time_array',{},'endabs_time_array',{},'stpc_time_array',{},...
@@ -160,30 +144,37 @@ function readMatFile(obj,matfolder,file,truckID,program)
         
         % Fill up the structure of matTable
         fcTable(1).TruckID = TruckID';
-        
-        
         fcfields = fieldnames(fcTable);
-
-        for i = 2:numel(fcfields)
+        
+        % convert cell to double type
+        stabs_time_array = cell2mat(stabs_time_array);
+        endabs_time_array = cell2mat(endabs_time_array);
+        stecm_time_array = cell2mat(stecm_time_array);
+        endecm_time_array =  cell2mat(endecm_time_array);
+        
+        for i = 2:numel(fcfields)         
+             
+            fcTable.(fcfields{i}) = eval(fcfields{i})';  
             
-                    
-             fcTable.(fcfields{i}) = eval(fcfields{i})';
-               
-                    
         end
 
          % Upload the data and engine family to the database
-%         fastinsert(obj.conn,'[dbo].[tblFCData4]',fieldnames(fcTable),fcTable);
-%         
-%         % Close the database connection
-%         close(obj.conn)
-%         
-%         % Else print cal already uploaded    
-%         fprintf('Mat file %s is uploaded to database matData table.\n',file,program);
+        fastinsert(obj.conn,'[dbo].[tblFCData2]',fieldnames(fcTable),fcTable);
         
+        % Close the database connection
+        close(obj.conn)
         
+        % Else print cal already uploaded    
+        fprintf('Fault code information %s is uploaded to database FCData table.\n',file,program);
         
+    else
         
+        % Else print out no fault code
+    
+        fprintf('No Fault code information is present in %s.\n',file);
+    
+     end
+
          % Create calTable struct to hold table to be inserted
         matTable = struct('TruckID',{},'abs_time',{},'PC_Timestamp',{},...
             'ECM_Run_Time',{},'Engine_Speed',{},'Net_Engine_Torque',{},...
