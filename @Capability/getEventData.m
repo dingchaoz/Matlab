@@ -144,6 +144,8 @@ function data = getEventData(obj, SEID, varargin)
 %     - Modified the SQL query to fetch data from Pacific's archived database 3 (from 2014/12/01) as well
 %   Revised - Blaisy Rodrigues - 2016/01/11
 %     - Modified the SQL query to fetch data from Sierra's archived database  (for SEIDs 12526, 11170, 11171, 11172 which log too frequently) as well & also for Nighthawk(moved data before Nov-15 to Archive)
+%   Revised - Blaisy Rodrigues - 2016/01/15
+%     - Modified the SQL query to fetch data from Seahawk's archived database, SeahawkArchive1 
 %  
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
@@ -241,6 +243,8 @@ function data = getEventData(obj, SEID, varargin)
     % Formulate the entire SQL query for Seahawk with its archived database
     elseif strcmp(obj.program, 'Seahawk')
         sql = [select ' FROM [SeahawkArchive].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
+            '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
+			select ' FROM [SeahawkArchive1].[dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where ' UNION ALL ' ...
             select ' FROM [dbo].[tblEventDrivenData] LEFT OUTER JOIN [dbo].[tblTrucks] ON ' ...
             '[tblEventDrivenData].[TruckID] = [tblTrucks].[TruckID] ' where];
