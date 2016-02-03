@@ -18,7 +18,8 @@
 function readMatFile(obj,matfolder,file,truckID,program)
 
   % form the full matfile path
-    matfile = char(fullfile(matfolder,file));
+    %matfile = char(fullfile(matfolder,file));
+    matfile = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata\DragonFront\Engineering\ENG_CHX_FG500015_DD_AISIN\MatData_Files\14-06_matfiles\ENG_CHX_FG500015_DD_AISIN_Engineering_140616.mat';
     %matfile = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata\DragonFront\FieldTest_FDV3\T8758_BG573629_3500\MatData_Files\12-01_matfiles\T8758_BG573629_3500_FDV3_120128.mat';
     % load the matfile into workspace
     load(matfile);
@@ -32,148 +33,189 @@ function readMatFile(obj,matfolder,file,truckID,program)
 
     % Get all the parameter names from the mat file
      allParams = who('-file', matfile);
+     
+    % Initiate missing params array
+     missParams = {};
+     % Check for if ActiveFaults exist
+    if ~exist('ActiveFaults','var')
+        % Note that there was no MinMax data in this file (not not that MinMax data was expected)
+        disp(['No ActiveFaults parameter in file ' matfile]);
+        obj.event.write(['No ActiveFaults in file ' matfile]);
+        % Update tblTrucks saying that there should have been MinMax data and wasn't
+        %update(obj.conn, '[dbo].[tblTrucks]', {'EventData'}, {'No Evdd_Data Parameter'}, ...
+        %sprintf('WHERE [TruckID] = %0.f',truckID));
+    
+        error('MatfileUploader:readMatFile:ParameterMissing',...
+            'File was missing parameter ActiveFaults.')
+    end
+        
+        %% Error handling
+        %% Interpolate the ECM_Run_Time
+%     try
+%         % Create the interpolated version of ECM_Run_Time
+%          fIndex = strmatch('ActiveFaults2',allParams);
+%     catch ex
+%         if strcmp(ex.identifier, 'CapabilityUploader:AddCSVFile:interpECMRunTime:failToLocateStartingECMRunTime');
+%             % Instead of keeping the error, just set all ECM_Run_Time values to a NaN so they
+%             % get uploaded into the database as a null. Then, we at least get to keep the data
+%             % in one form, all be it with less meta-data.
+%             ECM_Run_Time_interp = zeros(size(ECM_Run_Time));
+%             ECM_Run_Time_interp(:) = NaN;
+%             % Journal this in the warning log
+%             obj.warning.write('Dropped ECM_Run_Time from the event driven data - There were 100 lines without an update at the start of the file.');
+%         else
+%             % Rethrow the original error
+%             rethrow(ex);
+%         end
+%     end
 
     %% Need to add error handling if ActiveFaults can't be found
     % Find possible active faults arrays on different screen
     fIndex = strmatch('ActiveFaults',allParams); 
-    
-    % Initiate fault code related information arrays as placeholder
-    stabs_time_array = {};
-    endabs_time_array = {};
-    stpc_time_array = {};
-    endpc_time_array = {};
-    stecm_time_array = {};
-    endecm_time_array = {};
-    screen_array = {};
-    fc_array = {};
+     
+    % if there if ActiveFaults exiting in the matfile
+    if length(fIndex) > 0
+        
+         % Initiate fault code related information arrays as placeholder
+        stabs_time_array = {};
+        endabs_time_array = {};
+        stpc_time_array = {};
+        endpc_time_array = {};
+        stecm_time_array = {};
+        endecm_time_array = {};
+        screen_array = {};
+        fc_array = {};
+        
+        % Loop through active fault code array
+        for i = 1:length(fIndex)
 
-    % Loop through active fault code array
-    for i = 1:length(fIndex)
+            % fault code array
+            fcArray = eval(char(allParams(fIndex(i))));
 
-        % fault code array
-        fcArray = eval(char(allParams(fIndex(i))));
+            % get the unique faults list
+            fcActiveList = unique(fcArray);
+            fcActiveList = fcActiveList(length(fcActiveList));
+            fcActiveList = strsplit(char(fcActiveList),'00:');
 
-        % get the unique faults list
-        fcActiveList = unique(fcArray);
-        fcActiveList = fcActiveList(length(fcActiveList));
-        fcActiveList = strsplit(char(fcActiveList),'00:');
+            %unique(ActiveFaults)
+            %if there are fault codes
+            if length(fcActiveList) > 1   
+                % Loop through the fault code list
+                %for j = 2:length(faultsActiveList)
+                for j = 2:length(fcActiveList)
 
-        %unique(ActiveFaults)
-        %if there are fault codes
-        if length(fcActiveList) > 1   
-            % Loop through the fault code list
-            %for j = 2:length(faultsActiveList)
-            for j = 2:length(fcActiveList)
+                    % get the fault code number
+                    %fcnum = faultsActiveList(j);
+                    fcnum = strtrim(fcActiveList(j));
 
-                % get the fault code number
-                %fcnum = faultsActiveList(j);
-                fcnum = strtrim(fcActiveList(j));
-
-                % string concatenate to conform to the format of fault code 00: xxxx
-                % in ActiveFaults array 
-                %if numel(num2str(fcnum)) == 4
-                if numel(char(fcnum)) == 4
-                   fc = strcat('00:',char(fcnum)); 
-                elseif numel(char(fcnum)) == 3
-                   fc = strcat('00:0',char(fcnum));
-                elseif numel(char(fcnum)) == 2
-                   fc = strcat('00:00',char(fcnum));
-                elseif numel(char(fcnum)) == 1
-                   fc = strcat('00:000',char(fcnum)); 
-                end
-
-
-                % Search each fault code if exist in the
-                %acfIndex = strfind(fcArray,fc);
-                acfIndex = ~cellfun('isempty',strfind(fcArray,fc));
-                acfIndex = find([acfIndex] == 1);
-
-                % If the fc found in the current fault code array
-                if length(acfIndex) > 0 
-
-                    % get the start and end time of abs_time
-                    stabs_time = abs_time(min(acfIndex));
-                    endabs_time = abs_time(min(acfIndex));
-                    % Append to abs_time_array
-                    stabs_time_array = [stabs_time_array,stabs_time];
-                    endabs_time_array = [endabs_time_array,endabs_time];
-
-                    % get the start and end time of PC_timestamp
-                    stpc_time = PC_Timestamp(min(acfIndex));
-                    endpc_time = PC_Timestamp(min(acfIndex));
-                    % Append to PC_timestamp_array
-                    stpc_time_array = [stpc_time_array,stpc_time];
-                    endpc_time_array = [endpc_time_array,endpc_time];
-
-                    % get the start and end time of ECM_Run_Time
-                    stecm_time = ECM_Run_Time(min(acfIndex));
-                    endecm_time = ECM_Run_Time(min(acfIndex));
-                    % Append to ECM_Run_Time_array
-                    stecm_time_array = [stecm_time_array,stecm_time];
-                    endecm_time_array = [endecm_time_array,endecm_time];
-
-                    % Get the screen
-                    screen = char(allParams(fIndex(i)));
-                    if strcmp(screen,'ActiveFaults')
-                        screen = strcat(screen,'_1_Sec_Screen_1');
+                    % string concatenate to conform to the format of fault code 00: xxxx
+                    % in ActiveFaults array 
+                    %if numel(num2str(fcnum)) == 4
+                    if numel(char(fcnum)) == 4
+                       fc = strcat('00:',char(fcnum)); 
+                    elseif numel(char(fcnum)) == 3
+                       fc = strcat('00:0',char(fcnum));
+                    elseif numel(char(fcnum)) == 2
+                       fc = strcat('00:00',char(fcnum));
+                    elseif numel(char(fcnum)) == 1
+                       fc = strcat('00:000',char(fcnum)); 
                     end
-                    % Append to screen_array and fc_array
-                    screen_array = [screen_array,screen];
-                    fc_array = [fc_array,fcnum];
+
+
+                    % Search each fault code if exist in the
+                    %acfIndex = strfind(fcArray,fc);
+                    acfIndex = ~cellfun('isempty',strfind(fcArray,fc));
+                    acfIndex = find([acfIndex] == 1);
+
+                    % If the fc found in the current fault code array
+                    if length(acfIndex) > 0 
+
+                        % get the start and end time of abs_time
+                        stabs_time = abs_time(min(acfIndex));
+                        endabs_time = abs_time(min(acfIndex));
+                        % Append to abs_time_array
+                        stabs_time_array = [stabs_time_array,stabs_time];
+                        endabs_time_array = [endabs_time_array,endabs_time];
+
+                        % get the start and end time of PC_timestamp
+                        stpc_time = PC_Timestamp(min(acfIndex));
+                        endpc_time = PC_Timestamp(min(acfIndex));
+                        % Append to PC_timestamp_array
+                        stpc_time_array = [stpc_time_array,stpc_time];
+                        endpc_time_array = [endpc_time_array,endpc_time];
+
+                        % get the start and end time of ECM_Run_Time
+                        stecm_time = ECM_Run_Time(min(acfIndex));
+                        endecm_time = ECM_Run_Time(min(acfIndex));
+                        % Append to ECM_Run_Time_array
+                        stecm_time_array = [stecm_time_array,stecm_time];
+                        endecm_time_array = [endecm_time_array,endecm_time];
+
+                        % Get the screen
+                        screen = char(allParams(fIndex(i)));
+                        if strcmp(screen,'ActiveFaults')
+                            screen = strcat(screen,'_1_Sec_Screen_1');
+                        end
+                        % Append to screen_array and fc_array
+                        screen_array = [screen_array,screen];
+                        fc_array = [fc_array,fcnum];
+
+                    end
 
                 end
+
 
             end
 
-
         end
+
+        % if there is fault code
+        if ~isempty(fc_array)
+        % Create fault code table to hold fault related information
+
+            fcTable = struct('TruckID',{},'fc_array',{},'screen_array',{},...
+                'stabs_time_array',{},'endabs_time_array',{},'stpc_time_array',{},...
+                'endpc_time_array',{},'stecm_time_array',{},...
+                'endecm_time_array',{}); 
+
+            TruckID = cell(1,length(fc_array));
+            TruckID(1,:) = cellstr(num2str(truckID));
+
+            % Fill up the structure of matTable
+            fcTable(1).TruckID = TruckID';
+            fcfields = fieldnames(fcTable);
+
+            % convert cell to double type
+            stabs_time_array = cell2mat(stabs_time_array);
+            endabs_time_array = cell2mat(endabs_time_array);
+            stecm_time_array = cell2mat(stecm_time_array);
+            endecm_time_array =  cell2mat(endecm_time_array);
+
+            for i = 2:numel(fcfields)         
+
+                fcTable.(fcfields{i}) = eval(fcfields{i})';  
+
+            end
+
+             % Upload the data and engine family to the database
+            fastinsert(obj.conn,'[dbo].[tblFCData2]',fieldnames(fcTable),fcTable);
+
+            % Close the database connection
+            close(obj.conn)
+
+            % Else print cal already uploaded    
+            fprintf('Fault code information %s is uploaded to database FCData table.\n',file,program);
+
+        else
+
+            % Else print out no fault code
+
+            fprintf('No Fault code information is present in %s.\n',file);
+
+         end
 
     end
     
-    % if there is fault code
-    if ~isempty(fc_array)
-    % Create fault code table to hold fault related information
-    
-        fcTable = struct('TruckID',{},'fc_array',{},'screen_array',{},...
-            'stabs_time_array',{},'endabs_time_array',{},'stpc_time_array',{},...
-            'endpc_time_array',{},'stecm_time_array',{},...
-            'endecm_time_array',{}); 
-        
-        TruckID = cell(1,length(fc_array));
-        TruckID(1,:) = cellstr(num2str(truckID));
-        
-        % Fill up the structure of matTable
-        fcTable(1).TruckID = TruckID';
-        fcfields = fieldnames(fcTable);
-        
-        % convert cell to double type
-        stabs_time_array = cell2mat(stabs_time_array);
-        endabs_time_array = cell2mat(endabs_time_array);
-        stecm_time_array = cell2mat(stecm_time_array);
-        endecm_time_array =  cell2mat(endecm_time_array);
-        
-        for i = 2:numel(fcfields)         
-             
-            fcTable.(fcfields{i}) = eval(fcfields{i})';  
-            
-        end
-
-         % Upload the data and engine family to the database
-        fastinsert(obj.conn,'[dbo].[tblFCData2]',fieldnames(fcTable),fcTable);
-        
-        % Close the database connection
-        close(obj.conn)
-        
-        % Else print cal already uploaded    
-        fprintf('Fault code information %s is uploaded to database FCData table.\n',file,program);
-        
-    else
-        
-        % Else print out no fault code
-    
-        fprintf('No Fault code information is present in %s.\n',file);
-    
-     end
 
          % Create calTable struct to hold table to be inserted
         matTable = struct('TruckID',{},'abs_time',{},'PC_Timestamp',{},...
@@ -198,6 +240,26 @@ function readMatFile(obj,matfolder,file,truckID,program)
 
         for i = 2:numel(fields)
             
+            % To- do try index = find
+            %% Error handling
+            %% Interpolate the ECM_Run_Time
+            %     try
+            %         % Create the interpolated version of ECM_Run_Time
+            %          fIndex = strmatch('ActiveFaults2',allParams);
+            %     catch ex
+            %         if strcmp(ex.identifier, 'CapabilityUploader:AddCSVFile:interpECMRunTime:failToLocateStartingECMRunTime');
+            %             % Instead of keeping the error, just set all ECM_Run_Time values to a NaN so they
+            %             % get uploaded into the database as a null. Then, we at least get to keep the data
+            %             % in one form, all be it with less meta-data.
+            %             ECM_Run_Time_interp = zeros(size(ECM_Run_Time));
+            %             ECM_Run_Time_interp(:) = NaN;
+            %             % Journal this in the warning log
+            %             obj.warning.write('Dropped ECM_Run_Time from the event driven data - There were 100 lines without an update at the start of the file.');
+            %         else
+            %             % Rethrow the original error
+            %             rethrow(ex);
+            %         end
+            %     end
             index = find(ismember(allParams, dutyCycParams{i}));
             
             % if the parameter can be found and the parameter has values
@@ -236,7 +298,31 @@ function readMatFile(obj,matfolder,file,truckID,program)
                 
                 %% BoostPressure is missing from this matfile
                 %% need to have error handling here
-                print('parameter is missing from this matfile')
+                % create a cell array of the same length as the abs_time
+                    var = cell(1,length(abs_time));
+                    
+                    x = fetch(obj.conn, sprintf('SELECT top 10 %s FROM [dbo].[tblMatData]',fields{i}));
+                    y = strcat('x.',fields{i});
+                    % if the parameter is a cell, create empty string cell
+                    if iscell(eval(y))
+
+                        var(1,:) = cellstr('');
+
+                    % if the parameter is a double, then put some unlikely value in the cell
+                    % this is not an optimal approach, for GPS coordiante, we
+                    % choose -1 to be put in as GPS coordiante can't be -1
+                    elseif isa(eval(y),'double')
+                        var(1,:) = num2cell(-1);
+                    end
+
+                    % transpose
+                    var = var';
+                    % put the cell array into struct
+                    matTable.(fields{i}) = var;
+                    
+                    % Append missing params to the array
+                    missParams = [missParams, fields{i}];
+                    fprintf('parameter is missing from this matfile\n')
                 
             end
         
@@ -246,26 +332,21 @@ function readMatFile(obj,matfolder,file,truckID,program)
         fastinsert(obj.conn,'[dbo].[tblMatData]',fieldnames(matTable),matTable);
         
         % Close the database connection
-        close(obj.conn)
+        %close(obj.conn)
         
         % Else print cal already uploaded    
         fprintf('Mat file %s is uploaded to database matData table.\n',file,program);
-      
-%         matTable(1).abs_time = abs_time;
-%         matTable(1).PC_Timestamp = PC_Timestamp;
-%         matTable(1).ECM_Run_Time = ECM_Run_Time;
-%         matTable(1).Engine_Speed = Engine_Speed;
-%         matTable(1).Net_Engine_Torque = Net_Engine_Torque;
-%         matTable(1).Accelerator_Pedal_Position = Accelerator_Pedal_Position;
-%         matTable(1).Ambient_Air_Press = Ambient_Air_Press;
-%         matTable(1).Coolant_Temperature = Coolant_Temperature;
-%         matTable(1).Net_Engine_Torque = Net_Engine_Torque;
-%         matTable(1).EGR_Position = EGR_Position;
-%         matTable(1).Boost_Pressure = Boost_Pressure;
-%         matTable(1).Charge_Air_Cooler_Outlet_Tmptr = Charge_Air_Cooler_Outlet_Tmptr;
-%         matTable(1).GPS_Longitude = GPS_Longitude;
-%         matTable(1).GPS_Latitude = GPS_Latitude;
-%         matTable(1).GPS_Speed = GPS_Speed;
-% 
-%         
+             
+        % Update tblTruck MatData column
+        if isempty(missParams) 
+            update(obj.conn, '[dbo].[tblTrucks]', {'MatData'}, {'Yes'}, ...
+            sprintf('WHERE [TruckID] = %0.f',truckID));
+        else
+            update(obj.conn, '[dbo].[tblTrucks]', {'MatData'}, {'Some duty cycle params not existing'}, ...
+            sprintf('WHERE [TruckID] = %0.f',truckID));
+        end
+        
+        % Update tblTruck LastMatFileDate column
+        update(obj.conn, '[dbo].[tblTrucks]', {'LastMatFileDate'}, dataDateNum, ...
+        sprintf('WHERE [TruckID] = %0.f',truckID));
 end
