@@ -146,6 +146,8 @@ function data = getEventData(obj, SEID, varargin)
 %     - Modified the SQL query to fetch data from Sierra's archived database  (for SEIDs 12526, 11170, 11171, 11172 which log too frequently) as well & also for Nighthawk(moved data before Nov-15 to Archive)
 %   Revised - Blaisy Rodrigues - 2016/01/15
 %     - Modified the SQL query to fetch data from Seahawk's archived database, SeahawkArchive2 
+%   Revised - Blaisy Rodrigues - 2016/02/09
+%     - Modified the SQL query to fetch data from Seahawk's archived database, AcadiaArchive2 
 %  
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
