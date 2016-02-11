@@ -5,9 +5,9 @@ function  addProcessedMat(obj, file,filepath,truckID,mth,yr)
 
    
    % Get the latest processed FileID and increment by 1
-    LastFileID = fetch(obj.conn, sprintf('SELECT max ([FileID]) FROM [dbo].[tblProcessedMatFiles]')); 
-    FileID = LastFileID.x + 1;
-    obj.FileID = FileID;
+%     LastFileID = fetch(obj.conn, sprintf('SELECT max ([FileID]) FROM [dbo].[tblProcessedMatFiles]')); 
+%     FileID = LastFileID.x + 1;
+%     obj.FileID = FileID;
     
     % Convert from cell array to number so the yr and mth can be inserted
     % into db
@@ -17,8 +17,8 @@ function  addProcessedMat(obj, file,filepath,truckID,mth,yr)
     try
         % Insert the new vehicle into the tblTrucks table
         fastinsert(obj.conn, '[dbo].[tblProcessedMatFiles]', ...
-            {'TruckID','FileName','Year','Month','FileID','FilePath'}, ...
-            {truckID,file,yr,mth,FileID,filepath})
+            {'TruckID','FileName','Year','Month','FilePath'}, ...
+            {truckID,file,yr,mth,filepath})
     catch ex
         % If it was a duplicate truck error
         if ~isempty(strfind(ex.message,'Cannot insert duplicate key row in object'))

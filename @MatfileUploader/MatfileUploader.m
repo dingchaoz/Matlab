@@ -195,9 +195,7 @@ classdef MatfileUploader < Capability
         %-----Data processing methods
         % Master mathod to run data process for one program
         matdataUploader(obj)
-        % Small method to process one truck of data
-        [filesP,timeP,filesE,timeE] = csvUploader(obj, rootDir, truckID)
-        
+    
     end
     
     %% Protected methods implemented externally
@@ -205,8 +203,7 @@ classdef MatfileUploader < Capability
         % Does the dirty work of reading in the .csv file
         readCaltermIII_EcmDataOnly(obj, filename)
         
-        % Process the MinMax data to make them into pairs
-        processMinMaxData(obj, abs_time, ECM_Run_Time, MMM_Update_Rate, MinMax_PublicDataID, MinMax_Data, cal, truckID)
+  
     end
     
     %% Private methods implemented externally
