@@ -322,7 +322,7 @@ function readMatFile(obj,matfolder,file,truckID,program)
                     
                     % Append missing params to the array
                     missParams = [missParams, fields{i}];
-                    fprintf('parameter is missing from this matfile\n')
+                    fprintf('parameter %s is missing from this matfile\n',fields{i})
                 
             end
         

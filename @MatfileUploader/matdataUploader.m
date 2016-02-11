@@ -232,8 +232,9 @@ function matdataUploader(obj)
                     % If the file not exists in processed folder, process the mat file   
                     else
                         fprintf('There is new mat file in     %s\r',char(matFolder));
-                         % Process and read the mat file
-                        %readMatFile(obj,matFolder(j),file,truckID,programs{item,1});
+                        
+                        % Process and read the mat file
+                        readMatFile(obj,matFolder(j),file,truckID,programs{item,1});
                               
                         % Insert file and update file ID 
                         addProcessedMat(obj,file,matFolder,truckID,mth,yr);
@@ -244,7 +245,7 @@ function matdataUploader(obj)
                 else
                     
                     % Process and read the mat file
-                    %readMatFile(obj,matFolder(j),file,truckID,programs{item,1});
+                    readMatFile(obj,matFolder(j),file,truckID,programs{item,1});
                               
                     % Insert file and update file ID 
                     addProcessedMat(obj,file,matFolder,truckID,mth,yr);

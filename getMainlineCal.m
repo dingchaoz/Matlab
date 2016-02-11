@@ -121,8 +121,15 @@ function [calFile, ecfgFile, calVer, calRev] = getMainlineCal(mainlineRoot,copyC
             
             tf = isstrprop(s, 'digit'); % Return a logic array where elements of s is a number
             start_i = 0; % Initiate a variable to record the starting digit position of cal version
+            
+            
+            if strcmp(program,'Ventura') || strcmp(program,'Vanguard')
+                temp = strsplit(char(calSplit(5)));
+                temp = strsplit(char(temp),'_');
+                calVer{i} = str2double(char(temp(2)));
+                
 
-            if ~strcmp(program,'HDPacific')
+            elseif ~strcmp(program,'HDPacific')
                 for j = 1: length(tf)-8 % Loop through every 8 char's corresponding digit determinant value
                     if sum(tf(j:j+7)) == 8 % If the 8 determinate values summing up to 8, meaning it is a cal version
                         start_i = j;      % Record the starting position       

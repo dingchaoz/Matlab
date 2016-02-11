@@ -59,11 +59,11 @@ function exportThresholds(r,l,mainline,program,famName,code)
         m2mat(exportFile,matFile,filterFile,program)
 
 %         Upload the .mat and .xml binary file for this program
-        uploadCalibratables(matFile,program,famName,calVer{i},calRev{i})
+        %uploadCalibratables(matFile,program,famName,calVer{i},calRev{i})
         
         % Upload tabluar cal information to tblCals1 for DragonCC and
         % pickup programs
-        if strcmp(program,'DragonCC') || strcmp(program,'Seahawk')
+        if strcmp(program,'DragonCC') || strcmp(program,'Seahawk') || strcmp(program,'Acadia')
             
             uploadThresholdTable(matFile,program,famName,calVer{i},calRev{i})
         end
