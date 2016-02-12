@@ -18,8 +18,8 @@
 function readMatFile(obj,matfolder,file,truckID,program)
 
   % form the full matfile path
-    %matfile = char(fullfile(matfolder,file));
-    matfile = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata\DragonFront\Engineering\ENG_CHX_FG500015_DD_AISIN\MatData_Files\14-06_matfiles\ENG_CHX_FG500015_DD_AISIN_Engineering_140616.mat';
+    matfile = char(fullfile(matfolder,file));
+    %matfile = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata\DragonFront\Engineering\ENG_CHX_FG500015_DD_AISIN\MatData_Files\14-06_matfiles\ENG_CHX_FG500015_DD_AISIN_Engineering_140616.mat';
     %matfile = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata\DragonFront\FieldTest_FDV3\T8758_BG573629_3500\MatData_Files\12-01_matfiles\T8758_BG573629_3500_FDV3_120128.mat';
     % load the matfile into workspace
     load(matfile);
@@ -36,18 +36,18 @@ function readMatFile(obj,matfolder,file,truckID,program)
      
     % Initiate missing params array
      missParams = {};
-     % Check for if ActiveFaults exist
-    if ~exist('ActiveFaults','var')
-        % Note that there was no MinMax data in this file (not not that MinMax data was expected)
-        disp(['No ActiveFaults parameter in file ' matfile]);
-        obj.event.write(['No ActiveFaults in file ' matfile]);
-        % Update tblTrucks saying that there should have been MinMax data and wasn't
-        %update(obj.conn, '[dbo].[tblTrucks]', {'EventData'}, {'No Evdd_Data Parameter'}, ...
-        %sprintf('WHERE [TruckID] = %0.f',truckID));
-    
-        error('MatfileUploader:readMatFile:ParameterMissing',...
-            'File was missing parameter ActiveFaults.')
-    end
+%      % Check for if ActiveFaults exist
+%     if ~exist('ActiveFaults','var')
+%         % Note that there was no MinMax data in this file (not not that MinMax data was expected)
+%         disp(['No ActiveFaults parameter in file ' matfile]);
+%         obj.event.write(['No ActiveFaults in file ' matfile]);
+%         % Update tblTrucks saying that there should have been MinMax data and wasn't
+%         %update(obj.conn, '[dbo].[tblTrucks]', {'EventData'}, {'No Evdd_Data Parameter'}, ...
+%         %sprintf('WHERE [TruckID] = %0.f',truckID));
+%     
+%         error('MatfileUploader:readMatFile:ParameterMissing',...
+%             'File was missing parameter ActiveFaults.')
+%     end
         
         %% Error handling
         %% Interpolate the ECM_Run_Time
@@ -349,4 +349,6 @@ function readMatFile(obj,matfolder,file,truckID,program)
         % Update tblTruck LastMatFileDate column
         update(obj.conn, '[dbo].[tblTrucks]', {'LastMatFileDate'}, dataDateNum, ...
         sprintf('WHERE [TruckID] = %0.f',truckID));
+    
+        fprintf('tblTrucks MatData and LastMatFileDate for truckID %0.f is updated \r',truckID);
 end

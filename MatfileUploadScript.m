@@ -76,8 +76,6 @@ Thunderbolt = MatfileUploader('Thunderbolt');
 Thunderbolt.matdataUploader;
 clear Thunderbolt
 
-% Move the MR Industrial Data
-MoveMRIndCapData
 
 % Blazer
 Blazer = MatfileUploader('Blazer');
@@ -99,8 +97,10 @@ Shadowfax = MatfileUploader('Shadowfax');
 Shadowfax.matdataUploader;
 clear Shadowfax
 
-% % Move the V8 data
-% MoveV8CapData
+% Thunderbolt
+Thunderbolt = MatfileUploader('Thunderbolt');
+Thunderbolt.matdataUploader;
+clear Thunderbolt
 
 % Vanguard
 Vanguard = MatfileUploader('Vanguard');

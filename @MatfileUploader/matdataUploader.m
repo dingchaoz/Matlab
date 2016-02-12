@@ -49,9 +49,9 @@ function matdataUploader(obj)
     % Recurse one level through the program directory folders on MR because the data is everywhere
     base = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata';
     % Program names as in the database
-    prog =     {'DragonCC',   'DragonMR', 'Seahawk', 'Yukon' ,'Nighthawk'};
+    prog =     {'DragonCC',   'DragonMR', 'Seahawk', 'Yukon' ,'Nighthawk','Sierra','Vulture','Thunderbolt'};
     % Program names as in the mrdata folder
-    progFold = {'DragonFront','Dragon',   'Seahawk', 'Yukon' ,'Nighthawk'};
+    progFold = {'DragonFront','Dragon',   'Seahawk', 'Yukon' ,'Nighthawk','Sierra','Vulture','Thunderbolt'};
     % Empty variable to hold all the driectories
     programs = {};
     for i = 1:length(prog)
@@ -234,7 +234,7 @@ function matdataUploader(obj)
                         fprintf('There is new mat file in     %s\r',char(matFolder));
                         
                         % Process and read the mat file
-                        readMatFile(obj,matFolder(j),file,truckID,programs{item,1});
+                        readMatFile(obj,matFolder,file,truckID,programs{item,1});
                               
                         % Insert file and update file ID 
                         addProcessedMat(obj,file,matFolder,truckID,mth,yr);
@@ -245,7 +245,7 @@ function matdataUploader(obj)
                 else
                     
                     % Process and read the mat file
-                    readMatFile(obj,matFolder(j),file,truckID,programs{item,1});
+                    readMatFile(obj,matFolder,file,truckID,programs{item,1});
                               
                     % Insert file and update file ID 
                     addProcessedMat(obj,file,matFolder,truckID,mth,yr);
