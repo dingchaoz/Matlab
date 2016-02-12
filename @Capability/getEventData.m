@@ -147,7 +147,7 @@ function data = getEventData(obj, SEID, varargin)
 %   Revised - Blaisy Rodrigues - 2016/01/15
 %     - Modified the SQL query to fetch data from Seahawk's archived database, SeahawkArchive2 
 %   Revised - Blaisy Rodrigues - 2016/02/09
-%     - Modified the SQL query to fetch data from Seahawk's archived database, AcadiaArchive2 
+%     - Modified the SQL query to fetch data from Acadia's archived database, AcadiaArchive2 
 %  
     %% Process the inputs
     % Creates a new input parameter parser object to parse the inputs arguments
