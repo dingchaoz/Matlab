@@ -15,7 +15,7 @@
 
 %% faultcode summary: faultsActive,faultsActiveList,faultsActiveStr
 
-function read = readMatFile(obj,matfolder,file,truckID,program)
+function readMatFile(obj,matfolder,file,truckID,program)
 
   % form the full matfile path
     matfile = char(fullfile(matfolder,file));
@@ -72,21 +72,6 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
     %% Need to add error handling if ActiveFaults can't be found
     % Find possible active faults arrays on different screen
     fIndex = strmatch('ActiveFaults',allParams); 
-
-   if isempty(fIndex)
-        % Warn that this couldn't be run
-        disp('There are no duty cycle parameters in this mat file')
-        % Log the error
-        obj.error.write('-----------------------------------------------------------');
-        obj.error.write(fprintf('There are no duty cycle parameters in %s mat file\n',file))
-
-        % Upload errored file to the database
-        fastinsert(obj.conn,'[dbo].[tblErroredMatFiles]',{'TruckID','FileName','Error'},{truckID,file,'No ActiveFaults params'});
-
-        read = 0;
-
-        return
-    end
      
     % if there if ActiveFaults exiting in the matfile
     if length(fIndex) > 0
@@ -148,11 +133,11 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
            
                         for i = 2:4
                             
-                            Index = strmatch(dutyCycParams{i},allParams);
-                            if length(Index) > 1
-                                temp = eval(char(allParams(Index(1))));
+                            fIndex = strmatch(dutyCycParams{i},allParams);
+                            if length(fIndex) > 1
+                                temp = eval(char(allParams(fIndex(1))));
                             else
-                                temp = eval(char(allParams(Index))); 
+                                temp = eval(char(allParams(fIndex))); 
                             end
                             
                             if i == 2
@@ -191,13 +176,10 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
                         endecm_time_array = [endecm_time_array,endecm_time];
 
                         % Get the screen
-                        if length(fIndex) > 1
-                            screen = char(allParams(fIndex(i)));
-                        else
-                            screen = char(allParams(fIndex));
-%                         if strcmp(screen,'ActiveFaults')
-%                             screen = strcat(screen,'_1_Sec_Screen_1');
-%                         end
+                        screen = char(allParams(fIndex(i)));
+                        if strcmp(screen,'ActiveFaults')
+                            screen = strcat(screen,'_1_Sec_Screen_1');
+                        end
                         % Append to screen_array and fc_array
                         screen_array = [screen_array,screen];
                         fc_array = [fc_array,fcnum];
@@ -282,14 +264,10 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
             disp('There are no duty cycle parameters in this mat file')
             % Log the error
             obj.error.write('-----------------------------------------------------------');
-            obj.error.write(fprintf('There are no duty cycle parameters in %s mat file\n',file))
+            obj.error.write('There are no duty cycle parameters in this mat file')
             
-            % Upload errored file to the database
-            fastinsert(obj.conn,'[dbo].[tblErroredMatFiles]',{'TruckID','FileName','Error'},{truckID,file,'No duty cycle params'});
             
-            read = 0;
             
-            return
         end
         
         if length(fIndex) > 1
@@ -299,6 +277,7 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
         
         len = length(eval(char(allParams(fIndex))));
         TruckID = cell(1,length(len)); 
+       % TruckID = cell(1,length(abs_time));
         TruckID(1,:) = cellstr(num2str(truckID));
      
 %      % Fill up the structure of matTable
@@ -308,14 +287,32 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
 
         for i = 2:numel(fields)
             
+            % To- do try index = find
+            %% Error handling
+            %% Interpolate the ECM_Run_Time
+            %     try
+            %         % Create the interpolated version of ECM_Run_Time
+            %          fIndex = strmatch('ActiveFaults2',allParams);
+            %     catch ex
+            %         if strcmp(ex.identifier, 'CapabilityUploader:AddCSVFile:interpECMRunTime:failToLocateStartingECMRunTime');
+            %             % Instead of keeping the error, just set all ECM_Run_Time values to a NaN so they
+            %             % get uploaded into the database as a null. Then, we at least get to keep the data
+            %             % in one form, all be it with less meta-data.
+            %             ECM_Run_Time_interp = zeros(size(ECM_Run_Time));
+            %             ECM_Run_Time_interp(:) = NaN;
+            %             % Journal this in the warning log
+            %             obj.warning.write('Dropped ECM_Run_Time from the event driven data - There were 100 lines without an update at the start of the file.');
+            %         else
+            %             % Rethrow the original error
+            %             rethrow(ex);
+            %         end
+            %     end
             %index = find(ismember(allParams, dutyCycParams{i}));
             index = strmatch(dutyCycParams{i},allParams);
             
             if length(index) > 1
                 index = index(1);
             end
-            
-            %%%% TO-DO, check if critical duty cycle params missing
             
             % if the parameter can be found and the parameter has values
             % collected
@@ -361,7 +358,10 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
 %                         var(1,:) = cellstr('');
 %                     else
 %                         var(1,:) = num2cell(-1);
-                                
+                            
+                         
+                            
+                    
                     x = fetch(obj.conn, sprintf('SELECT top 10 %s FROM [dbo].[tblMatData]',fields{i}));
                     y = strcat('x.',fields{i});
                     % if the parameter is a cell, create empty string cell
@@ -410,7 +410,4 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
         sprintf('WHERE [TruckID] = %0.f',truckID));
     
         fprintf('tblTrucks MatData and LastMatFileDate for truckID %0.f is updated \r',truckID);
-        
-        % return read == 1
-        read = 1;
 end
