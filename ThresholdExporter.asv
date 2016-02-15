@@ -115,9 +115,9 @@ exportThresholds(r,l,fullfile(VultureRoot,'Downloads from CalbertNG\Vulture_HO')
 % Thunderbolt Root
 ThunderboltRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\common\DL_Diag\Data Analysis\Storage\MinMax Parameter Lists\Thunderbolt';
 % Thunderbolt Default (use the CC_Auto family as default)
-exportThresholds(r,l,fullfile(ThunderboltRoot,'Downloads from CalbertNG\CC_Auto'),'Thunderbolt','Default','BHQ')
+exportThresholds(r,l,fullfile(ThunderboltRoot,'MY19\CC_Auto'),'Thunderbolt','Default','BHQ')
 % Thunderbolt CC_Auto
-exportThresholds(r,l,fullfile(ThunderboltRoot,'Downloads from CalbertNG\CC_Auto'),'Thunderbolt','Thunderbolt_CC_Auto','BHQ')
+exportThresholds(r,l,fullfile(ThunderboltRoot,'MY19\CC_Auto'),'Thunderbolt','Thunderbolt_CC_Auto','BHQ')
 
 %% DragonMR
 % DragonMR Root
