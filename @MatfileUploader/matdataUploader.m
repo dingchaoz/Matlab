@@ -27,13 +27,17 @@ function matdataUploader(obj)
     %% Automated File Finder and Mover
     totalStart = tic;
     
-    
-    % Recurse one level through the program directory folders on MR because the data is everywhere
-    base = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata';
-    
     % Program names as in the database
     prog = obj.program;
     
+    if strcmp(prog,'Acadia')
+        base = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\ETD_Data\Acadia\MatData';
+    else
+        
+        % Recurse one level through the program directory folders on MR because the data is everywhere
+        base = '\\CIDCSDFS01\EBU_Data01$\NACTGx\mrdata';
+    end
+
     % Program names as in the mrdata folder
     if strcmp(prog,'DragonCC')
         progFold = 'DragonFront';
@@ -91,8 +95,7 @@ function matdataUploader(obj)
                 if ~exist(currentFolder{i})
                     break;
                 end
-                
-                
+                      
                 subFolders = dir(char(currentFolder(i)));
                 subList = {subFolders(3:end).name}';
                 subList = subList(cell2mat({subFolders(3:end).isdir}'));
@@ -107,7 +110,6 @@ function matdataUploader(obj)
                     if isempty(regexp(subList{zz},'matfiles'))
                         subList(zz) = [];
                     end
-
                 end
                 
                 % a check if the folder is already processed, remove the
@@ -132,8 +134,7 @@ function matdataUploader(obj)
                             rethrow(ex)
                         end
                     end
-                   
-                    
+   
                     % Extract the month and year of the current folder
                     [tok] = strsplit(char(matFolder(j)),'\');
                     tok = strsplit(char(tok(end)),'_');
@@ -151,32 +152,21 @@ function matdataUploader(obj)
                     
                     % If the folder is a new folder with larger year or
                     % month, go ahead process and read the mat file data
-                    if (yr > maxYr) || (yr == maxYr && mth > maxMth) || isnan(maxMth)|| isnan(maxYr)
-                        
+                    if (yr > maxYr) || (yr == maxYr && mth > maxMth) || isnan(maxMth)|| isnan(maxYr)                 
                         new = true;
                         ProcessMat(matFolder{j},new);
                     
-                    % If the folder is the same with the latest processed
+                   % If the folder is the same with the latest processed
                     % folder
                     elseif yr == maxYr && mth >= maxMth -1
                         
                         new = false;
                         ProcessMat(matFolder{j},new);
-                        
-
                     else
                         continue
                     end
-     
-                    
-
-                    
                 end    
-
             end    
-
-
-
         end
     end
     
@@ -191,14 +181,22 @@ function matdataUploader(obj)
 
             for z = 1 : length(files)
                 file = char(files(z).name);
-                
+                filePth = ['''',matFolder,''''];
+                processedFiles = fetch(obj.conn, sprintf('SELECT distinct FileName FROM [dbo].[tblProcessedMatFiles] where TruckID = %i and FilePath = %s',truckID,filePth));
+                erroredFiles = fetch(obj.conn, sprintf('SELECT distinct FileName FROM [dbo].[tblErroredMatFiles] where TruckID = %i',truckID));
+                  
                 if ~new
                     
-                    filePth = ['''',matFolder,''''];
-                    processedFiles = fetch(obj.conn, sprintf('SELECT distinct FileName FROM [dbo].[tblProcessedMatFiles] where TruckID = %i and FilePath = %s',truckID,filePth));
-                    erroredFiles = fetch(obj.conn, sprintf('SELECT distinct FileName FROM [dbo].[tblErroredMatFiles] where TruckID = %i',truckID));
+                    if ~isempty(erroredFiles)
+                        
+                        if find(ismember(erroredFiles.FileName,file))
+                              fprintf('No new mat file in     %s\r',char(matFolder));
+                        end
+                        
+                    end
+                    
                     % Check if new file exists, if already exists, skip it
-                    if find(ismember(processedFiles.FileName,file)) || find(ismember(erroredFiles.FileName,file))
+                    if find(ismember(processedFiles.FileName,file))
                             
                         fprintf('No new mat file in     %s\r',char(matFolder));
                         
@@ -219,19 +217,27 @@ function matdataUploader(obj)
                     
                 else
                     
-                    % Process and read the mat file
-                    read = readMatFile(obj,matFolder,file,truckID,programs{item,1});
+                    % Check if new file exists, if already exists, skip it
+
+                     if ~isempty(erroredFiles)
+                        
+                        if find(ismember(erroredFiles.FileName,file))
+                              fprintf('No new mat file in     %s\r',char(matFolder));
+                        end
+                        
+                     end
+                        % Process and read the mat file
+                        read = readMatFile(obj,matFolder,file,truckID,programs{item,1});
                     
-                    % If the matfile is read and matdata is uploaded
-                    if read == 1
-                        % Insert file and update file ID 
-                        addProcessedMat(obj,file,matFolder,truckID,mth,yr);
-                        % There were no Min/Max files present, display a message
-                        fprintf('Mat file %s in %s is processed and updated in the tblProcessedMatFiles\r',char(file),char(matFolder(j)));
-                    end
-                    
-                end
-   
+                         % If the matfile is read and matdata is uploaded
+                        if read == 1
+                            % Insert file and update file ID 
+                            addProcessedMat(obj,file,matFolder,truckID,mth,yr);
+                            % There were no Min/Max files present, display a message
+                            fprintf('Mat file %s in %s is processed and updated in the tblProcessedMatFiles\r',char(file),char(matFolder(j)));
+                        end
+                    end                    
+               
             end
         else
             % There were no Min/Max files present, display a message
