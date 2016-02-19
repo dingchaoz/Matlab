@@ -20,7 +20,7 @@ function SyncSuppData(varargin)
         programs = {dirData(cell2mat({dirData(:).isdir})).name}';
         programs = programs(3:end);
     else
-        % Use what the user passed in
+        % Use what the user passed in 
         programs = varargin;
     end
     

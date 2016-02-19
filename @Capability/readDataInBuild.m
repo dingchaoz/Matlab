@@ -29,7 +29,9 @@ function data = readDataInBuild(obj, fileName, cal)
 %       - Modified to rectify bad cells recognized by Matlab due to shifted columns in 
 %         Ayrton's datainbuild file 
 %   Revised - Yiyuan Chen - 2015/07/16
-%       - Modified to skip the extra column "OverrideSubfileNumber" in datainbuild.csv of some new softwares
+%       - Modified to skip the extra column "OverrideSubfileNumber" in column 22 in datainbuild.csv of some new softwares
+%   Revised - Blaisy Rodrigues - 2016/02/17
+%       - Modified to skip the extra columns "OverrideSubfileNumber" in column 23 & "MSNR Configurable" in column 19 in datainbuild.csv of some new softwares
     
     % Open the file for reading
     fid = fopen(fileName); % addDataInBuild already checks for a valid file
@@ -43,16 +45,31 @@ function data = readDataInBuild(obj, fileName, cal)
     orgheader = header; % save the original header (it's used later to check if it's a new header) 
     if strcmp(header(hdcommaidx(21)+1 : hdcommaidx(22)),'"OverrideSubfileNumber",')
         header = [header(1 : hdcommaidx(21)), header(hdcommaidx(22)+1 : end)]; % use the older header
+        
+         
     end
+    %to deal with new builds that have columns 19 and 23 extra; first deal
+    %with column 23 and then with column 19 as order of header info will
+    %not get affected
+     if strcmp(header(hdcommaidx(22)+1 : hdcommaidx(23)),'"OverrideSubfileNumber",')
+        header = [header(1 : hdcommaidx(22)), header(hdcommaidx(23)+1 : end)]; % use the older header
+     end
+     
+     if strcmp(header(hdcommaidx(18)+1 : hdcommaidx(19)),'"MSNR_Configurable",') 
+        header = [header(1 : hdcommaidx(18)), header(hdcommaidx(19)+1 : end)]; % use the older header
+        
+    end
+
     
-    % Count the number of commas in the header to check the number of columns
-    % If there aren't 34 columns of data present
+    
+%     Count the number of commas in the header to check the number of columns
+%     If there aren't 34 columns of data present
     if sum(header==',') ~= 33
         % Thow an error as a column was added or removed
         error('Capability:readDataInBuild:NumColumns', ...
         'Found %.0f columns in the datainbuild.csv file but expected 34 columns.', sum(header==',')+1)
     end
-    
+%     
     % Read in the meat of the text
     % Initialize the cell array to contain the data
     rawData = cell([30000 1]);
@@ -65,7 +82,8 @@ function data = readDataInBuild(obj, fileName, cal)
         % Use fgets to keep the termination charachters
         line = fgets(fid);
         % If the line is not empty and starts with a quote, keep it, otherwise skip it
-        if ~isempty(line) && line(1)=='"'
+        %if ~isempty(line) 
+           if ~isempty(line) && line(1)=='"'  
             % If there is a line-feed on the end like there should be
             if line(end)==char(10)
                 % Remove the line-feed from the end
@@ -95,7 +113,20 @@ function data = readDataInBuild(obj, fileName, cal)
             if strcmp(orgheader(hdcommaidx(21)+1 : hdcommaidx(22)),'"OverrideSubfileNumber",') 
                 % if the original header has "OverrideSubfileNumber", skip its value
                 line = [line(1:commaidx(21)), line(commaidx(22)+1 : end)];
-            end            
+            end
+       %to deal with new builds that have columns 19 and 23 extra; first deal
+    %with column 23 and then with column 19 so that order of header info will
+    %not get affected       
+             if strcmp(orgheader(hdcommaidx(22)+1 : hdcommaidx(23)),'"OverrideSubfileNumber",') 
+                % if the original header has "OverrideSubfileNumber", skip its value
+                line = [line(1:commaidx(22)), line(commaidx(23)+1 : end)];
+                
+            end 
+            if strcmp(orgheader(hdcommaidx(18)+1 : hdcommaidx(19)),'"MSNR_Configurable",') 
+                % if the original header has "OverrideSubfileNumber", skip its value
+                line = [line(1:commaidx(18)), line(commaidx(19)+1 : end)];
+            end
+                      
             
             % Set the line in the raw data, replacing instances of '","' with a non-printing group separator cahracter
             % Trim the leading and trailing quotation mark " from the line, too
