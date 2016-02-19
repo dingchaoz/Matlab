@@ -66,15 +66,20 @@ function matdataUploader(obj)
         % For each program
     for item = 1:size(programs,1)
 
-
-        rawDataDir = programs{item,2};
+        % If it is not Acadia program
+        if ~strcmp(prog,'Acadia')
+            rawDataDir = programs{item,2};
+        else
+            rawDataDir = base;
+        end
 
         %% Get truck folder listing
         % Get the directory information
         FolderData = dir(rawDataDir);
         List = {FolderData(3:end).name}';
         List = List(cell2mat({FolderData(3:end).isdir}'));
-
+        
+        
         % Pull out the folder names and create full paths
         for j = 1:length(List)
             % Set the truck name
@@ -85,13 +90,20 @@ function matdataUploader(obj)
             truckList = {truckFolderData(3:end).name}';
             truckList = truckList(cell2mat({truckFolderData(3:end).isdir}'));
 
-            % Look for MinMax files the cheater way for now do all .csv files
-
-            currentFolder = fullfile(parentFolder,truckList,'MatData_Files');
+         
+             % If it is not Acadia program
+            if strcmp(prog,'Acadia')
+                 % Look for MinMax files the cheater way for now do all .csv files
+                currentFolder = fullfile(parentFolder,truckList);
+            else
+                currentFolder = fullfile(parentFolder,truckList,'MatData_Files');
+            end
             
 
             for i = 1:length(currentFolder)
                 
+                % Check if there is such directory, if not, skip and not
+                % process any futher
                 if ~exist(currentFolder{i})
                     break;
                 end
@@ -112,28 +124,53 @@ function matdataUploader(obj)
                     end
                 end
                 
-                % a check if the folder is already processed, remove the
-                % previous folders and only process the latest folders
-                matFolder = fullfile(char(currentFolder(i)),subList);
+                if strcmp(prog,'Acadia')
+                    matFolder = fullfile(char(currentFolder(i)));
+                else
+                    % a check if the folder is already processed, remove the
+                    % previous folders and only process the latest folders
+                    matFolder = fullfile(char(currentFolder(i)),subList);
+                end
 
                 for j = 1: length(matFolder)
+                    
+                    
+                    if ~strcmp(prog,'Acadia')
+                        % Try to get the truck ID of this truck
+                        try
+                            truckID = obj.getTruckID(truckList{i});
+                        catch ex
+                            if strcmp('Capability:getTruckID:NoMatch',ex.identifier)
+                                % Add this truck name to the tblTrucks table
+                                truckID = obj.addTruck(truckList{i});
 
-                    % Try to get the truck ID of this truck
-                    try
-                        truckID = obj.getTruckID(truckList{i});
-                    catch ex
-                        if strcmp('Capability:getTruckID:NoMatch',ex.identifier)
-                            % Add this truck name to the tblTrucks table
-                            truckID = obj.addTruck(truckList{i});
+                                % Log that this truck name was added to the table
+                                obj.error.write('-----------------------------------------------------------');
+                                obj.error.write(['Added entry to trucks table for vehicle ' truckList{i} '.']);
+                            else
+                                % Rethrow the original, unknown exception
+                                rethrow(ex)
+                            end
+                        end
+                    else
+                         % Try to get the truck ID of this truck
+                        try
+                            truckID = obj.getTruckID(folderName);
+                        catch ex
+                            if strcmp('Capability:getTruckID:NoMatch',ex.identifier)
+                                % Add this truck name to the tblTrucks table
+                                truckID = obj.addTruck(truckList{i});
 
-                            % Log that this truck name was added to the table
-                            obj.error.write('-----------------------------------------------------------');
-                            obj.error.write(['Added entry to trucks table for vehicle ' truckList{i} '.']);
-                        else
-                            % Rethrow the original, unknown exception
-                            rethrow(ex)
+                                % Log that this truck name was added to the table
+                                obj.error.write('-----------------------------------------------------------');
+                                obj.error.write(['Added entry to trucks table for vehicle ' truckList{i} '.']);
+                            else
+                                % Rethrow the original, unknown exception
+                                rethrow(ex)
+                            end
                         end
                     end
+                        
    
                     % Extract the month and year of the current folder
                     [tok] = strsplit(char(matFolder(j)),'\');
@@ -191,14 +228,16 @@ function matdataUploader(obj)
                         
                         if find(ismember(erroredFiles.FileName,file))
                               fprintf('No new mat file in     %s\r',char(matFolder));
+                              break;
                         end
                         
                     end
                     
                     % Check if new file exists, if already exists, skip it
-                    if find(ismember(processedFiles.FileName,file))
+                    if any(ismember(processedFiles.FileName,file)) || any(ismember(erroredFiles.FileName,file))
                             
                         fprintf('No new mat file in     %s\r',char(matFolder));
+                        break;
                         
                     % If the file not exists in processed folder, process the mat file   
                     else
@@ -223,6 +262,7 @@ function matdataUploader(obj)
                         
                         if find(ismember(erroredFiles.FileName,file))
                               fprintf('No new mat file in     %s\r',char(matFolder));
+                              break;
                         end
                         
                      end

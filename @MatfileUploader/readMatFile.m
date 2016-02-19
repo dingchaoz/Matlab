@@ -75,10 +75,10 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
 
    if isempty(fIndex)
         % Warn that this couldn't be run
-        disp('There are no duty cycle parameters in this mat file')
+        disp('There are no related ActiveFaults parameter in this mat file')
         % Log the error
         obj.error.write('-----------------------------------------------------------');
-        obj.error.write(fprintf('There are no duty cycle parameters in %s mat file\n',file))
+        obj.error.write(fprintf('There are no ActiveFaults parameter in %s mat file\n',file))
 
         % Upload errored file to the database
         fastinsert(obj.conn,'[dbo].[tblErroredMatFiles]',{'TruckID','FileName','Error'},{truckID,file,'No ActiveFaults params'});
@@ -106,7 +106,13 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
 
             % fault code array
             fcArray = eval(char(allParams(fIndex(i))));
-
+            
+            % If the fault code array is empty
+             if isempty(fcArray)
+                break;
+             end
+            
+ 
             % get the unique faults list
             fcActiveList = unique(fcArray);
             fcActiveList = fcActiveList(length(fcActiveList));
@@ -146,35 +152,61 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
                     if length(acfIndex) > 0 
                         
            
-                        for i = 2:4
+                        for ii = 2:4
                             
-                            Index = strmatch(dutyCycParams{i},allParams);
+                            Index = strmatch(dutyCycParams{ii},allParams);
+                            
+                             % If any of the abs_time or
+                            % pc_timestamp or ecm_runtime params misses
+                             if isempty(Index)
+                                 
+                                 % Fill in dummy variable
+% 
+%                                 % convert cell to double type
+%                                 stabs_time_array = -1;
+%                                 endabs_time_array = -1;
+%                                 stecm_time_array = -1;
+%                                 endecm_time_array =  -1;
+%                                  
+                                  break;
+                             end
+                            
+                            % If there are multiple abs_time or
+                            % pc_timestamp or ecm_runtime params exist, get
+                            % the longest length one as it is the one has
+                            % the most completed time values
                             if length(Index) > 1
                                 temp = eval(char(allParams(Index(1))));
+                                abs_len = length(eval(char(allParams(Index(1)))));
+                                for zz = 2:length(Index)
+                                    if abs_len < length(eval(char(allParams(Index(zz)))))
+                                        temp = eval(char(allParams(Index(zz))));
+                                        abs_len = length(eval(char(allParams(Index(zz)))));
+                                    end
+                                end
                             else
                                 temp = eval(char(allParams(Index))); 
                             end
                             
-                            if i == 2
+                            if ii == 2
                                 % get the start and end time of abs_time
                                 stabs_time = temp(min(acfIndex));
                                 endabs_time = temp(min(acfIndex));
                             end
                             
-                             if i == 3
+                             if ii == 3
                                 % get the start and end time of PC_timestamp
                                 stpc_time = temp(min(acfIndex));
                                 endpc_time = temp(min(acfIndex));
                              end
                             
-                              if i == 4
+                              if ii == 4
                                 % get the start and end time of ECM_Run_Time
                                 stecm_time = temp(min(acfIndex));
                                 endecm_time = temp(min(acfIndex));
                             end
                             
                         end
-  
 
                         % Append to abs_time_array
                         stabs_time_array = [stabs_time_array,stabs_time];
@@ -202,13 +234,9 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
                         screen_array = [screen_array,screen];
                         fc_array = [fc_array,fcnum];
 
-                    end
-
+                        end
                 end
-
-
             end
-
         end
 
         % if there is fault code
@@ -228,10 +256,19 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
             fcfields = fieldnames(fcTable);
 
             % convert cell to double type
-            stabs_time_array = cell2mat(stabs_time_array);
-            endabs_time_array = cell2mat(endabs_time_array);
-            stecm_time_array = cell2mat(stecm_time_array);
-            endecm_time_array =  cell2mat(endecm_time_array);
+            if ~isnumeric(stabs_time_array)   
+                stabs_time_array = cell2mat(stabs_time_array);
+            end
+            if ~isnumeric(endabs_time_array)   
+                endabs_time_array = cell2mat(endabs_time_array);
+            end
+            if ~isnumeric(stecm_time_array)   
+                stecm_time_array = cell2mat(stecm_time_array);
+            end
+            if ~isnumeric(endecm_time_array)   
+                endecm_time_array =  cell2mat(endecm_time_array);
+            end
+     
 
             for i = 2:numel(fcfields)         
 
@@ -241,9 +278,6 @@ function read = readMatFile(obj,matfolder,file,truckID,program)
 
              % Upload the data and engine family to the database
             fastinsert(obj.conn,'[dbo].[tblFCData]',fieldnames(fcTable),fcTable);
-
-            % Close the database connection
-            %close(obj.conn)
 
             % Else print cal already uploaded    
             fprintf('Fault code information %s is uploaded to database FCData table.\n',file,program);
