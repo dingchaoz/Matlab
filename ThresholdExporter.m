@@ -94,6 +94,10 @@ exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','Drag
 exportThresholds(r,l,fullfile(dragonccRoot,'MY16\DragnetCC_Auto'),'DragonCC','Dragnet_CC_16','BDC')
 % Dragnet_CC_16.5 (use the Auto family)
 exportThresholds(r,l,fullfile(dragonccRoot,'MY16.5\DD_Auto'),'DragonCC','Dragnet_CC_16_5','BDC')
+% Dragnet_CC_17 (use the Auto family)
+exportThresholds(r,l,fullfile(dragonccRoot,'MY17\DD_Auto'),'DragonCC','Dragnet_CC_17','BDC')
+% Dragnet_CC_18 (use the Auto family)
+exportThresholds(r,l,fullfile(dragonccRoot,'MY18\DD_Auto'),'DragonCC','Dragnet_CC_18','BDC')
 % Plain Dragon Front (should update this to use a current product calibration)
 exportThresholds(r,l,fullfile(dragonccRoot,'PV\DragnetCC_Auto'),'DragonCC','DragonCC','BDC')
 % % DragonCC Auto
@@ -148,6 +152,8 @@ exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Dragne
 exportThresholds(r,l,fullfile(seahawkRoot,'MY16\DragnetPU_Auto'),'Seahawk','Dragnet_PU_16','BDC')
 % Dragnet_PU_17 (use the Auto family)
 exportThresholds(r,l,fullfile(seahawkRoot,'MY17\DragnetPU_Auto'),'Seahawk','Dragnet_PU_17','BDC')
+% Dragnet_PU_18 (use the Auto family)
+exportThresholds(r,l,fullfile(seahawkRoot,'MY18\DragnetPU_Auto'),'Seahawk','Dragnet_PU_18','BDC')
 % Plain Seahawk (should update this to use a current product calibration)
 exportThresholds(r,l,fullfile(seahawkRoot,'PV\DragnetPU_Auto'),'Seahawk','Seahawk','BDC')
 % % Seahawk Auto
@@ -233,6 +239,7 @@ vanguardRoot = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\HMLDE_Calibrations\C
 % Vanguard Default (use In Progress)
 % exportThresholds(r,l,fullfile(manualCals,'Vanguard'),'Vanguard','Default','BCX')
 exportThresholds(r,l,fullfile(vanguardRoot,'MY16\Mainline'),'Vanguard','Default','BCX')
+exportThresholds(r,l,fullfile(vanguardRoot,'MY17\Mainline'),'Vanguard','MY17','BCX')
 
 %% Ventura
 % Ventura Root
