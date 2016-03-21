@@ -119,9 +119,9 @@ classdef Capability < handle
             obj.progMap = {
             % 'Display Name', 'Database Name', 'Server',    'Instance'
               'ISB',          'DragonMR',      'W4-S129433', 'CAPABILITYDB';
-              'Chrysler CC',  'DragonCC',      'W4-S129433', 'CAPABILITYDB';
+              'Chrysler CC',  'DragonCC',      'SDWPSQL6001', 'CAPABILITYDB';
               'ISL',          'Yukon',         'W4-S129433', 'CAPABILITYDB';
-              'Chrysler PU',  'Seahawk',       'W4-S129433', 'CAPABILITYDB';
+              'Chrysler PU',  'Seahawk',       'SDWPSQL6001', 'CAPABILITYDB';
               'ISX',          'HDPacific',     'W4-S129433', 'CAPABILITYDB';
               'Acadia',       'Acadia',        'W4-S129433', 'CAPABILITYDB';
               'Ayrton',       'Ayrton',        'W4-S129433', 'CAPABILITYDB'; 

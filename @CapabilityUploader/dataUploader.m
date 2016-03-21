@@ -42,7 +42,7 @@ function dataUploader(obj)
         startDir = '\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\ETD_Data\MinMaxData\PeleII';
     else  % Use the program name for all the rest
 
-        startDir = ['\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\ETD_Data\MinMaxData\' obj.program];
+        startDir = ['\\CIDCSDFS01\EBU_Data01$\NACTGx\fngroup_ctc\ETD_Data\MinMaxData\mergerServerTests\' obj.program];
     end
     
     % Blank array for folder to work on

@@ -41,8 +41,8 @@ function truckID = addTruck(obj, truckName)
     try
         % Insert the new vehicle into the tblTrucks table
         fastinsert(obj.conn, '[dbo].[tblTrucks]', ...
-            {'TruckID','TruckName','Family','TruckType'}, ...
-            {truckID,truckName,obj.program,'Default'})
+            {'TruckID','TruckName','Family','TruckType','ProcessData'}, ...
+            {truckID,truckName,obj.program,'Default',1})
     catch ex
         % If it was a duplicate truck error
         if ~isempty(strfind(ex.message,'Cannot insert duplicate key row in object'))
