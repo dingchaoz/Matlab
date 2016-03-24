@@ -248,21 +248,21 @@ function where = makeWhere(Name, args)
     % the TripFlag at all
     
     %% Add filtering based on the engine family desired
-    switch args.family
-        case 'all' % Default, Do nothing, there should be no additional filtering for this
-        case 'x1' % Filter only X1 trucks out
-            % Add this phrase to the end of the WHERE clause
-            where = strcat(where, ' And [Engine] = ''X1''');
-        case 'x3' % Filter only X2/3 trucks out
-            % Add this phrase to the end of the WHERE clause
-            where = strcat(where, ' And ([Engine] = ''X2'' Or [Engine] = ''X3'')');
-        case 'black' % Filter only black trucks out
-            % Add this phrase to the end of the WHERE clause
-            where = strcat(where, ' And [Engine] = ''Black''');
-        otherwise
-            % Throw an error as there was invalid input
-            error('Capability:getCapHist:InvalidFamily','''family'' input must be either ''all'', ''x1'', ''x3'', or ''black''');
-    end
+%     switch args.family
+%         case 'all' % Default, Do nothing, there should be no additional filtering for this
+%         case 'x1' % Filter only X1 trucks out
+%             % Add this phrase to the end of the WHERE clause
+%             where = strcat(where, ' And [Engine] = ''X1''');
+%         case 'x3' % Filter only X2/3 trucks out
+%             % Add this phrase to the end of the WHERE clause
+%             where = strcat(where, ' And ([Engine] = ''X2'' Or [Engine] = ''X3'')');
+%         case 'black' % Filter only black trucks out
+%             % Add this phrase to the end of the WHERE clause
+%             where = strcat(where, ' And [Engine] = ''Black''');
+%         otherwise
+%             % Throw an error as there was invalid input
+%             error('Capability:getCapHist:InvalidFamily','''family'' input must be either ''all'', ''x1'', ''x3'', or ''black''');
+%     end
     
     %% Add filtering based on the truck type desired
     switch args.truck
