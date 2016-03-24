@@ -13,6 +13,8 @@ classdef Capability < handle
 %   Revised - Chris Remington - March 20, 2014
 %     - Merged Sri's Dot Plot functions into the main code to allow that functionality
 %       within the GUI
+%   Revised - Dingchao Zhang -  March 21st, 2016
+%   - Changed server name to the new fullfledged server SDWPSQL6001
     
     properties % Public
         % Structure to hold the filtering values for a current plot configuration
@@ -118,26 +120,26 @@ classdef Capability < handle
             % Define the mapping of database name, plot display program, server, and instance
             obj.progMap = {
             % 'Display Name', 'Database Name', 'Server',    'Instance'
-              'ISB',          'DragonMR',      'W4-S129433', 'CAPABILITYDB';
+              'ISB',          'DragonMR',      'SDWPSQL6001', 'CAPABILITYDB';
               'Chrysler CC',  'DragonCC',      'SDWPSQL6001', 'CAPABILITYDB';
-              'ISL',          'Yukon',         'W4-S129433', 'CAPABILITYDB';
+              'ISL',          'Yukon',         'SDWPSQL6001', 'CAPABILITYDB';
               'Chrysler PU',  'Seahawk',       'SDWPSQL6001', 'CAPABILITYDB';
-              'ISX',          'HDPacific',     'W4-S129433', 'CAPABILITYDB';
-              'Acadia',       'Acadia',        'W4-S129433', 'CAPABILITYDB';
-              'Ayrton',       'Ayrton',        'W4-S129433', 'CAPABILITYDB'; 
-              'Nighthawk',    'Nighthawk',     'W4-S129433', 'CAPABILITYDB';
-              'Vanguard',     'Vanguard',      'W4-S129433', 'CAPABILITYDB';
-              'Ventura',      'Ventura',       'W4-S129433', 'CAPABILITYDB';
-              'Pele',         'Pele',          'W4-S129433', 'CAPABILITYDB';
-              'Atlantic',     'Atlantic',      'W4-S129433', 'CAPABILITYDB';
-              'Blazer',       'Blazer',        'W4-S129433', 'CAPABILITYDB';
-              'Bronco',       'Bronco',        'W4-S129433', 'CAPABILITYDB';
-              'Clydesdale',   'Clydesdale',    'W4-S129433', 'CAPABILITYDB';
-              'Mamba',        'Mamba',         'W4-S129433', 'CAPABILITYDB';
-              'Shadowfax',    'Shadowfax',     'W4-S129433', 'CAPABILITYDB';
-              'Sierra',       'Sierra',        'W4-S129433', 'CAPABILITYDB';
-              'Thunderbolt',  'Thunderbolt',   'W4-S129433', 'CAPABILITYDB';
-              'Vulture',      'Vulture',       'W4-S129433', 'CAPABILITYDB';
+              'ISX',          'HDPacific',     'SDWPSQL6001', 'CAPABILITYDB';
+              'Acadia',       'Acadia',        'SDWPSQL6001', 'CAPABILITYDB';
+              'Ayrton',       'Ayrton',        'SDWPSQL6001', 'CAPABILITYDB'; 
+              'Nighthawk',    'Nighthawk',     'SDWPSQL6001', 'CAPABILITYDB';
+              'Vanguard',     'Vanguard',      'SDWPSQL6001', 'CAPABILITYDB';
+              'Ventura',      'Ventura',       'SDWPSQL6001', 'CAPABILITYDB';
+              'Pele',         'Pele',          'SDWPSQL6001', 'CAPABILITYDB';
+              'Atlantic',     'Atlantic',      'SDWPSQL6001', 'CAPABILITYDB';
+              'Blazer',       'Blazer',        'SDWPSQL6001', 'CAPABILITYDB';
+              'Bronco',       'Bronco',        'SDWPSQL6001', 'CAPABILITYDB';
+              'Clydesdale',   'Clydesdale',    'SDWPSQL6001', 'CAPABILITYDB';
+              'Mamba',        'Mamba',         'SDWPSQL6001', 'CAPABILITYDB';
+              'Shadowfax',    'Shadowfax',     'SDWPSQL6001', 'CAPABILITYDB';
+              'Sierra',       'Sierra',        'SDWPSQL6001', 'CAPABILITYDB';
+              'Thunderbolt',  'Thunderbolt',   'SDWPSQL6001', 'CAPABILITYDB';
+              'Vulture',      'Vulture',       'SDWPSQL6001', 'CAPABILITYDB';
               };
             
             % If program wasn't passed in
@@ -189,7 +191,7 @@ classdef Capability < handle
             if isempty(idx)
                 % Use some default values
                 obj.plotProgramName = '???';
-                obj.server = 'W4-S129433';
+                obj.server = 'SDWPSQL6001';
                 obj.instanceName = 'CAPABILITYDB';
             else
                 % Set these properties

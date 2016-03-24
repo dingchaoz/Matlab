@@ -22,7 +22,7 @@
 
 :::: Definitions for the script
 :: Define the server name here
-SET SERVERNAME=tcp:W4-S129433\CAPABILITYDB
+SET SERVERNAME=tcp:SDWPSQL6001\CAPABILITYDB
 :: Define the local directory where to save the backup file (must be C: or D: drive) [NEED TRAILING \]
 SET LOCALSAVEDIR=C:\Program Files (x86)\SQL\MSSQL11.CAPABILITYDB\MSSQL\Backup
 :: Define the network directory where to copy the local file to for safe keeping [NEED TRAILING \]
