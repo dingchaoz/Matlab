@@ -125,8 +125,8 @@ function AddCSVFile(obj, fullFileName, truckID)
             end
         else
             % The file specified doesn't exist
-            obj.event.write(['File does not exist - ' fullFuleName]);
-            obj.error.write(['File does not exist - ' fullFuleName]);
+            obj.event.write(['File does not exist - ' fullFileName]);
+            obj.error.write(['File does not exist - ' fullFileName]);
             % Exit the function
             return
         end
